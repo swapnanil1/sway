@@ -1,0 +1,26 @@
+[Desktop Entry]
+Categories=System;Settings;Utility;
+Comment[en_US]=Control your computer with ease using application profiles
+Comment=Control your computer with ease using application profiles
+Comment[bg]=Управлявайте компютъра си с лекота, изполвайки профили за програмите ви
+Comment[es_ES]=Controle su computadora fácilmente usando perfiles de aplicaciones
+Comment[ru]=Управляйте своим оборудованием с легкостью, используя профили приложений
+Exec=corectrl
+GenericName[en_US]=Core control
+GenericName=Core control
+GenericName[bg]=Централен Контрол
+GenericName[es_ES]=Control central
+GenericName[ru]=Центральный контроль
+Icon=corectrl
+Keywords=core;control;system;hardware;
+MimeType=
+Name[en_US]=CoreCtrl
+Name=CoreCtrl
+Path=
+StartupNotify=true
+StartupWMClass=corectrl
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=
