@@ -1,8 +1,8 @@
 ## Set Wallpaper
-output * bg ~/Pictures/Wallpapers/skycrpink.jpg fill
+output * bg ~/Pictures/Wallpapers/wallpaper.png fill
 
 ### Autostart
-exec_always --no-startup-id /usr/lib/polkit-kde-authentication-agent-1 &
+exec_always --no-startup-id /usr/bin/lxqt-policykit-agent &
 #exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always --no-startup-id autotiling
@@ -24,9 +24,9 @@ client.background       #F8F8F2
 font JetBrainsMono Nerd Font 13
 
 # Window Decorations
-gaps outer -4
-gaps inner 4
-gaps top 4
+gaps outer -2
+gaps inner 2
+gaps top 2
 gaps bottom 0
 hide_edge_borders smart
 default_border pixel 2
@@ -55,7 +55,7 @@ set $term alacritty
 # Set Firefox
 set $bro firefox
 # Set File Manager 
-set $file dolphin
+set $file thunar
 # Set Screenshot app
 set $ss "flameshot gui"
 # Set app launcher
