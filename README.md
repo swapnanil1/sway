@@ -2,11 +2,11 @@
 ## Sway Install + Dependencies 
 ### Install Sway + ly + Polkit
 ```
-paru -S --needed swaybg swaylock swayidle waybar wofi brightnessctl grim slurp pavucontrol alacritty xorg-xwayland wayland-protocols polkit  ly
+sudo pacman -S --needed swaybg swaylock swayidle waybar wofi brightnessctl grim slurp pavucontrol alacritty xorg-xwayland wayland-protocols polkit  ly
 ```
 ### Required For Icons, Screenshare & Authentication
 ```
-paru -S ttf-font-awesome xorg-xhost xdg-desktop-portal xdg-desktop-portal-wlr wl-clipboard network-manager-applet gvfs polkit-kde-agent
+sudo pacman -S ttf-font-awesome xorg-xhost xdg-desktop-portal xdg-desktop-portal-wlr wl-clipboard network-manager-applet gvfs lxqt-policykit
 ```
 ### Config ly-greeter
 ```
@@ -16,11 +16,11 @@ systemctl enable ly.service
 
 ### Install a GUI Filemanager , TextEditor & ImageViewer
 ```
-paru -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman catfish gvfs tumbler file-roller engrampa xarchiver caja squashfs-tools libopenraw libgepub libgsf poppler-glib ffmpegthumbnailer xarchiver xed pix
+sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman catfish gvfs tumbler file-roller engrampa xarchiver caja squashfs-tools libopenraw libgepub libgsf poppler-glib ffmpegthumbnailer xarchiver xed 
 ```
-### Dynamic Autotiling for Sway & Notification deamon 
+### Dynamic Autotiling for Sway & Notification deamon (AUR Stuff)
 ```
-paru -S autotiling swaync flameshot-git
+paru -S autotiling swaync flameshot-git pix
 ```
 ### Set Theme for gtk and qt
 GTK - Theme
@@ -33,13 +33,12 @@ gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
 ```
 GTK - Icons
 ```
-paru -S papirus-icon-theme
-gsettings set org.gnome.desktop.interface icon-theme "papirus-icon-theme"
+sudo pacman -S papirus-icon-theme
+gsettings set org.gnome.desktop.interface icon-theme "Papirus"
 ```
 QT 
 
 ```
-paru -S qt6ct kvantum
+sudo pacman -S qt6ct kvantum
 ```
-Set ```QT_QPA_PLATFORMTHEME=qt6ct```
-in /etc/environment
+run ```echo "QT_QPA_PLATFORMTHEME=qt6ct" >> /etc/enviroment```
