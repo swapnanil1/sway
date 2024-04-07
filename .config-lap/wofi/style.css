@@ -1,20 +1,7 @@
-* {
-    color: #F5F5F5;
-    font-family: 'JetBrainsMono Nerd Font';
-    font-size: 16px;
-}
 window {
 margin: 0px;
-border: 2px solid #6272A4;
+border: 1px solid #bd93f9;
 background-color: #282a36;
-}
-#workspaces button.focused {
-border: 1.5px solid #fbeaff;
-background-color: #6c72b9;
-}
-
-#workspaces button:hover {
-    background: #bc4c96;
 }
 
 #input {
@@ -62,6 +49,4 @@ background-color: #44475a;
 #entry:selected #text {
 font-weight: bold;
 }
-#tray menu {
-background-color: #282a36;
-}
+
