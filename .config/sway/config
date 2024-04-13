@@ -1,10 +1,10 @@
 ## Set Wallpaper
-output * bg ~/Pictures/Wallpapers/wallpaper.png fill
+output * bg ~/Pictures/Wallpapers/redmoon.jpg fill
 
 ### Autostart
 exec_always --no-startup-id /usr/bin/lxqt-policykit-agent &
 #exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
-exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+#exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always --no-startup-id autotiling
 exec_always --no-startup-id swaync
 exec --no-startup-id corectrl
@@ -14,25 +14,35 @@ exec --no-startup-id /usr/bin/flameshot
 ##Title Bar Theme
 # Dracula
 # class                 border  bground text    indicator child_border
-client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
-client.focused_inactive #44475A #44475A #F8F8F2 #44475A   #44475A
-client.unfocused        #282A36 #282A36 #BFBFBF #282A36   #282A36
+#client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
+#client.focused_inactive #44475A #44475A #F8F8F2 #44475A   #44475A
+#client.unfocused        #282A36 #282A36 #BFBFBF #282A36   #282A36
+#client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
+#client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
+#client.background       #F8F8F2
+# Red Moon
+# class                 border  bground text    indicator child_border
+client.focused          #CC5D8E #CC5D8E #F8F8F2 #CC5D8E   #CC5D8E
+client.focused_inactive #662240 #662240 #F8F8F2 #662240   #662240
+client.unfocused        #180A19 #180A19 #BFBFBF #180A19   #180A19
 client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
-client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
+client.placeholder      #180A19 #180A19 #F8F8F2 #180A19   #180A19
 client.background       #F8F8F2
+
+
 #Fonts
 font JetBrainsMono Nerd Font 13
 
 # Window Decorations
-gaps outer -2
+gaps outer 2
 gaps inner 2
 gaps top 2
 gaps bottom 0
 hide_edge_borders smart
 default_border pixel 2
 default_floating_border pixel 2
-titlebar_padding 1
-titlebar_border_thickness 1
+titlebar_padding 2
+titlebar_border_thickness 2
 # Inhibit swaylock from locking when anything is fullscreen
 for_window [title=".*"] inhibit_idle fullscreen
 for_window [class=".*"] inhibit_idle fullscreen
