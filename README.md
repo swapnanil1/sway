@@ -6,7 +6,7 @@ sudo pacman -S --needed swaybg swaylock swayidle waybar wofi brightnessctl grim 
 ```
 ### Required For Icons, Screenshare & Authentication
 ```
-sudo pacman -S ttf-font-awesome xorg-xhost xdg-desktop-portal xdg-desktop-portal-wlr wl-clipboard network-manager-applet gvfs lxqt-policykit
+sudo pacman -S ttf-font-awesome ttf-jetbrains-mono-nerd xorg-xhost xdg-desktop-portal xdg-desktop-portal-wlr wl-clipboard network-manager-applet gvfs lxqt-policykit
 ```
 ### Config ly-greeter
 ```
@@ -41,6 +41,10 @@ GTK - Icons
 ```
 sudo pacman -S papirus-icon-theme
 gsettings set org.gnome.desktop.interface icon-theme "Papirus"
+```
+Set gtk theme with lxappearance
+```
+sudo pacman -S --needed lxappearance
 ```
 QT 
 
