@@ -124,7 +124,7 @@
                               "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
                               "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
                               "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
-                              }
+                              },
                     },
         "actions":  {
                     "on-click-right": "mode",
@@ -135,7 +135,7 @@
                     }
     },
     "custom/lock": {
-        "format": "| ",
+        "format": "|  ",
 	"tooltip": false,
         "on-click": "swaylock -f -i ~/Pictures/Wallpapers/lockscreen.jpg"
     },
