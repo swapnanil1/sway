@@ -15,8 +15,13 @@ systemctl enable ly.service
 ```
 
 ### Install a GUI Filemanager , TextEditor & ImageViewer
+Recommended
 ```
-sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman catfish gvfs tumbler file-roller engrampa xarchiver caja squashfs-tools libopenraw libgepub libgsf poppler-glib ffmpegthumbnailer xarchiver xed 
+sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman engrampa gvfs xed 
+```
+Optional Extras
+```
+sudo pacman -S --needed catfish tumbler file-roller engrampa caja squashfs-tools libopenraw libgepub libgsf poppler-glib ffmpegthumbnailer   
 ```
 ### Dynamic Autotiling for Sway & Notification deamon (AUR Stuff)
 ```
@@ -25,8 +30,9 @@ paru -S autotiling swaync flameshot-git pix
 ### Set Theme for gtk and qt
 GTK - Theme
 ```
+mkdir .themes
 cd .themes
-git clone git clone https://github.com/dracula/gtk.git
+git clone https://github.com/dracula/gtk.git
 mv gtk Dracula
 gsettings set org.gnome.desktop.interface gtk-theme "Dracula"
 gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
