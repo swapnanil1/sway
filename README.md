@@ -6,7 +6,7 @@ sudo pacman -S --needed swaybg swaylock swayidle waybar wofi brightnessctl grim 
 ```
 ### Required For Icons, Screenshare & Authentication
 ```
-sudo pacman -S ttf-font-awesome ttf-jetbrains-mono-nerd xorg-xhost xdg-desktop-portal xdg-desktop-portal-wlr wl-clipboard network-manager-applet gvfs lxqt-policykit
+sudo pacman -S ttf-font-awesome ttf-jetbrains-mono-nerd xorg-xhost xdg-desktop-portal xdg-desktop-portal-wlr wl-clipboard gvfs lxqt-policykit
 ```
 ### Config ly-greeter
 ```
@@ -51,4 +51,4 @@ QT
 ```
 sudo pacman -S qt6ct kvantum
 ```
-run ```echo "QT_QPA_PLATFORMTHEME=qt6ct" >> /etc/enviroment```
+run ```echo "QT_QPA_PLATFORMTHEME=qt6ct" >> /etc/environment```
