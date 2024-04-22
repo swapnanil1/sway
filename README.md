@@ -23,9 +23,9 @@ Optional Extras
 ```
 sudo pacman -S --needed catfish tumbler file-roller engrampa caja squashfs-tools libopenraw libgepub libgsf poppler-glib ffmpegthumbnailer   
 ```
-### Dynamic Autotiling for Sway & Notification deamon (AUR Stuff)
+### Dynamic Autotiling for Sway, Notification deamon (AUR Stuff) , Pomodoro Gnome & Waybar 
 ```
-paru -S autotiling swaync flameshot-git pix
+paru -S autotiling swaync flameshot-git pix i3-gnome-pomodoro-git
 ```
 ### Set Theme for gtk and qt
 GTK - Theme
