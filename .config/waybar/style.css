@@ -65,3 +65,6 @@ font-weight: bold;
 #tray menu {
 background-color: #282a36;
 }
+#custom-pomodoro.paused {
+  border-bottom: 3px solid #44475a;
+}
