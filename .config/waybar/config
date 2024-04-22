@@ -34,7 +34,7 @@
     "modules-center": [""],
 
 //MODULES ON RIGHT
-    "modules-right": ["idle_inhibitor","keyboard-state","network","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","clock","pulseaudio","custom/lock","custom/power","tray"],
+    "modules-right": ["idle_inhibitor","custom/pomodoro","keyboard-state","network","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","clock","pulseaudio","custom/lock","custom/power","tray"],
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
@@ -43,6 +43,15 @@
             "locked": "",
             "unlocked": ""
         }
+    },
+    "custom/pomodoro": {
+      "exec": "i3-gnome-pomodoro status --format=waybar --show-seconds",
+      "return-type": "json",
+      "interval": 1,
+      "format": "{}",
+      "on-click": "i3-gnome-pomodoro start",
+      "on-click-middle": "i3-gnome-pomodoro toggle",
+      "on-click-right": "i3-gnome-pomodoro stop",
     },
     "idle_inhibitor": {
         "format": "{icon}",
