@@ -5,7 +5,7 @@
     "spacing": 10,
 
 //MODULES ON LEFT
-    "modules-left": ["sway/workspaces","sway/window","sway/mode"],
+    "modules-left": ["sway/workspaces","sway/window","sway/mode","custom/todo"],
     "sway/workspaces": {
          "disable-scroll": true,
          "all-outputs": true,
@@ -30,11 +30,18 @@
         "always-on": true,
         "no-mode-message": "No Mode"
     },
+    "custom/todo": {
+        "exec": "~/.config/waybar/scripts/todo.sh",
+        "return-type": "json",
+        "format": "{} todos",
+        "on-click": "alacritty -e nvim ~/todo.txt",
+        "interval": 5,
+    },
 //MODULES ON CENTRE
     "modules-center": [""],
 
 //MODULES ON RIGHT
-    "modules-right": ["idle_inhibitor","custom/pomodoro","keyboard-state","network","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","clock","pulseaudio","custom/lock","custom/power","tray"],
+    "modules-right": ["idle_inhibitor","keyboard-state","network","custom/pomodoro","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","clock","pulseaudio","custom/lock","custom/power","tray"],
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
@@ -43,15 +50,6 @@
             "locked": "",
             "unlocked": ""
         }
-    },
-    "custom/pomodoro": {
-      "exec": "i3-gnome-pomodoro status --format=waybar --show-seconds",
-      "return-type": "json",
-      "interval": 1,
-      "format": "{}",
-      "on-click": "i3-gnome-pomodoro start",
-      "on-click-middle": "i3-gnome-pomodoro toggle",
-      "on-click-right": "i3-gnome-pomodoro stop",
     },
     "idle_inhibitor": {
         "format": "{icon}",
@@ -76,9 +74,18 @@
         "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
         "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
     },
+    "custom/pomodoro": {
+      "exec": "i3-gnome-pomodoro status --format=waybar --show-seconds",
+      "return-type": "json",
+      "interval": 1,
+      "format": "{}",
+      "on-click": "i3-gnome-pomodoro start",
+      "on-click-middle": "i3-gnome-pomodoro toggle",
+      "on-click-right": "i3-gnome-pomodoro stop",
+    },
     "cpu": {
         "interval": 10, 
-        "format": " {usage}%"
+        "format": "|  {usage}%"
     },
     "memory": {
         "interval": 10,
