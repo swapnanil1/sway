@@ -17,7 +17,7 @@ systemctl enable ly.service
 ### Install a GUI Filemanager , TextEditor & ImageViewer
 Recommended
 ```
-sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman engrampa gvfs xed 
+sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman engrampa gvfs xed xreader android-file-transfer
 ```
 Optional Extras
 ```
@@ -26,6 +26,10 @@ sudo pacman -S --needed catfish tumbler file-roller engrampa caja squashfs-tools
 ### Dynamic Autotiling for Sway, Notification deamon (AUR Stuff) , Pomodoro Gnome & Waybar 
 ```
 paru -S autotiling swaync flameshot-git pix i3-gnome-pomodoro-git
+```
+For Bluetooth Support
+```
+paru -S bluetuith
 ```
 ### Set Theme for gtk and qt
 GTK - Theme
@@ -51,4 +55,9 @@ QT
 ```
 sudo pacman -S qt6ct kvantum
 ```
-run ```echo "QT_QPA_PLATFORMTHEME=qt6ct" >> /etc/environment```
+Setup Environment variables (useful setting force wayland flags globally )
+```sudo nvim /etc/environment```
+```
+QT_QPA_PLATFORMTHEME=qt6ct 
+ELECTRON_OZONE_PLATFORM_HINT=wayland
+```

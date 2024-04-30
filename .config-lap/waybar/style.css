@@ -1,67 +1,73 @@
 * {
-    color: #F5F5F5;
-    font-family: 'JetBrainsMono Nerd Font';
-    font-size: 16px;
+  color: #f5f5f5;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 16px;
 }
 window {
-margin: 0px;
-border: 2px solid #6272A4;
-background-color: #282a36;
+  margin: 0px;
+  border: 2px solid #cc5d8e; /* BORDER*/
+  background-color: #180a19; /* Mass background*/
 }
 #workspaces button.focused {
-border: 1.5px solid #fbeaff;
-background-color: #6c72b9;
+  border: 1.5px solid #fbeaff;
+  background-color: #662240; /* Focused  */
 }
 
 #workspaces button:hover {
-    background: #bc4c96;
+  background: #cc5d8e; /* Hover */
 }
 
 #input {
-margin: 5px;
-border: none;
-color: #f8f8f2;
-background-color: #44475a;
+  margin: 5px;
+  border: none;
+  color: #f8f8f2;
+  background-color: #44475a;
 }
 
 #inner-box {
-margin: 5px;
-border: none;
-background-color: #282a36;
+  margin: 5px;
+  border: none;
+  background-color: #282a36;
 }
 
 #outer-box {
-margin: 5px;
-border: none;
-background-color: #282a36;
+  margin: 5px;
+  border: none;
+  background-color: #282a36;
 }
 
 #scroll {
-margin: 0px;
-border: none;
+  margin: 0px;
+  border: none;
 }
 
 #text {
-margin: 5px;
-border: none;
-color: #f8f8f2;
-} 
+  margin: 5px;
+  border: none;
+  color: #f8f8f2;
+}
 
 #entry.activatable #text {
-color: #282a36;
+  color: #282a36;
 }
 
 #entry > * {
-color: #f8f8f2;
+  color: #f8f8f2;
 }
 
 #entry:selected {
-background-color: #44475a;
+  background-color: #44475a;
 }
 
 #entry:selected #text {
-font-weight: bold;
+  font-weight: bold;
 }
 #tray menu {
-background-color: #282a36;
+  background-color: #282a36;
+}
+#custom-pomodoro.paused {
+  border-bottom: 3px solid #44475a;
+}
+#battery.critical {
+  background-color: red;
 }
