@@ -4,12 +4,9 @@ output * bg ~/Pictures/Wallpapers/redmoon.jpg fill
 ### Autostart
 exec_always --no-startup-id /usr/bin/lxqt-policykit-agent &
 #exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
-exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+#exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always --no-startup-id autotiling
 exec_always --no-startup-id swaync
-exec --no-startup-id corectrl
-exec --no-startup-id /usr/bin/keepassxc
-exec --no-startup-id /usr/bin/flameshot
 ### Visuals
 ##Title Bar Theme
 # Dracula
@@ -65,7 +62,7 @@ set $bro firefox
 # Set File Manager 
 set $file thunar
 # Set Screenshot app
-set $ss "flameshot gui"
+set $ss "flameshot full"
 # Set app launcher
 set $menu wofi --show=drun --lines=7 --prompt=""
 
