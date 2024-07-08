@@ -6,7 +6,8 @@ exec_always --no-startup-id /usr/bin/lxqt-policykit-agent &
 #exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 #exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always --no-startup-id autotiling
-exec_always --no-startup-id swaync
+exec_always --no-startup-id swaync              # Notification
+exec wl-paste --watch cliphist store            # Clipboard
 exec --no-startup-id corectrl
 exec --no-startup-id /usr/bin/keepassxc
 exec --no-startup-id /usr/bin/flameshot
@@ -121,6 +122,9 @@ input * {
 
     # Take a ScreenShot
     bindsym $mod+Shift+p exec $ss
+
+    # Clipboard History
+    bindsym Mod1+p exec cliphist list | wofi -S dmenu | cliphist decode | wl-copy
 
     # Sway Notification Demon swaync
     bindsym $mod+Shift+n exec swaync-client -t -sw

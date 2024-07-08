@@ -5,17 +5,17 @@
     "spacing": 10,
 
 //MODULES ON LEFT
-    "modules-left": ["sway/workspaces","sway/window","sway/mode","custom/todo"],
+    "modules-left": ["custom/pomodoro","custom/todo","sway/workspaces","sway/window","sway/mode"],
     "sway/workspaces": {
          "disable-scroll": true,
          "all-outputs": true,
          "warp-on-scroll": false,
          "format": "{name}: {icon}",
          "format-icons": {
-             "1": "",
-             "2": "",
+             "1": "",
+             "2": "",
              "3": "",
-             "4": "",
+             "4": "",
              "5": "",
              "urgent": "",
              "default": ""
@@ -33,7 +33,7 @@
     "custom/todo": {
         "exec": "~/.config/waybar/scripts/todo.sh",
         "return-type": "json",
-        "format": "{} todos",
+        "format": " {} ",
         "on-click": "alacritty -e nvim ~/todo.txt",
         "interval": 5,
     },
@@ -41,7 +41,7 @@
     "modules-center": [""],
 
 //MODULES ON RIGHT
-    "modules-right": ["idle_inhibitor","keyboard-state","network","custom/pomodoro","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","clock","pulseaudio","custom/lock","custom/power","tray"],
+    "modules-right": ["idle_inhibitor","keyboard-state","network","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","pulseaudio","custom/brightness","clock","custom/lock","custom/power","tray"],
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
@@ -50,6 +50,15 @@
             "locked": "",
             "unlocked": ""
         }
+    },
+    "custom/brightness": {
+    "format": "{icon} {percentage}%",
+    "interval": 1,
+    "format-icons": [""],
+    "exec": "~/.config/waybar/scripts/waybar-ddutil",
+    "on-scroll-up": "ddcutil setvcp 10 + 10",
+    "on-scroll-down": "ddcutil setvcp 10 - 10",
+    "return-type": "json"
     },
     "idle_inhibitor": {
         "format": "{icon}",
@@ -60,11 +69,11 @@
     },
     "pulseaudio": {
         "scroll-step": 5, // %,
-        "format": "| {icon}{volume}% {format_source}",
-        "format-bluetooth": "| {icon} {volume}% {format_source}",
-        "format-bluetooth-muted": "|  {icon} {format_source}",
-        "format-muted": "|  {format_source}",
-        "format-source": " {volume}%",
+        "format": "{icon}{volume}% {format_source}",
+        "format-bluetooth": "{icon} {volume}% {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}%",
         "format-source-muted": " ",
         "format-icons": {
             "headphone": " ",
@@ -78,14 +87,15 @@
       "exec": "i3-gnome-pomodoro status --format=waybar --show-seconds",
       "return-type": "json",
       "interval": 1,
-      "format": "{}",
+      "format": "  {}",
+      "format-icons": "  {}",
       "on-click": "i3-gnome-pomodoro start",
       "on-click-middle": "i3-gnome-pomodoro toggle",
       "on-click-right": "i3-gnome-pomodoro stop",
     },
     "cpu": {
         "interval": 10, 
-        "format": "|  {usage}%"
+        "format": " {usage}%"
     },
     "memory": {
         "interval": 10,
@@ -101,22 +111,22 @@
         "thermal-zone": 2,
         "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
         "critical-threshold": 80,
-        "format-critical": "| GPU {temperatureC}°C",
-        "format": "| GPU {temperatureC}°C",
-        "format-icons": ["", "", ""]
+        "format-critical": "GPU {temperatureC}°C",
+        "format": "GPU {temperatureC}°C",
+        "format-ions": ["", "", ""]
     },
    "temperature#cpu": {
         "thermal-zone": 1,
         "hwmon-path": "/sys/class/hwmon/hwmon1/temp1_input",
         "critical-threshold": 80,
-        "format-critical": "{icon} CPU {temperatureC}°C |",
+        "format-critical": "{icon} CPU {temperatureC}°C",
         "format": "{icon} CPU {temperatureC}°C |",
         "format-icons": ["", "", ""]
     },
     "network": {
         "interface": "enp34s0", // This is the magic line
-        "format-wifi": "   {bandwidthDownBits}  {bandwidthUpBits} |",
-        "format-ethernet": " {bandwidthDownBits}  {bandwidthUpBits} |",
+        "format-wifi": "   {bandwidthDownBits}  {bandwidthUpBits}",
+        "format-ethernet": " {bandwidthDownBits}  {bandwidthUpBits}",
         "format-linked": "(No IP)",
         "format-disconnected": "",
         "on-click": "alacritty -e nmtui",
@@ -151,7 +161,7 @@
                     }
     },
     "custom/lock": {
-        "format": "|  ",
+        "format": " ",
 	"tooltip": false,
         "on-click": "swaylock -f -i ~/Pictures/Wallpapers/lockscreen.jpg"
     },

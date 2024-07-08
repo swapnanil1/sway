@@ -17,7 +17,7 @@ systemctl enable ly.service
 ### Install a GUI Filemanager , TextEditor & ImageViewer
 Recommended
 ```
-sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman engrampa gvfs xed xreader android-file-transfer
+sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman engrampa gvfs xed xreader android-file-transfer ristretto
 ```
 Optional Extras
 ```
@@ -25,14 +25,18 @@ sudo pacman -S --needed catfish tumbler file-roller engrampa caja squashfs-tools
 ```
 ### Dynamic Autotiling for Sway, Notification deamon (AUR Stuff) , Pomodoro Gnome & Waybar 
 ```
-paru -S autotiling swaync flameshot-git pix i3-gnome-pomodoro-git
+paru -S autotiling swaync flameshot-git i3-gnome-pomodoro-git
 ```
-For Bluetooth Support
+#### For Brightness Control & Clipboard 
+```
+sudo pacman -S --needed cliphist ddcutil
+```
+#### For Bluetooth Support
 ```
 paru -S bluetuith
 ```
 ### Set Theme for gtk and qt
-GTK - Theme
+#### GTK - Theme
 ```
 mkdir .themes
 cd .themes
@@ -41,21 +45,22 @@ mv gtk Dracula
 gsettings set org.gnome.desktop.interface gtk-theme "Dracula"
 gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
 ```
-GTK - Icons
+#### GTK - Icons
 ```
 sudo pacman -S papirus-icon-theme
 gsettings set org.gnome.desktop.interface icon-theme "Papirus"
 ```
-Set gtk theme with lxappearance
+#### Set GTK Theme with lxappearance
 ```
 sudo pacman -S --needed lxappearance
 ```
-QT 
+#### QT 
 
 ```
 sudo pacman -S qt6ct kvantum
 ```
-Setup Environment variables (useful setting force wayland flags globally )
+Setup Environment variables (useful setting force wayland flags globally)
+
 ```sudo nvim /etc/environment```
 ```
 QT_QPA_PLATFORMTHEME=qt6ct 
