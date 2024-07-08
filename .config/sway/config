@@ -79,8 +79,8 @@ output * {
   res 1920x1080@144Hz
   subpixel rgb
   position 0,0
-  adaptive_sync off
-  max_render_time 1
+  adaptive_sync on
+  max_render_time 7
 }
 ### Idle configuration
 #
