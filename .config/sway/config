@@ -129,7 +129,11 @@ input * {
     # Sway Notification Demon swaync
     bindsym $mod+Shift+n exec swaync-client -t -sw
 
-    # Setting side mouse button to mute mic using --whole-window | quickly disable mic
+    # Start Pomodoro 
+    bindsym $mod+Shift+t exec i3-gnome-pomodoro start
+    bindsym $mod+Shift+z exec i3-gnome-pomodoro toggle
+
+    # Setting side mouse button to mute mic using --whole-window | quickly disable mic for entire system
     bindsym --whole-window button8 exec \
     wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
