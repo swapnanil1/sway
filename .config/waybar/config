@@ -41,14 +41,14 @@
     "modules-center": [""],
 
 //MODULES ON RIGHT
-    "modules-right": ["idle_inhibitor","keyboard-state","network","cpu","memory","custom/gpu-usage","temperature","temperature#cpu","pulseaudio","custom/brightness","clock","custom/lock","custom/power","tray"],
+    "modules-right": ["keyboard-state","network","temperature#cpu","cpu","memory","custom/gpu-usage","temperature","pulseaudio","custom/brightness","clock","idle_inhibitor","custom/lock","custom/power","tray"],
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
         "format": "{name} {icon}",
         "format-icons": {
-            "locked": "",
-            "unlocked": ""
+            "locked": "",
+            "unlocked": ""
         }
     },
     "custom/brightness": {
@@ -71,8 +71,8 @@
         "scroll-step": 5, // %,
         "format": "{icon}{volume}% {format_source}",
         "format-bluetooth": "{icon} {volume}% {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
+        "format-bluetooth-muted": "{icon} {format_source}",
+        "format-muted": "{format_source}",
         "format-source": "{volume}%",
         "format-source-muted": " ",
         "format-icons": {
@@ -112,15 +112,15 @@
         "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
         "critical-threshold": 80,
         "format-critical": "GPU {temperatureC}°C",
-        "format": "GPU {temperatureC}°C",
+        "format": "GPU {temperatureC}°C |",
         "format-ions": ["", "", ""]
     },
    "temperature#cpu": {
         "thermal-zone": 1,
         "hwmon-path": "/sys/class/hwmon/hwmon1/temp1_input",
         "critical-threshold": 80,
-        "format-critical": "{icon} CPU {temperatureC}°C",
-        "format": "{icon} CPU {temperatureC}°C |",
+        "format-critical": "| CPU {temperatureC}°C",
+        "format": "| CPU {temperatureC}°C",
         "format-icons": ["", "", ""]
     },
     "network": {
@@ -135,8 +135,8 @@
     },
     "clock": {
         "timezone": "Asia/Kolkata",
-        "format": "{:%I:%M%p}",
-        "format-alt": "{:%A, %B %d, %Y (%R)}  ",
+        "format": "{:%I:%M%p} |",
+        "format-alt": "{:%A, %B %d, %Y (%R)}   |",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
                     "mode"          : "year",
@@ -161,13 +161,13 @@
                     }
     },
     "custom/lock": {
-        "format": " ",
+        "format": " ",
 	"tooltip": false,
         "on-click": "swaylock -f -i ~/Pictures/Wallpapers/lockscreen.jpg"
     },
      "custom/power":{
 	"tooltip": false,
-        "format":" |", "on-click":"swaynag -t warning -m 'Power Menu Options | Remember to Switch Off your Keyboard after Shutdown' -b 'Restart' 'swaymsg exec systemctl reboot' -b 'Shutdown | Keyboard' 'swaymsg exec systemctl poweroff' -b 'Restart to BIOS' 'systemctl reboot --firmware-setup'"
+        "format":" ", "on-click":"swaynag -t warning -m 'Power Menu Options | Remember to Switch Off your Keyboard after Shutdown' -b 'Restart' 'swaymsg exec systemctl reboot' -b 'Shutdown | Keyboard' 'swaymsg exec systemctl poweroff' -b 'Restart to BIOS' 'systemctl reboot --firmware-setup'"
     },
     "tray": {
         //"icon-size": 21,
