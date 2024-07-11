@@ -1,7 +1,7 @@
 {
     "layer": "top",
     "position": "top",
-    "spacing": 5,
+    "spacing": 6,
 
 //MODULES ON LEFT
     "modules-left": ["custom/pomodoro","custom/todo","sway/workspaces","sway/window","sway/mode"],

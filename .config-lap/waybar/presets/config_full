@@ -1,7 +1,7 @@
 {
     "layer": "top",
     "position": "top",
-    "spacing": 5,
+    "spacing": 4,
 
 //MODULES ON LEFT
     "modules-left": ["custom/pomodoro","custom/todo","sway/workspaces","sway/window","sway/mode"],
@@ -50,7 +50,7 @@
     "modules-center": [""],
 
 //MODULES ON RIGHT
-    "modules-right": ["keyboard-state","network","bluetooth","pulseaudio","backlight","battery","clock","idle_inhibitor","custom/lock","custom/power","tray"],
+    "modules-right": ["keyboard-state","network","bluetooth","memory","cpu","temperature","custom/gpu-usage","pulseaudio","backlight","battery","clock","battery#timeleft","idle_inhibitor","custom/lock","custom/power","tray"],
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
@@ -134,8 +134,8 @@
     },
     "clock": {
         "timezone": "Asia/Kolkata",
-        "format": "{:%I:%M%p}|",
-        "format-alt": "{:%A, %B %d, %Y (%R)}  |",
+        "format": "{:%I:%M%p}",
+        "format-alt": "{:%A, %B %d, %Y (%R)}  ",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
                     "mode"          : "year",

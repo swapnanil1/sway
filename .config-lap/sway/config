@@ -6,7 +6,10 @@ exec_always --no-startup-id /usr/bin/lxqt-policykit-agent &
 #exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 #exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always --no-startup-id autotiling
-exec_always --no-startup-id swaync
+exec_always --no-startup-id swaync              # Notification
+exec wl-paste --watch cliphist store            # Clipboard
+exec --no-startup-id /usr/bin/keepassxc
+exec --no-startup-id /usr/bin/flameshot
 ### Visuals
 ##Title Bar Theme
 # Dracula
@@ -25,6 +28,8 @@ client.unfocused        #180A19 #180A19 #BFBFBF #180A19   #180A19
 client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
 client.placeholder      #180A19 #180A19 #F8F8F2 #180A19   #180A19
 client.background       #F8F8F2
+
+
 #Fonts
 font JetBrainsMono Nerd Font 13
 
@@ -62,7 +67,7 @@ set $bro firefox
 # Set File Manager 
 set $file thunar
 # Set Screenshot app
-set $ss "flameshot full"
+set $ss "flameshot gui"
 # Set app launcher
 set $menu wofi --show=drun --lines=7 --prompt=""
 
@@ -95,7 +100,7 @@ exec swayidle -w \
 input * {
     accel_profile flat
     pointer_accel 0.0
-    natural_scroll enabled 
+    natural_scroll enabled
     tap enabled
 }
 # input "6940:7059:Corsair_CORSAIR_KATAR_PRO_Gaming_Mouse" {
@@ -119,12 +124,23 @@ input * {
     # Take a ScreenShot
     bindsym $mod+Shift+p exec $ss
 
+    # Clipboard History
+    bindsym Mod1+p exec cliphist list | wofi -S dmenu | cliphist decode | wl-copy
+
     # Sway Notification Demon swaync
     bindsym $mod+Shift+n exec swaync-client -t -sw
 
-    # Setting side mouse button to mute mic using --whole-window | quickly disable mic
+    # Start Pomodoro 
+    bindsym $mod+Shift+t exec i3-gnome-pomodoro start
+    bindsym $mod+Shift+z exec i3-gnome-pomodoro toggle
+
+    # Setting side mouse button to mute mic using --whole-window | quickly disable mic for entire system
     bindsym --whole-window button8 exec \
     wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+    # Setting side mouse button to mute mic using --whole-window | quickly disable audio for entire system
+    bindsym --whole-window button9 exec \
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 
     # Touchpad Gestures
     bindgesture swipe:right workspace prev
@@ -264,14 +280,6 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
-
-# Volume control
-    bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-    bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-    bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-# Brightness Control
-    bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
-    bindsym XF86MonBrightnessUp exec brightnessctl set 5%+
 
 # Set Status Bar:
 
