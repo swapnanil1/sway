@@ -1,4 +1,4 @@
-import = ["~/.config/alacritty/themes/themes/midnight-haze.toml"]
+#import = ["~/.config/alacritty/themes/themes/midnight-haze.toml"]
 #import = ["~/.config/alacritty/themes/themes/omni.toml"]
 #Window decoration only works with a compositor(WM), remove if on windows
 [window]

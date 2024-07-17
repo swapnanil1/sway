@@ -73,17 +73,18 @@ paru -S bluetuith
 ```
 mkdir .themes
 cd .themes
-git clone https://github.com/dracula/gtk.git
-mv gtk Dracula
-gsettings set org.gnome.desktop.interface gtk-theme "Dracula"
-gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
+git clone https://github.com/EliverLara/Kripton
+gsettings set org.gnome.desktop.interface gtk-theme "Kripton"
+gsettings set org.gnome.desktop.wm.preferences theme "Kripton"
 ```
-
 #### GTK - Icons
 
 ```
-sudo pacman -S papirus-icon-theme
-gsettings set org.gnome.desktop.interface icon-theme "Papirus"
+cd repos
+git clone https://github.com/vinceliuice/Colloid-icon-theme.git
+cd Colloid-icon-theme
+./install.sh -s default -t teal
+gsettings set org.gnome.desktop.interface icon-theme "Colloid-Teal-Dark"
 ```
 
 #### Set GTK Theme with lxappearance
@@ -104,5 +105,5 @@ Setup Environment variables (useful setting force wayland flags globally)
 
 ```
 QT_QPA_PLATFORMTHEME=qt6ct
-ELECTRON_OZONE_PLATFORM_HINT=wayland
+ELECTRON_OZONE_PLATFORM_HINT=auto
 ```

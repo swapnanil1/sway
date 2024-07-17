@@ -1,6 +1,6 @@
 function fish_prompt
     echo ''
-    set_color CC5D8E
+    set_color 50BFB4
     echo (pwd)
     set_color yellow
     echo '> '

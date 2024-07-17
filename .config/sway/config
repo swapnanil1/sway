@@ -1,5 +1,5 @@
 ## Set Wallpaper
-output * bg ~/Pictures/Wallpapers/redmoon.jpg fill
+output * bg ~/Pictures/Wallpapers/moutainsButBlue.png fill
 
 ### Autostart
 exec_always --no-startup-id /usr/bin/lxqt-policykit-agent &
@@ -12,7 +12,7 @@ exec --no-startup-id corectrl
 exec --no-startup-id /usr/bin/keepassxc
 exec --no-startup-id /usr/bin/flameshot
 ### Visuals
-##Title Bar Theme
+## Title Bar Theme
 # Dracula
 # class                 border  bground text    indicator child_border
 #client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
@@ -23,13 +23,20 @@ exec --no-startup-id /usr/bin/flameshot
 #client.background       #F8F8F2
 # Red Moon
 # class                 border  bground text    indicator child_border
-client.focused          #CC5D8E #CC5D8E #F8F8F2 #CC5D8E   #CC5D8E
-client.focused_inactive #662240 #662240 #F8F8F2 #662240   #662240
-client.unfocused        #180A19 #180A19 #BFBFBF #180A19   #180A19
+# client.focused          #CC5D8E #CC5D8E #F8F8F2 #CC5D8E   #CC5D8E
+# client.focused_inactive #662240 #662240 #F8F8F2 #662240   #662240
+# client.unfocused        #180A19 #180A19 #BFBFBF #180A19   #180A19
+# client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
+# client.placeholder      #180A19 #180A19 #F8F8F2 #180A19   #180A19
+# client.background       #F8F8F2
+# moutainsButBlue
+# class                 border  bground text    indicator child_border
+client.focused          #50BFB4 #50BFB4 #F8F8F2 #50BFB4   #50BFB4
+client.focused_inactive #026873 #026873 #F8F8F2 #026873   #026873
+client.unfocused        #0D0D0D #0D0D0D #BFBFBF #0D0D0D   #0D0D0D
 client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
 client.placeholder      #180A19 #180A19 #F8F8F2 #180A19   #180A19
 client.background       #F8F8F2
-
 
 #Fonts
 font JetBrainsMono Nerd Font 13
@@ -53,7 +60,7 @@ for_window [app_id=".*"] inhibit_idle fullscreen
 ### Variables
 #
 # Set Mod Key . Use Mod1 for Alt. Use Mod4 for Super
-set $mod Mod1
+set $mod Mod4
 
 # Home row direction keys, like vim
 set $left h
@@ -64,7 +71,7 @@ set $right l
 # Set terminal
 set $term alacritty
 # Set Firefox
-set $bro firefox
+set $bro brave
 # Set File Manager 
 set $file thunar
 # Set Screenshot app

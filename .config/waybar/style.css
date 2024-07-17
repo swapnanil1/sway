@@ -5,16 +5,16 @@
 }
 window {
 margin: 0px;
-border: 2px solid #CC5D8E; /* BORDER*/
-background-color: #180A19; /* Mass background*/
+border: 2px solid #50BFB4; /* BORDER*/
+background-color: #0D0D0D; /* Mass background*/
 }
 #workspaces button.focused {
 border: 1.5px solid #fbeaff;
-background-color: #662240; /* Focused  */
+background-color: #026873; /* Focused  */
 }
 
 #workspaces button:hover {
-    background: #7E6C6E; /* Hover */
+    background: #026873; /* Hover */
 }
 
 #input {
