@@ -1,0 +1,70 @@
+* {
+    color: #F5F5F5;
+    font-family: 'JetBrainsMono Nerd Font';
+    font-size: 16px;
+}
+window {
+margin: 0px;
+border: 2px solid #50BFB4; /* BORDER*/
+background-color: #0D0D0D; /* Mass background*/
+}
+#workspaces button.focused {
+border: 1.5px solid #fbeaff;
+background-color: #026873; /* Focused  */
+}
+
+#workspaces button:hover {
+    background: #026873; /* Hover */
+}
+
+#input {
+margin: 5px;
+border: none;
+color: #f8f8f2;
+background-color: #44475a;
+}
+
+#inner-box {
+margin: 5px;
+border: none;
+background-color: #282a36;
+}
+
+#outer-box {
+margin: 5px;
+border: none;
+background-color: #282a36;
+}
+
+#scroll {
+margin: 0px;
+border: none;
+}
+
+#text {
+margin: 5px;
+border: none;
+color: #f8f8f2;
+} 
+
+#entry.activatable #text {
+color: #282a36;
+}
+
+#entry > * {
+color: #f8f8f2;
+}
+
+#entry:selected {
+background-color: #44475a;
+}
+
+#entry:selected #text {
+font-weight: bold;
+}
+#tray menu {
+background-color: #282a36;
+}
+#custom-pomodoro.paused {
+  border-bottom: 3px solid #44475a;
+}

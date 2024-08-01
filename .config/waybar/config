@@ -167,7 +167,7 @@
     },
      "custom/power":{
 	"tooltip": false,
-        "format":" ", "on-click":"swaynag -t warning -m 'Power Menu Options | Remember to Switch Off your Keyboard after Shutdown' -b 'Restart' 'swaymsg exec systemctl reboot' -b 'Shutdown | Keyboard' 'swaymsg exec systemctl poweroff' -b 'Restart to BIOS' 'systemctl reboot --firmware-setup'"
+        "format":" ", "on-click":"swaynag -t warning -m 'Power Menu Options | Remember to Switch Off your Keyboard after Shutdown' -b 'Shutdown' 'swaymsg exec systemctl poweroff' -b 'Reboot' 'swaymsg exec systemctl reboot' -b 'Reboot to Windows' 'systemctl reboot --boot-loader-entry=auto-windows' -b 'Reboot to BIOS' 'systemctl reboot --firmware-setup'"
     },
     "tray": {
         //"icon-size": 21,

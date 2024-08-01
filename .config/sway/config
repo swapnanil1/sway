@@ -73,7 +73,7 @@ set $term alacritty
 # Set Firefox
 set $bro brave
 # Set File Manager 
-set $file thunar
+set $file nemo
 # Set Screenshot app
 set $ss "flameshot gui"
 # Set app launcher
@@ -86,7 +86,7 @@ output * {
   res 1920x1080@144Hz
   subpixel rgb
   position 0,0
-  adaptive_sync on
+  adaptive_sync off
   max_render_time 7
 }
 ### Idle configuration
@@ -131,7 +131,7 @@ input * {
     bindsym $mod+Shift+p exec $ss
 
     # Clipboard History
-    bindsym Mod1+p exec cliphist list | wofi -S dmenu | cliphist decode | wl-copy
+    bindsym $mod+p exec cliphist list | wofi -S dmenu | cliphist decode | wl-copy
 
     # Sway Notification Demon swaync
     bindsym $mod+Shift+n exec swaync-client -t -sw
