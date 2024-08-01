@@ -9,7 +9,7 @@
 | ScreenShot        | Meta+Shift+P | FlameShot         |
 | Close Window      | Meta+Shift+Q | Sway              |
 | Browser           | Meta + C     | Firefox           |
-| FileManager       | Meta+X       | Thunar            |
+| FileManager       | Meta+X       | Nemo              |
 | Terminal          | Meta+Return  | Alacritty         |
 | Toggle Pomodoro   | Meta+Shift+Z | i3-gnome-pomodoro |
 
@@ -39,7 +39,7 @@ systemctl enable ly.service
 Recommended
 
 ```
-sudo pacman -S --needed thunar thunar-archive-plugin thunar-media-tags-plugin thunar-volman engrampa gvfs xed xreader android-file-transfer ristretto
+sudo pacman -S --needed nemo nemo-audio-tab nemo-emblems nemo-fileroller nemo-image-converter nemo-preview nemo-python gvfs gvfs-mtp xed xreader ristretto
 ```
 
 Optional Extras
@@ -51,7 +51,7 @@ sudo pacman -S --needed catfish tumbler file-roller engrampa caja squashfs-tools
 ### Dynamic Autotiling for Sway, Notification deamon (AUR Stuff) , Pomodoro Gnome & Waybar
 
 ```
-paru -S autotiling swaync flameshot-git i3-gnome-pomodoro-git
+paru -S autotiling swaync flameshot-git i3-gnome-pomodoro-git  webapp-manager
 ```
 
 #### For Brightness Control & Clipboard
