@@ -42,6 +42,13 @@ Recommended
 sudo pacman -S --needed nemo nemo-audio-tab nemo-emblems nemo-fileroller nemo-image-converter nemo-preview nemo-python gvfs gvfs-mtp xed xreader ristretto
 ```
 
+Set Nemo's Default Terminal
+
+```
+gsettings set org.cinnamon.desktop.default-applications.terminal exec alacritty
+
+```
+
 Optional Extras
 
 ```
@@ -68,7 +75,7 @@ paru -S bluetuith
 
 ### Set Theme for gtk and qt
 
-#### GTK - Theme
+#### GTK - Theme , Defaults to DarkMode
 
 ```
 mkdir .themes
@@ -76,7 +83,9 @@ cd .themes
 git clone https://github.com/EliverLara/Kripton
 gsettings set org.gnome.desktop.interface gtk-theme "Kripton"
 gsettings set org.gnome.desktop.wm.preferences theme "Kripton"
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 ```
+
 #### GTK - Icons
 
 ```
