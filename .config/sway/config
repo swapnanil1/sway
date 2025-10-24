@@ -156,6 +156,11 @@ input type:touchpad {
 # Keybindings
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Screenshot keybindings
+bindsym $mod+Shift+p exec "~/.config/sway/scripts/screenshot_full.sh"
+bindsym $mod+Shift+o exec "~/.config/sway/scripts/screenshot_active.sh"
+
+# General
 bindsym $mod+e exec $fm
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
