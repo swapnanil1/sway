@@ -83,7 +83,7 @@ set $down j
 set $up k
 set $right l
 set $term foot
-set $fm nemo
+set $fm dolphin
 set $menu wmenu-run \
     -b \
     -i \
@@ -138,9 +138,6 @@ bindgesture swipe:left workspace prev
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 input * {
     xkb_options "altwin:swap_lalt_lwin,caps:swapescape"
-}
-
-input type:mouse {
     accel_profile flat
     pointer_accel 0.0
 }
@@ -296,12 +293,16 @@ bar {
 # --- Environment Setup for Systemd/D-Bus Integration ---
 # Import essential env vars into systemd user session
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+
 # Update D-Bus activation environment
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-# PolicyKit agent (Authentication prompts) : using lxsession-gtk3
-exec /usr/bin/lxpolkit &
+
+# PolicyKit agent (Authentication prompts) : using polkit-kde-agent
+exec /usr/lib/polkit-kde-authentication-agent-1 &
+
 # Clipboard history daemon
 exec wl-paste --watch cliphist store
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Include Additional Configs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
