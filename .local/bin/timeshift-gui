@@ -1,0 +1,4 @@
+#!/bin/bash
+xhost +SI:localuser:root
+pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY timeshift-gtk
+xhost -SI:localuser:root

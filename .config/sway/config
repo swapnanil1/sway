@@ -101,25 +101,40 @@ set $menu wmenu-run \
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Output Configuration
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#PC
-output * {
-    resolution 1920x1080@144Hz
-    bg /home/swapnanil/Pictures/wall.jpg fill
-    subpixel rgb
+output HDMI-A-1 {
+    mode 1920x1080@120Hz
     position 0,0
-    adaptive_sync on
-    max_render_time 7
-    allow_tearing yes
+    scale 1.0
 }
 
-#Laptop
-#output eDP-1 scale 1.75 {
-#    resolution 2560x1600@60Hz
-#    bg /home/swapnanil/Pictures/wall.jpg fill
-#    subpixel rgb
-#    position 0,0
-#    adaptive_sync on
-#}
+output eDP-1 {
+    mode 2560x1600@60Hz
+    position 1920,0
+    scale 2.0
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Laptop + External display workspace setup
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+set $ext HDMI-A-1
+set $lap eDP-1
+
+workspace 1 output $ext
+workspace 2 output $ext
+workspace 3 output $ext
+
+workspace 4 output $lap
+workspace 5 output $lap
+workspace 6 output $lap
+
+exec_always swaymsg workspace 1; exec_always swaymsg move workspace to output HDMI-A-1
+exec_always swaymsg workspace 2; exec_always swaymsg move workspace to output HDMI-A-1
+exec_always swaymsg workspace 3; exec_always swaymsg move workspace to output HDMI-A-1
+
+exec_always swaymsg workspace 4; exec_always swaymsg move workspace to output eDP-1
+exec_always swaymsg workspace 5; exec_always swaymsg move workspace to output eDP-1
+exec_always swaymsg workspace 6; exec_always swaymsg move workspace to output eDP-1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Laptop Specific
@@ -243,66 +258,39 @@ bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 bindsym Print exec grim
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Status Bar (Enhanced Swaybar with Gruvbox Dark Theme)
+# Autostart
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exec_always --no-startup-id sh -c "pkill waybar; sleep 0.5; waybar"
+exec --no-startup-id autotiling
+exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+exec_always --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Core System Integration & Autostart
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-bar {
-    id bar-0
-    position top
-    mode dock
-    hidden_state hide
-    modifier $mod
-    font pango:"JetBrainsMono Nerd Font" 11
-    height 30
-    gaps 0 5 5 5
-    workspace_buttons yes
-    strip_workspace_numbers no
-    strip_workspace_name no
-    wrap_scroll yes
-    workspace_min_width 40 px
-    binding_mode_indicator yes
-    separator_symbol " | "
-    pango_markup enabled
-    status_command while date +'%Y-%m-%d %X'; do sleep 1; done
-    status_padding 1
-    status_edge_padding 3
-    output *
-
-    tray_padding 2 px
-    tray_output *
-    icon_theme hicolor
-
-    colors {
-        background $bg0
-        statusline $fg
-        separator $gray
-        focused_background $bg1
-        focused_statusline $fg
-        focused_separator $gray
-        focused_workspace $blue1 $bg1 $fg
-        active_workspace $green1 $bg2 $fg4
-        inactive_workspace $bg2 $bg0 $gray
-        urgent_workspace $red1 $bg1 $fg
-        binding_mode $orange1 $bg1 $fg
-    }
-
-    bindsym button4 workspace prev
-    bindsym button5 workspace next
-}
-
-# --- Environment Setup for Systemd/D-Bus Integration ---
-# Import essential env vars into systemd user session
+# --- 1. Environment & D-Bus Setup (Essential for Screen Share) ---
+# Import variables into systemd user session
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 
 # Update D-Bus activation environment
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
-# PolicyKit agent (Authentication prompts) : using polkit-kde-agent
-exec /usr/lib/polkit-kde-authentication-agent-1 &
+# --- 2. Portal Service Reset (The Fix for Screen Sharing) ---
+# Force restart the portals to ensure they see the new environment variables.
+# Using 'exec_always' ensures screen sharing works even after you reload Sway.
+exec_always --no-startup-id systemctl --user stop xdg-desktop-portal xdg-desktop-portal-wlr
+exec_always --no-startup-id systemctl --user start xdg-desktop-portal xdg-desktop-portal-wlr
+
+# --- 3. Background Daemons ---
+# Polkit Agent (Authentication prompts for GUI apps)
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # Clipboard history daemon
 exec wl-paste --watch cliphist store
 
+# KDE Connect
+exec kdeconnectd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Include Additional Configs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
