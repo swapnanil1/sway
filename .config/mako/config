@@ -1,0 +1,26 @@
+# Gruvbox Dark Mako Config
+# Place in: ~/.config/mako/config
+
+[default]
+font=monospace 10
+width=300
+height=100
+margin=10
+padding=10
+border-size=2
+border-radius=3
+
+# Gruvbox Dark Colors
+background-color=#282828
+text-color=#ebdbb2
+border-color=#d79921
+
+# Options
+default-timeout=5000
+group-by-app=true
+
+[urgent]
+# Gruvbox Red for urgent
+background-color=#cc241d
+text-color=#ebdbb2
+border-color=#fabd2f

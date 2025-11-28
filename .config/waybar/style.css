@@ -235,3 +235,29 @@ padding: 0 10px;
 margin: 4px 2px;
 border-radius: 4px;
 }
+
+/* Pomodoro Module */
+#custom-pomodoro {
+    padding: 0 10px;
+    margin: 4px 2px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Idle State (Gray) */
+#custom-pomodoro.idle {
+    background-color: @bg1;
+    color: @gray;
+}
+
+/* Work State (Red - Focus) */
+#custom-pomodoro.work {
+    background-color: @bg1;
+    color: @red;
+}
+
+/* Break State (Green/Aqua) */
+#custom-pomodoro.break {
+    background-color: @bg1;
+    color: @aqua;
+}

@@ -1,0 +1,51 @@
+/* Refined Gruvbox Dark Wofi Style */
+
+window {
+    margin: 0px;
+    border: 2px solid #504945; /* Dark Grey border (Subtle) */
+    background-color: #282828; /* Hard Dark Background */
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+#input {
+margin: 5px;
+border: none;
+border-bottom: 1px solid #504945; /* Separator line */
+color: #ebdbb2;
+background-color: #282828;
+}
+
+#inner-box {
+margin: 5px;
+border: none;
+background-color: #282828;
+}
+
+#outer-box {
+margin: 5px;
+border: none;
+background-color: #282828;
+}
+
+#scroll {
+margin: 0px;
+border: none;
+}
+
+#text {
+margin: 5px;
+border: none;
+color: #ebdbb2; /* Standard Text */
+}
+
+/* The Active Item */
+#entry:selected {
+background-color: #3c3836; /* Lighter Grey (Not Yellow) */
+border-radius: 3px;
+}
+
+#entry:selected #text {
+color: #fe8019; /* Orange Text for focus */
+font-weight: bold;
+}

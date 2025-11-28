@@ -52,8 +52,8 @@ font pango:"JetBrainsMono Nerd Font" 11
 default_border pixel 2
 default_floating_border pixel 2
 
-gaps inner 8
-gaps outer 5
+gaps inner 4
+gaps outer 1
 
 # Window Colors
 client.focused          $blue1 $bg0 $fg $purple1 $blue1
@@ -84,18 +84,7 @@ set $up k
 set $right l
 set $term foot
 set $fm dolphin
-set $menu wmenu-run \
-    -b \
-    -i \
-    -f "JetBrainsMono Nerd Font 14" \
-    -l 10 \
-    -p "❯ " \
-    -N 282828FF \
-    -n EBDBB2FF \
-    -M 3C3836FF \
-    -m FBF1C7FF \
-    -S 458588FF \
-    -s 1D2021FF
+set $menu wofi --show drun
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,8 +130,8 @@ exec_always swaymsg workspace 6; exec_always swaymsg move workspace to output eD
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### Power Management
-bindswitch --reload lid:on output eDP-1 enable
-bindswitch --reload lid:off exec swaylock && systemctl suspend && output eDP-1 disable
+bindswitch --reload lid:on exec output eDP-1 enable
+bindswitch --reload lid:off exec swaylock && output eDP-1 disable
 
 ### Switch Workspace using touchpad
 bindgesture swipe:right workspace next
@@ -291,8 +280,19 @@ exec wl-paste --watch cliphist store
 
 # KDE Connect
 exec kdeconnectd
+
+# Start the Notification Daemon
+exec mako
+
+# Start clipboard history Daemon, use it via
+exec wl-paste --type text --watch cliphist store
+bindsym $mod+Shift+v exec cliphist list | wofi --show dmenu | cliphist decode | wl-copy
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Include Additional Configs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+for_window [title="waybar_btop"] floating enable, resize set 1000 700, move position center
+for_window [title="waybar_nmtui"] floating enable, resize set 800 600, move position center
+for_window [title="waybar_audio"] floating enable, resize set 800 500, move position center
+for_window [app_id="pavucontrol"] floating enable, resize set 800 600, move position center
 include /etc/sway/config.d/*

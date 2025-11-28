@@ -1,57 +1,100 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 34,
-    "spacing": 4,
-    "modules-left": ["sway/workspaces", "sway/window"],
-    "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "backlight", "battery","power-profiles-daemon","custom/power","tray"],
+    "height": 30,
+    "spacing": 2,
+    "modules-left": ["sway/workspaces", "sway/window","tray"],
+    "modules-center": ["custom/pomodoro","clock"],
+    "modules-right": ["pulseaudio", "network", "cpu", "memory", "backlight", "battery", "power-profiles-daemon", "custom/power"],
 
     // Modules Configuration
     "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
-        "format": "{name}: {icon}",
+        "format": "{icon}\u2005",
         "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "urgent": "",
-            "focused": "",
-            "default": ""
+            "1": "一",
+            "2": "二",
+            "3": "三",
+            "4": "四",
+            "5": "五",
+            "6": "六",
+            "7": "七",
+            "8": "八",
+            "9": "九",
+            "10": "十"
         }
     },
     "sway/window": {
-        "format": "{title}",
-        "max-length": 50,
+        "format": "{title}\u2005",
+        "max-length": 30,
         "rewrite": {
+            // Web Browsers
             "(.*) - Mozilla Firefox": "🌎 $1",
-            "(.*) - foot": " [$1]"
+            "(.*) - Google Chrome": " $1",
+            "(.*) - Brave": " $1",
+            "(.*) - Chromium": " $1",
+
+            // Development
+            "(.*) - Visual Studio Code": " $1",
+            "(.*) - VSCodium": " $1",
+            "Code - OSS": " Code",
+            "(.*) - Sublime Text": " $1",
+            "(.*) - Atom": "⚛ $1",
+
+            // Chat & Social
+            "(.*) - Discord": " $1",
+            "Discord": " Discord",
+            "(.*) - Telegram Desktop": " $1",
+            "Telegram": " Telegram",
+
+            // Media
+            "(.*) - Spotify": " $1",
+            "Spotify": " Spotify",
+            "(.*) - VLC media player": " $1",
+            "(.*) - OBS": " $1",
+
+            // Productivity & System
+            "(.*) - Zoom": " $1",
+            "Zoom Meeting": " Zoom",
+            "(.*) - Thunar": " $1",
+            "(.*) - Nautilus": " $1",
+            "(.*) - Dolphin": " $1",
+            "(.*) - PCManFM": " $1",
+            "(.*) - Steam": " $1",
+            "Steam": " Steam",
+
+            // Terminals
+            "(.*) - foot": " [$1]",
+            "(.*) - kitty": " [$1]",
+            "(.*) - Alacritty": " [$1]",
+            "(.*) - wezterm": " [$1]"
         }
     },
     "tray": {
-        "icon-size": 21,
-        "spacing": 10
+        "icon-size": 18,
+        "spacing": 8
     },
     "clock": {
         "format": "{:%I:%M %p}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{:%Y-%m-%d}</small></tt>",
+        "tooltip-format": "<tt><small>{:%Y-%m-%d}</small></tt>",
         "format-alt": "{:%Y-%m-%d}"
     },
     "cpu": {
-        "format": "{usage}% ",
+        "format": "{usage}% \u2005",
         "tooltip": false,
         "on-click": "foot --title waybar_btop -e btop"
     },
     "memory": {
-        "format": "{}% ",
+        "format": "{percentage}% \u2005",
         "on-click": "foot --title waybar_btop -e btop"
     },
     "backlight": {
-        "format": "{percent}% {icon}",
-        "format-icons": ["", "", "", "", "", "", "", "", ""]
+        "format": "{percent} {icon}\u2005",
+        "format-icons": ["", "", "", "", "", "", "", "", ""],
+        "on-click": "brightnessctl set 50%",
+        "on-click-right": "brightnessctl set 75%",
+        "on-click-middle": "brightnessctl set 100%"
     },
     "battery": {
         "states": {
@@ -59,31 +102,27 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
+        "format": "{capacity} {icon}\u2005",
+        "format-charging": "{capacity} \u2005",
+        "format-plugged": "{capacity} \u2005",
+        "format-alt": "{time} {icon}\u2005",
         "format-icons": ["", "", "", "", ""]
     },
     "network": {
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}",
-        // Opens nmtui-connect to pick wifi
+        "format-wifi": "{signalStrength}% \u2005",
+        "format-ethernet": "ETH \u2005",
+        "tooltip-format": "{essid} - {ifname} via {gwaddr}",
+        "format-linked": "{ifname} (No IP) \u2005",
+        "format-disconnected": "⚠\u2005",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}\u2005",
         "on-click": "foot --title waybar_nmtui -e sh -c 'nmtui-connect'",
-        // Opens nmtui-edit to configure static IPs etc
         "on-click-right": "foot --title waybar_nmtui -e sh -c 'nmtui-edit'"
     },
     "pulseaudio": {
-        "format": "{volume}% {icon} {format_source}",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
+        "format": "{volume}% {icon}\u2005",
+        "format-bluetooth": "{volume}% {icon}\u2005",
+        "format-bluetooth-muted": " {icon}\u2005",
+        "format-muted": "\u2005",
         "format-icons": {
             "headphone": "",
             "hands-free": "",
@@ -97,57 +136,27 @@
         "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
     },
     "power-profiles-daemon": {
-    "format": "{icon}",
-    "tooltip-format": "Power Profile: {profile}\nDriver: {driver}",
-    "tooltip": true,
-    "format-icons": {
-        "default": "",
-        "performance": "",
-        "balanced": "",
-        "power-saver": ""
+        "format": "{icon}\u2005",
+        "tooltip-format": "Power Profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "",
+            "performance": "",
+            "balanced": "",
+            "power-saver": ""
         }
     },
-    "privacy": {
-        "icon-spacing": 4,
-        "icon-size": 18,
-        "transition-duration": 250,
-        "modules": [
-            {
-                "type": "screenshare",
-                "tooltip": true,
-                "tooltip-icon-size": 24
-            },
-            {
-                "type": "audio-in",
-                "tooltip": true,
-                "tooltip-icon-size": 24
-            }
-        ]
-    },
-    "custom/webcam": {
-    "interval": 2,
-    "exec": "fuser -s /dev/video0 && echo '{\"text\": \"📷\", \"tooltip\": \"Camera in use\"}' || echo '{\"text\": \"\"}'",
-    "return-type": "json",
-    "format": "{text}"
+    "custom/pomodoro": {
+        "exec": "~/.config/waybar/scripts/pomodoro.sh",
+        "return-type": "json",
+        "interval": 1,
+        "format": "{text}",
+        "on-click": "~/.config/waybar/scripts/pomodoro.sh toggle",
+        "on-click-right": "~/.config/waybar/scripts/pomodoro.sh break"
     },
     "custom/power": {
-        "format": "⏻ ",
+        "format": "⏻\u2005",
         "tooltip": false,
         "on-click": "swaynag -t warning -m 'Power Menu Options' -b 'Logout' 'swaymsg exit' -b 'Suspend' 'systemctl suspend' -b 'Reboot' 'systemctl reboot' -b 'Shutdown' 'systemctl poweroff'"
     }
 }
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Waybar Widget Popups
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# System Monitor (btop)
-for_window [title="waybar_btop"] floating enable, resize set 1000 700, move position center
-
-# Network Manager (nmtui)
-for_window [title="waybar_nmtui"] floating enable, resize set 800 600, move position center
-
-# Audio Mixer (pulsemixer)
-for_window [title="waybar_audio"] floating enable, resize set 800 500, move position center
-
-# Audio Control (Pavucontrol)
-for_window [app_id="pavucontrol"] floating enable, resize set 800 600, move position center
