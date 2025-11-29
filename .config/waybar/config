@@ -1,13 +1,28 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 30,
-    "spacing": 2,
-    "modules-left": ["sway/workspaces", "sway/window","tray"],
-    "modules-center": ["custom/pomodoro","clock"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "backlight", "battery", "power-profiles-daemon", "custom/power"],
-
-    // Modules Configuration
+    "height": 34,
+    "spacing": 1,
+    "modules-left": [
+        "sway/workspaces",
+        "sway/window",
+        "tray"
+    ],
+    "modules-center": [
+        "custom/pomodoro",
+        "clock"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "pulseaudio#microphone",
+        "network",
+        "cpu",
+        "memory",
+        "backlight",
+        "battery",
+        "power-profiles-daemon",
+        "custom/power"
+    ],
     "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -29,32 +44,23 @@
         "format": "{title}\u2005",
         "max-length": 30,
         "rewrite": {
-            // Web Browsers
             "(.*) - Mozilla Firefox": "🌎 $1",
             "(.*) - Google Chrome": " $1",
             "(.*) - Brave": " $1",
             "(.*) - Chromium": " $1",
-
-            // Development
             "(.*) - Visual Studio Code": " $1",
             "(.*) - VSCodium": " $1",
             "Code - OSS": " Code",
             "(.*) - Sublime Text": " $1",
             "(.*) - Atom": "⚛ $1",
-
-            // Chat & Social
             "(.*) - Discord": " $1",
             "Discord": " Discord",
             "(.*) - Telegram Desktop": " $1",
             "Telegram": " Telegram",
-
-            // Media
             "(.*) - Spotify": " $1",
             "Spotify": " Spotify",
             "(.*) - VLC media player": " $1",
             "(.*) - OBS": " $1",
-
-            // Productivity & System
             "(.*) - Zoom": " $1",
             "Zoom Meeting": " Zoom",
             "(.*) - Thunar": " $1",
@@ -63,8 +69,6 @@
             "(.*) - PCManFM": " $1",
             "(.*) - Steam": " $1",
             "Steam": " Steam",
-
-            // Terminals
             "(.*) - foot": " [$1]",
             "(.*) - kitty": " [$1]",
             "(.*) - Alacritty": " [$1]",
@@ -75,38 +79,49 @@
         "icon-size": 18,
         "spacing": 8
     },
+    "custom/pomodoro": {
+        "exec": "~/.config/waybar/scripts/pomodoro.sh",
+        "return-type": "json",
+        "interval": 1,
+        "format": "{text}",
+        "on-click": "~/.config/waybar/scripts/pomodoro.sh toggle",
+        "on-click-right": "~/.config/waybar/scripts/pomodoro.sh break"
+    },
     "clock": {
         "format": "{:%I:%M %p}",
         "tooltip-format": "<tt><small>{:%Y-%m-%d}</small></tt>",
         "format-alt": "{:%Y-%m-%d}"
     },
-    "cpu": {
-        "format": "{usage}% \u2005",
-        "tooltip": false,
-        "on-click": "foot --title waybar_btop -e btop"
-    },
-    "memory": {
-        "format": "{percentage}% \u2005",
-        "on-click": "foot --title waybar_btop -e btop"
-    },
-    "backlight": {
-        "format": "{percent} {icon}\u2005",
-        "format-icons": ["", "", "", "", "", "", "", "", ""],
-        "on-click": "brightnessctl set 50%",
-        "on-click-right": "brightnessctl set 75%",
-        "on-click-middle": "brightnessctl set 100%"
-    },
-    "battery": {
-        "states": {
-            "good": 95,
-            "warning": 30,
-            "critical": 15
+    "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": " Muted",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": [
+                "",
+                "",
+                ""
+            ]
         },
-        "format": "{capacity} {icon}\u2005",
-        "format-charging": "{capacity} \u2005",
-        "format-plugged": "{capacity} \u2005",
-        "format-alt": "{time} {icon}\u2005",
-        "format-icons": ["", "", "", "", ""]
+        "scroll-step": 5,
+        "on-click": "pavucontrol -t 3",
+        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+    },
+    "pulseaudio#microphone": {
+        "format": "{format_source}",
+        "format-source": "",
+        "format-source-muted": "\u2005",
+        "tooltip-format": "Microphone: {volume}%",
+        "on-click": "pavucontrol -t 4",
+        "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
+        "on-scroll-up": "pactl set-source-volume @DEFAULT_SOURCE@ +1%",
+        "on-scroll-down": "pactl set-source-volume @DEFAULT_SOURCE@ -1%"
     },
     "network": {
         "format-wifi": "{signalStrength}% \u2005",
@@ -118,22 +133,52 @@
         "on-click": "foot --title waybar_nmtui -e sh -c 'nmtui-connect'",
         "on-click-right": "foot --title waybar_nmtui -e sh -c 'nmtui-edit'"
     },
-    "pulseaudio": {
-        "format": "{volume}% {icon}\u2005",
-        "format-bluetooth": "{volume}% {icon}\u2005",
-        "format-bluetooth-muted": " {icon}\u2005",
-        "format-muted": "\u2005",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
+    "cpu": {
+        "format": "{usage}% \u2005",
+        "tooltip": false,
+        "on-click": "foot --title waybar_btop -e btop"
+    },
+    "memory": {
+        "format": "{percentage}% \u2005",
+        "on-click": "foot --title waybar_btop -e btop"
+    },
+    "backlight": {
+        "format": "{icon}",
+        "tooltip-format": "Backlight: {percent}%",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "on-click": "brightnessctl set 50%",
+        "on-click-right": "brightnessctl set 75%",
+        "on-click-middle": "brightnessctl set 100%",
+        "on-scroll-up": "brightnessctl set 1%+",
+        "on-scroll-down": "brightnessctl set 1%-"
+    },
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
         },
-        "on-click": "pavucontrol",
-        "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+        "format": "{capacity} {icon}\u2005",
+        "format-charging": "{capacity} \u2005",
+        "format-plugged": "{capacity} \u2005",
+        "format-alt": "{time} {icon}\u2005",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
     },
     "power-profiles-daemon": {
         "format": "{icon}\u2005",
@@ -145,14 +190,6 @@
             "balanced": "",
             "power-saver": ""
         }
-    },
-    "custom/pomodoro": {
-        "exec": "~/.config/waybar/scripts/pomodoro.sh",
-        "return-type": "json",
-        "interval": 1,
-        "format": "{text}",
-        "on-click": "~/.config/waybar/scripts/pomodoro.sh toggle",
-        "on-click-right": "~/.config/waybar/scripts/pomodoro.sh break"
     },
     "custom/power": {
         "format": "⏻\u2005",

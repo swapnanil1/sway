@@ -5,43 +5,10 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Color Palette (Gruvbox Dark)
+# Color Palette
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# Background colors
-set $bg        "#282828"
-set $bg0_h     "#1d2021"
-set $bg0       "#282828"
-set $bg1       "#3c3836"
-set $bg2       "#504945"
-set $bg3       "#665c54"
-set $bg4       "#7c6f64"
-
-# Foreground colors
-set $fg        "#ebdbb2"
-set $fg0       "#fbf1c7"
-set $fg1       "#ebdbb2"
-set $fg2       "#d5c4a1"
-set $fg3       "#bdae93"
-set $fg4       "#a89984"
-
-# Gruvbox colors
-set $red       "#cc241d"
-set $red1      "#fb4934"
-set $green     "#98971a"
-set $green1    "#b8bb26"
-set $yellow    "#d79921"
-set $yellow1   "#fabd2f"
-set $blue      "#458588"
-set $blue1     "#83a598"
-set $purple    "#b16286"
-set $purple1   "#d3869b"
-set $aqua      "#689d6a"
-set $aqua1     "#8ec07c"
-set $orange    "#d65d0e"
-set $orange1   "#fe8019"
-set $gray      "#928374"
-set $gray1     "#a89984"
+# include color_schemes/gruvbox.conf
+include color_schemes/evergreen.conf
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # General Settings
@@ -251,8 +218,6 @@ bindsym Print exec grim
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 exec_always --no-startup-id sh -c "pkill waybar; sleep 0.5; waybar"
 exec --no-startup-id autotiling
-exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
-exec_always --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Core System Integration & Autostart
@@ -275,6 +240,9 @@ exec_always --no-startup-id systemctl --user start xdg-desktop-portal xdg-deskto
 # Polkit Agent (Authentication prompts for GUI apps)
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
+# Fix keyrings aka no more unintentional logout  
+exec --no-startup-id "gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
+
 # Clipboard history daemon
 exec wl-paste --watch cliphist store
 
@@ -289,10 +257,29 @@ exec wl-paste --type text --watch cliphist store
 bindsym $mod+Shift+v exec cliphist list | wofi --show dmenu | cliphist decode | wl-copy
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Window Behavior Rules
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# 1. Inhibit Idle for Fullscreen Windows (Prevents screen turning off while watching videos)
+for_window [class=".*"] inhibit_idle fullscreen
+for_window [app_id=".*"] inhibit_idle fullscreen
+
+# 2. Global Tearing (Replaces the invalid [all] rule)
+# We use 'title=".*"' to target every window
+for_window [title=".*"] allow_tearing yes
+
+# 3. Waybar Widget Popups (Floating Rules)
+# Pavucontrol (Volume Mixer)
+for_window [app_id="pavucontrol"] floating enable, resize set 800 600, move position center
+
+# System Monitor (Btop)
+for_window [title="waybar_btop"] floating enable, resize set 1000 700, move position center
+
+# Network Manager (Nmtui)
+for_window [title="waybar_nmtui"] floating enable, resize set 800 600, move position center
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Include Additional Configs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-for_window [title="waybar_btop"] floating enable, resize set 1000 700, move position center
-for_window [title="waybar_nmtui"] floating enable, resize set 800 600, move position center
-for_window [title="waybar_audio"] floating enable, resize set 800 500, move position center
-for_window [app_id="pavucontrol"] floating enable, resize set 800 600, move position center
+
 include /etc/sway/config.d/*
