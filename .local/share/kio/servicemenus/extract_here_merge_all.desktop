@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+MimeType=application/zip;application/x-zip-compressed;application/x-7z-compressed;application/x-rar;application/x-tar;application/x-bzip2;application/x-gzip;application/x-zstd;
+Actions=extract7zDirect
+X-KDE-Priority=TopLevel
+
+[Desktop Action extract7zDirect]
+Name=7z Extract Here (Terminal Status)
+Icon=utilities-terminal
+Exec=foot bash -c 'cd "$1" && 7z x "$2"; echo; read -n 1 -s -p "Press any key to close..."' _ %d %f
