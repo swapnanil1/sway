@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Game mode. Everything it touches is in the user session:
+#   - notifications paused
+#   - idle lock off (a controller does not count as input)
+#   - sway "game" mode: only workspace keys and the exit key stay bound, so key
+#     combinations reach the game
+# sway composites nothing extra for a fullscreen game, so there is no compositor
+# to stop; FreeSync and tearing are handled per window in 70-rules.conf.
+#
+#   gamemode on | off
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need swaymsg makoctl
+
+case "${1:-}" in
+	on)
+		"$BIN/sound" gamemode-on
+		notify "Game mode on" "Only Mod+1..0 (workspaces) and Mod+Shift+G (leave) still work."
+		sleep 0.3
+		touch "$RUNTIME/gamemode"
+		makoctl mode -a do-not-disturb >/dev/null
+		systemctl --user stop swayidle.service
+		swaymsg -q 'mode "game"'
+		;;
+	off)
+		swaymsg -q 'mode "default"'
+		systemctl --user start swayidle.service
+		makoctl mode -r do-not-disturb >/dev/null
+		rm -f "$RUNTIME/gamemode"
+		"$BIN/sound" gamemode-off
+		notify "Game mode off"
+		;;
+	*) die "usage: gamemode on|off" ;;
+esac
