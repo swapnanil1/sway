@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Idle behaviour, run as swayidle.service. Game mode stops this unit.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need swayidle
+
+LOCK_AFTER=600     # seconds idle before the screen locks
+OFF_AFTER=900      # seconds idle before the outputs power down
+
+exec swayidle -w \
+	timeout "$LOCK_AFTER" "$BIN/lock" \
+	timeout "$OFF_AFTER" 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+	before-sleep "$BIN/lock" \
+	lock "$BIN/lock"

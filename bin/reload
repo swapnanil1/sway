@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Rebuild the generated config, then reload sway. A broken keys table keeps the
+# previous bindings instead of leaving you without any.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+"$BIN/keys" build || notify "Keys not rebuilt" "keys/*.keys has an error; run: keys --check"
+"$BIN/theme" --ensure
+swaymsg -q reload

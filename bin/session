@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Session lifecycle.
+#
+#   session start   once per login, from sway: generated files, environment, units
+#   session stop    before leaving sway, so units do not outlive the compositor
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+case "${1:-}" in
+	start)
+		"$BIN/keys" build
+		"$BIN/theme" --ensure
+		# systemd units and D-Bus activated services need to find the compositor
+		dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY SWAYSOCK \
+			XDG_CURRENT_DESKTOP XDG_SESSION_TYPE QT_QPA_PLATFORMTHEME 2>/dev/null
+		mkdir -p "$HOME/Pictures/Screenshots"
+		# clear anything left by a session that died uncleanly
+		systemctl --user stop sway-session.target 2>/dev/null
+		systemctl --user reset-failed 2>/dev/null
+		systemctl --user start sway-session.target
+		(sleep 2; "$BIN/sound" login) &
+		;;
+	stop) systemctl --user stop sway-session.target ;;
+	*) die "usage: session start|stop" ;;
+esac

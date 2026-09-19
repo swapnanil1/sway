@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Sound when a USB device is plugged in or removed. Run as device-sound.service.
+# (Keyboard options need no re-applying here: sway's input config covers
+# devices that appear later.)
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need udevadm
+
+udevadm monitor --udev --subsystem-match=usb 2>/dev/null |
+	while read -r _ _ action _ rest; do
+		[[ $rest == *"(usb)"* ]] || continue
+		case "$action" in
+			add)    "$BIN/sound" device-added ;;
+			remove) "$BIN/sound" device-removed ;;
+		esac
+	done
