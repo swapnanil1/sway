@@ -1,0 +1,12 @@
+# ${THEME_HEADER}
+background-color=${BG}
+text-color=${FG}
+border-color=${ACCENT}
+progress-color=over ${BG_ALT}
+
+[urgency=low]
+border-color=${BLACK}
+
+[urgency=critical]
+border-color=${RED}
+text-color=${RED}

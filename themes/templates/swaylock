@@ -1,0 +1,22 @@
+# ${THEME_HEADER}
+color=${BG_HEX}
+indicator-radius=90
+indicator-thickness=8
+show-failed-attempts
+ignore-empty-password
+inside-color=${BG_HEX}
+inside-clear-color=${BG_HEX}
+inside-ver-color=${BG_HEX}
+inside-wrong-color=${BG_HEX}
+ring-color=${BG_ALT_HEX}
+ring-clear-color=${YELLOW_HEX}
+ring-ver-color=${ACCENT_HEX}
+ring-wrong-color=${RED_HEX}
+key-hl-color=${ACCENT_HEX}
+bs-hl-color=${RED_HEX}
+line-color=00000000
+separator-color=00000000
+text-color=${FG_HEX}
+text-clear-color=${FG_HEX}
+text-ver-color=${FG_HEX}
+text-wrong-color=${RED_HEX}
