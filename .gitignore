@@ -1,0 +1,3 @@
+# fish writes its own state next to its config
+config/fish/fish_variables
+config/fish/conf.d/99-local.fish
