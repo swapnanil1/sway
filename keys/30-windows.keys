@@ -1,0 +1,22 @@
+# Window management
+default | $mod+w       | Focus up               | focus up
+default | $mod+a       | Focus left             | focus left
+default | $mod+s       | Focus down             | focus down
+default | $mod+d       | Focus right            | focus right
+default | $mod+Shift+w | Move window up         | move up
+default | $mod+Shift+a | Move window left       | move left
+default | $mod+Shift+s | Move window down       | move down
+default | $mod+Shift+d | Move window right      | move right
+default | $mod+Shift+q | Close window           | kill
+default | $mod+f       | Fullscreen             | fullscreen toggle
+default | $mod+Shift+f | Float / tile the window | floating toggle
+default | $mod+z       | Toggle split layout    | layout toggle split
+default | $mod+x       | Tabbed layout          | layout tabbed
+default | $mod+r       | Resize mode            | mode "resize"
+default | $mod+g       | Adjust: volume, brightness, media | mode "adjust"
+
+# right-hand fallbacks
+default | $mod+j               | Focus left        | focus left
+default | $mod+k               | Focus down        | focus down
+default | $mod+l               | Focus up          | focus up
+default | $mod+semicolon       | Focus right       | focus right

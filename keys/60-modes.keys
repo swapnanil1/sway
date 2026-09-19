@@ -1,0 +1,38 @@
+# Modes. Nothing is held down inside a mode.
+
+resize | a      | Narrower          | resize shrink width 40px
+resize | d      | Wider             | resize grow width 40px
+resize | w      | Shorter           | resize shrink height 40px
+resize | s      | Taller            | resize grow height 40px
+resize | Escape | Leave resize mode | mode "default"
+resize | Return | Leave resize mode | mode "default"
+resize | r      | Leave resize mode | mode "default"
+
+# Everything a compact keyboard has no key for
+adjust | w      | Volume up             | exec $bin/volume up
+adjust | s      | Volume down           | exec $bin/volume down
+adjust | x      | Mute                  | exec $bin/volume mute
+adjust | d      | Brightness up         | exec $bin/brightness up
+adjust | a      | Brightness down       | exec $bin/brightness down
+adjust | q      | Previous track        | exec playerctl previous
+adjust | e      | Next track            | exec playerctl next
+adjust | space  | Play / pause          | exec playerctl play-pause
+adjust | z      | Event sounds on / off | exec $bin/sound toggle
+adjust | Escape | Leave adjust mode     | mode "default"
+adjust | g      | Leave adjust mode     | mode "default"
+
+# Game mode: every other binding is off, so key combinations reach the game
+game | $mod+Shift+g | Game mode off | exec $bin/gamemode off
+game | $mod+1 | Workspace 1 | workspace number 1
+game | $mod+2 | Workspace 2 | workspace number 2
+game | $mod+3 | Workspace 3 | workspace number 3
+game | $mod+4 | Workspace 4 | workspace number 4
+game | $mod+5 | Workspace 5 | workspace number 5
+game | $mod+6 | Workspace 6 | workspace number 6
+game | $mod+7 | Workspace 7 | workspace number 7
+game | $mod+8 | Workspace 8 | workspace number 8
+game | $mod+9 | Workspace 9 | workspace number 9
+game | $mod+0 | Workspace 10 | workspace number 10
+
+# Pomodoro break: the only live key skips it
+break | $mod+Ctrl+Shift+b | Skip the break | exec $bin/pomodoro skip

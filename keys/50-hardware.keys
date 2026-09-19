@@ -1,0 +1,16 @@
+# Volume, brightness and media, one step. --locked: they also work on the lock screen
+default | $mod+Ctrl+w | Volume up        | exec $bin/volume up
+default | $mod+Ctrl+s | Volume down      | exec $bin/volume down
+default | $mod+Ctrl+x | Mute             | exec $bin/volume mute
+default | $mod+Ctrl+d | Brightness up    | exec $bin/brightness up
+default | $mod+Ctrl+a | Brightness down  | exec $bin/brightness down
+
+default | --locked XF86AudioRaiseVolume  | Volume up           | exec $bin/volume up
+default | --locked XF86AudioLowerVolume  | Volume down         | exec $bin/volume down
+default | --locked XF86AudioMute         | Mute                | exec $bin/volume mute
+default | --locked XF86AudioMicMute      | Mute the microphone | exec $bin/volume mic
+default | --locked XF86AudioPlay         | Play / pause        | exec playerctl play-pause
+default | --locked XF86AudioNext         | Next track          | exec playerctl next
+default | --locked XF86AudioPrev         | Previous track      | exec playerctl previous
+default | --locked XF86MonBrightnessUp   | Brightness up       | exec $bin/brightness up
+default | --locked XF86MonBrightnessDown | Brightness down     | exec $bin/brightness down

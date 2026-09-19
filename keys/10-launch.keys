@@ -1,0 +1,14 @@
+# Launchers and applications
+default | $mod+space        | App launcher                 | exec $bin/menu apps
+default | $mod+Tab          | Window switcher              | exec $bin/menu windows
+default | $mod+Shift+space  | This list of keys            | exec $bin/keys list
+default | $mod+v            | Clipboard history            | exec $bin/clipboard pick
+default | $mod+t            | Terminal                     | exec foot
+default | $mod+Return       | Terminal                     | exec foot
+default | $mod+q            | Drop-down terminal           | exec $bin/dropdown
+default | $mod+e            | File manager                 | exec thunar
+default | $mod+b            | Browser (focus or start)     | exec $bin/focus-or-launch --browser
+default | $mod+Shift+Escape | System monitor               | exec foot --app-id=floating -e btop
+default | $mod+c            | Screenshot an area (capture) | exec $bin/screenshot area
+default | $mod+Shift+c      | Screenshot the whole screen  | exec $bin/screenshot screen
+default | Print             | Screenshot an area           | exec $bin/screenshot area

@@ -1,0 +1,8 @@
+# Session
+default | $mod+Shift+x | Lock the screen                        | exec $bin/lock
+default | $mod+Shift+e | Session menu (power, reload, restart)  | exec $bin/menu session
+default | $mod+Shift+t | Theme picker                           | exec $bin/theme
+default | $mod+Shift+z | Pomodoro: start, pause, resume         | exec $bin/pomodoro toggle
+default | $mod+Shift+g | Game mode on                           | exec $bin/gamemode on
+default | $mod+Shift+r | Reload sway (rebuilds keys and colours) | exec $bin/reload
+default | $mod+Shift+i | Show window app id (for rules)         | exec $bin/window-info

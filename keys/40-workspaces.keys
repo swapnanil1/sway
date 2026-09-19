@@ -1,0 +1,22 @@
+# Workspaces: 1 web  2 code  3 terminals  4 files  5 games  6 steam  7 chat  8 settings
+default | $mod+Escape | Previous workspace | workspace back_and_forth
+default | $mod+1 | Workspace 1 (web) | workspace number 1
+default | $mod+2 | Workspace 2 (code) | workspace number 2
+default | $mod+3 | Workspace 3 (terminals) | workspace number 3
+default | $mod+4 | Workspace 4 (files) | workspace number 4
+default | $mod+5 | Workspace 5 (games) | workspace number 5
+default | $mod+6 | Workspace 6 (steam) | workspace number 6
+default | $mod+7 | Workspace 7 (chat and media) | workspace number 7
+default | $mod+8 | Workspace 8 (settings) | workspace number 8
+default | $mod+9 | Workspace 9 (spare) | workspace number 9
+default | $mod+0 | Workspace 10 (spare) | workspace number 10
+default | $mod+Shift+1 | Send window to 1 (web) | move container to workspace number 1
+default | $mod+Shift+2 | Send window to 2 (code) | move container to workspace number 2
+default | $mod+Shift+3 | Send window to 3 (terminals) | move container to workspace number 3
+default | $mod+Shift+4 | Send window to 4 (files) | move container to workspace number 4
+default | $mod+Shift+5 | Send window to 5 (games) | move container to workspace number 5
+default | $mod+Shift+6 | Send window to 6 (steam) | move container to workspace number 6
+default | $mod+Shift+7 | Send window to 7 (chat and media) | move container to workspace number 7
+default | $mod+Shift+8 | Send window to 8 (settings) | move container to workspace number 8
+default | $mod+Shift+9 | Send window to 9 (spare) | move container to workspace number 9
+default | $mod+Shift+0 | Send window to 10 (spare) | move container to workspace number 10

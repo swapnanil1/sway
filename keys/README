@@ -1,0 +1,12 @@
+One table per group. Each line is one binding:
+
+    mode | keys | description | command
+
+  mode         "default", or the name of a sway mode (resize, adjust, game, break)
+  keys         what follows `bindsym`, flags included: `$mod+space`, `--locked XF86AudioMute`
+  description  shown in the key list (Mod+Shift+Space), waybar tooltips and docs/keys.md
+  command      any sway command; `$bin` is the scripts directory
+
+`bin/keys build` turns these tables into the sway config that is actually
+loaded; reloading sway (Mod+Shift+C) rebuilds it first. Lines starting with #
+and blank lines are ignored. File names set the order and the group title.
