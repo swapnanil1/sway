@@ -1,0 +1,9 @@
+Files copied once into place and then left alone, because the tool that owns
+them rewrites them (nwg-look, qt6ct, kvantum) or because they are per-machine
+choices. `install` never overwrites an existing file.
+
+  gtk-3.0, gtk-4.0     GTK theme, icons, cursor
+  qt6ct, Kvantum       Qt theme
+  icons-default        cursor theme for applications that ignore GTK settings
+  xdg-desktop-portal   which portal backend serves which interface under sway
+  browser              keyring password store for Chromium, VS Code, Electron

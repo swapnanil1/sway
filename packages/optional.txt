@@ -1,0 +1,6 @@
+# Installed only with: ./install --optional
+wlsunset
+kanshi
+mousepad
+noto-fonts-cjk
+shellcheck

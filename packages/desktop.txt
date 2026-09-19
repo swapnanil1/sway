@@ -1,0 +1,28 @@
+# The sway session itself.
+sway
+swaybg
+swaylock
+swayidle
+xorg-xwayland
+waybar
+fuzzel
+mako
+libnotify
+foot
+autotiling
+
+# Screenshots, clipboard
+grim
+slurp
+satty
+wl-clipboard
+cliphist
+
+# Media keys, monitor brightness over DDC/CI, system monitor
+playerctl
+ddcutil
+btop
+
+# Event sounds (plain .oga files, no dependencies)
+ocean-sound-theme
+sound-theme-freedesktop

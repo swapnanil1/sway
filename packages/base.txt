@@ -1,0 +1,38 @@
+# What a bare Arch install is missing for any Wayland desktop.
+
+# Graphics and firmware (AMD entries are skipped without an amdgpu GPU)
+mesa
+vulkan-radeon
+linux-firmware-amdgpu
+amd-ucode
+
+# Audio
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+rtkit
+
+# Fonts
+ttf-jetbrains-mono-nerd
+noto-fonts
+noto-fonts-emoji
+
+# Plumbing: privilege prompts, mounting, secrets, portals, user dirs
+polkit
+mate-polkit
+udisks2
+gnome-keyring
+libsecret
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+xdg-user-dirs
+xdg-utils
+
+# envsubst (theme switcher) and jq (window menu)
+gettext
+jq
+
+# Login manager
+ly
