@@ -1,0 +1,24 @@
+# sway-desktop. This file only sets variables and loads the rest.
+#
+#   config.d/*.conf                    hand-written, loaded in name order
+#   ~/.cache/sway-desktop/keys.conf    built from keys/*.keys  (bin/keys build)
+#   ~/.cache/sway-desktop/sway.conf    colours of the active theme (bin/theme)
+#
+# The two generated files are recreated at login and on reload (Mod+Shift+R).
+
+# Mod is Super. 10-input.conf swaps left Alt and left Super, so Mod is the key
+# under the left thumb and applications get their Alt on the key beside it.
+set $mod Mod4
+
+# Scripts. install links the repository here, wherever it was cloned.
+set $bin $HOME/.local/share/sway-desktop/bin
+
+include ~/.cache/sway-desktop/sway.conf
+include config.d/*.conf
+include ~/.cache/sway-desktop/keys.conf
+
+# If the generated files are missing, sway still starts. These three bindings
+# are the way back: a terminal, a rebuild, and the exit.
+bindsym Mod4+Ctrl+Shift+Return exec foot
+bindsym Mod4+Ctrl+Shift+r exec $bin/reload
+bindsym Mod4+Ctrl+Shift+BackSpace exit
