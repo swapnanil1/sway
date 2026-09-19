@@ -1,0 +1,125 @@
+// waybar. Colours come from the active theme (style.css imports them).
+// Every module has a tooltip: hover for detail, click for the matching tool.
+{
+	"layer": "top",
+	"position": "top",
+	"height": 32,
+	"spacing": 0,
+	"reload_style_on_change": true,
+
+	"modules-left": ["custom/menu", "sway/workspaces", "sway/mode", "network", "custom/pomodoro"],
+	"modules-center": ["clock"],
+	"modules-right": ["cpu", "custom/temp", "custom/gpu", "memory", "custom/brightness", "wireplumber", "wireplumber#mic", "idle_inhibitor", "tray"],
+
+	"custom/menu": {
+		"format": "󰣇",
+		"tooltip-format": "Left: applications\nRight: session menu",
+		"on-click": "~/.local/share/sway-desktop/bin/menu apps",
+		"on-click-right": "~/.local/share/sway-desktop/bin/menu session"
+	},
+
+	"sway/workspaces": {
+		"disable-scroll-wraparound": true,
+		"format": "{name} {icon}",
+		"format-icons": {
+			"1": "󰖟", "2": "󰅴", "3": "󰆍", "4": "󰉋",
+			"5": "󰊗", "6": "󰓓", "7": "󰊌", "8": "󰒓",
+			"default": "󰧞"
+		}
+	},
+
+	"sway/mode": { "format": "{}", "tooltip": false },
+
+	"network": {
+		"interval": 3,
+		"format-ethernet": "󰁆 {bandwidthDownBytes} 󰁞 {bandwidthUpBytes}",
+		"format-wifi": "󰖩 {bandwidthDownBytes} 󰁞 {bandwidthUpBytes}",
+		"format-disconnected": "󰖪 offline",
+		"tooltip-format": "{ifname}\n{ipaddr}/{cidr}\ngateway {gwaddr}",
+		"tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ifname}  {ipaddr}/{cidr}",
+		"on-click": "nm-connection-editor"
+	},
+
+	"custom/pomodoro": {
+		"exec": "~/.local/share/sway-desktop/bin/pomodoro watch",
+		"return-type": "json",
+		"on-click": "~/.local/share/sway-desktop/bin/pomodoro toggle",
+		"on-click-middle": "~/.local/share/sway-desktop/bin/pomodoro break",
+		"on-click-right": "~/.local/share/sway-desktop/bin/pomodoro stop"
+	},
+
+	"clock": {
+		"interval": 5,
+		"format": "󰅐 {:%a %d  %I:%M %p}",
+		"format-alt": "󰅐 {:%A, %d %B %Y  %I:%M:%S %p}",
+		"tooltip-format": "<tt>{calendar}</tt>",
+		"calendar": { "mode": "month", "format": { "today": "<b><u>{}</u></b>" } }
+	},
+
+	"cpu": {
+		"interval": 2,
+		"format": "󰘚 {usage}%",
+		"on-click": "foot --app-id=floating -e btop"
+	},
+
+	"custom/temp": {
+		"exec": "~/.local/share/sway-desktop/bin/hwinfo cpu",
+		"return-type": "json",
+		"interval": 5,
+		"on-click": "foot --app-id=floating -e btop"
+	},
+
+	"custom/gpu": {
+		"exec": "~/.local/share/sway-desktop/bin/hwinfo gpu",
+		"return-type": "json",
+		"interval": 5,
+		"on-click": "foot --app-id=floating -e btop"
+	},
+
+	"memory": {
+		"interval": 3,
+		"format": "󰍛 {used:0.1f}G",
+		"tooltip-format": "{used:0.1f} of {total:0.1f} GiB used ({percentage}%)\nswap {swapUsed:0.1f} of {swapTotal:0.1f} GiB",
+		"states": { "warning": 85 },
+		"on-click": "foot --app-id=floating -e btop"
+	},
+
+	"custom/brightness": {
+		"exec": "~/.local/share/sway-desktop/bin/brightness json",
+		"return-type": "json",
+		"interval": "once",
+		"signal": 8,
+		"on-scroll-up": "~/.local/share/sway-desktop/bin/brightness up",
+		"on-scroll-down": "~/.local/share/sway-desktop/bin/brightness down",
+		"on-click": "~/.local/share/sway-desktop/bin/brightness menu",
+		"on-click-right": "~/.local/share/sway-desktop/bin/brightness toggle"
+	},
+
+	"wireplumber": {
+		"format": "{icon} {volume}%",
+		"format-muted": "󰖁 muted",
+		"format-icons": ["󰕿", "󰖀", "󰕾"],
+		"tooltip-format": "{node_name}\nLeft: mute   Right: mixer   Scroll: volume",
+		"on-click": "~/.local/share/sway-desktop/bin/volume mute",
+		"on-click-right": "pavucontrol",
+		"scroll-step": 5
+	},
+
+	"wireplumber#mic": {
+		"node-type": "Audio/Source",
+		"format": "󰍬",
+		"format-muted": "󰍭 muted",
+		"tooltip-format": "{node_name}\nLeft: mute   Right: input devices",
+		"on-click": "~/.local/share/sway-desktop/bin/volume mic",
+		"on-click-right": "pavucontrol -t 4"
+	},
+
+	"idle_inhibitor": {
+		"format": "{icon}",
+		"format-icons": { "activated": "󰅶", "deactivated": "󰾪" },
+		"tooltip-format-activated": "The screen will stay on",
+		"tooltip-format-deactivated": "Idle lock is active"
+	},
+
+	"tray": { "spacing": 10 }
+}

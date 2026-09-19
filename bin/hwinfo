@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# CPU and GPU readings for waybar, as JSON with a tooltip. Sensors are found by
+# driver name under /sys/class/hwmon, so nothing is tied to one machine.
+#
+#   hwinfo cpu | gpu
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+# hwmon <driver-name>...: print the first matching hwmon directory
+hwmon() {
+	local dir name want
+	for dir in /sys/class/hwmon/hwmon*; do
+		name=$(<"$dir/name") || continue
+		for want in "$@"; do [[ $name == "$want" ]] && { echo "$dir"; return; }; done
+	done
+	return 1
+}
+celsius() { [[ -r $1 ]] && echo $(($(<"$1") / 1000)); }
+json() { printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' "$1" "$2" "$3"; }
+
+case "${1:-}" in
+	cpu)
+		dir=$(hwmon k10temp zenpower coretemp) || { json "" "no CPU temperature sensor" ""; exit 0; }
+		t=$(celsius "$dir/temp1_input")
+		tip="CPU $t°C"
+		for f in "$dir"/temp*_label; do
+			[[ -r $f ]] && tip+="\\n$(<"$f") $(celsius "${f%_label}_input")°C"
+		done
+		json "󰔏 $t°C" "$tip" "$( ((t >= 90)) && echo critical)"
+		;;
+	gpu)
+		dir=$(hwmon amdgpu nouveau) || { json "" "no GPU sensor" ""; exit 0; }
+		dev=$(readlink -f "$dir/device")
+		t=$(celsius "$dir/temp1_input")
+		tip="GPU edge $t°C"
+		for f in "$dir"/temp*_label; do
+			[[ -r $f ]] && tip+="\\n$(<"$f") $(celsius "${f%_label}_input")°C"
+		done
+		[[ -r $dev/gpu_busy_percent ]] && tip+="\\nload $(<"$dev/gpu_busy_percent")%"
+		[[ -r $dir/power1_average ]] && tip+="\\npower $(($(<"$dir/power1_average") / 1000000)) W"
+		[[ -r $dir/fan1_input ]] && tip+="\\nfan $(<"$dir/fan1_input") RPM"
+		if [[ -r $dev/mem_info_vram_used ]]; then
+			tip+="\\nVRAM $(($(<"$dev/mem_info_vram_used") / 1048576)) of $(($(<"$dev/mem_info_vram_total") / 1048576)) MiB"
+		fi
+		json "󰢮 $t°C" "$tip" "$( ((t >= 85)) && echo critical)"
+		;;
+	*) die "usage: hwinfo cpu|gpu" ;;
+esac
