@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# Pomodoro: 25 minutes of work, 5 minutes of break, repeating.
+#
+#   pomodoro watch     what waybar runs: one JSON line per second
+#   pomodoro toggle    start, or pause/resume           (left click, Mod+Shift+Z)
+#   pomodoro break     take a break right now           (middle click)
+#   pomodoro stop      stop and reset                   (right click)
+#   pomodoro skip      end the break now                (Mod+Ctrl+Shift+B)
+#   pomodoro stats     the last 7 days
+#
+# A minute before a break a notification warns you; the break then takes over
+# the screen (bin/break-screen) until it ends or is skipped. In game mode it is
+# only announced. After a scheduled break work resumes by itself; after a break
+# you asked for the timer stops and waits for a click.
+#
+# Only finished blocks count: a full work block (pausing is fine) and a full
+# break. One line per day, kept forever: $STATE/pomodoro-history
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+WORK_MIN=25
+BREAK_MIN=5
+DIR="$RUNTIME/pomodoro"; mkdir -p "$DIR"
+HISTORY="$STATE/pomodoro-history"
+
+# bash arithmetic evaluates its operands, so file contents pass through this first
+num() { local v=; [[ -r $1 ]] && v=$(<"$1"); [[ $v =~ ^[0-9]+$ ]] && echo "$v" || echo 0; }
+state() { [[ -s $DIR/state ]] && cat "$DIR/state" || echo stopped; }
+fmt() { local s=$1; ((s < 0)) && s=0; printf '%02d:%02d' $((s / 60)) $((s % 60)); }
+
+today() { local line; line=$(grep -s "^$(date +%F) " "$HISTORY" | tail -n1); [[ $line =~ $1=([0-9]+) ]] && echo "${BASH_REMATCH[1]}" || echo 0; }
+count() {
+	local day work breaks; day=$(date +%F); work=$(today work); breaks=$(today breaks)
+	[[ $1 == work ]] && work=$((work + 1)) || breaks=$((breaks + 1))
+	{ grep -sv "^$day " "$HISTORY"; echo "$day work=$work breaks=$breaks"; } >"$HISTORY.tmp" && mv "$HISTORY.tmp" "$HISTORY"
+}
+
+start_work()  { rm -f "$DIR/paused" "$DIR/manual"; echo $((EPOCHSECONDS + WORK_MIN * 60)) >"$DIR/end"; echo work >"$DIR/state"; }
+start_break() { rm -f "$DIR/paused"; echo $((EPOCHSECONDS + BREAK_MIN * 60)) >"$DIR/end"; echo break >"$DIR/state"
+                is_gaming && notify "Pomodoro" "Break time: $BREAK_MIN minutes." || setsid -f "$BIN/break-screen" start >/dev/null 2>&1; }
+stop()        { echo stopped >"$DIR/state"; rm -f "$DIR/end" "$DIR/paused" "$DIR/manual"; }
+end_break()   { if [[ -e $DIR/manual ]]; then stop; notify "Break over" "Click the timer to start working."
+                else start_work; notify "Break over" "$WORK_MIN minutes of work, starting now."; fi; }
+pause_resume() {
+	local s; s=$(state)
+	case "$s" in
+		work | break)   echo $(($(num "$DIR/end") - EPOCHSECONDS)) >"$DIR/paused"; echo "$s-paused" >"$DIR/state" ;;
+		*-paused)       echo $((EPOCHSECONDS + $(num "$DIR/paused"))) >"$DIR/end"; echo "${s%-paused}" >"$DIR/state" ;;
+	esac
+}
+
+tick() {   # advance the state machine, then print one JSON line
+	local s left text class w b
+	s=$(state); left=$(($(num "$DIR/end") - EPOCHSECONDS))
+	case "$s" in
+		work)  ((left == 60)) && notify "Break in 1 minute" "Wrap up what you are doing."
+		       ((left <= 0)) && { count work; "$BIN/sound" pomodoro; start_break; s=break; left=$((BREAK_MIN * 60)); } ;;
+		break) ((left <= 0)) && { count breaks; "$BIN/sound" pomodoro; end_break; s=$(state); left=$(($(num "$DIR/end") - EPOCHSECONDS)); } ;;
+	esac
+	case "$s" in
+		work)         text="󰔟 $(fmt "$left")"; class=running ;;
+		break)        text="󰅶 $(fmt "$left")"; class=break ;;
+		*-paused)     text="󰏤 $(fmt "$(num "$DIR/paused")")"; class=paused ;;
+		*)            text="󰔛"; class=stopped ;;
+	esac
+	w=$(today work); b=$(today breaks)
+	((w + b > 0)) && text+="  ${w}w ${b}b $((w * WORK_MIN / 60))h$(printf '%02d' $((w * WORK_MIN % 60)))"
+	printf '{"text":"%s","class":"%s","tooltip":"Today: %d work blocks, %d breaks\\nLeft: start / pause   Middle: break now   Right: stop"}\n' "$text" "$class" "$w" "$b"
+}
+
+case "${1:-}" in
+	watch)  trap ':' USR1; echo $$ >"$DIR/watcher"; while true; do tick; sleep 1 & wait $!; done ;;
+	toggle) [[ $(state) == stopped ]] && start_work || pause_resume ;;
+	break)  start_break; touch "$DIR/manual" ;;
+	stop)   stop ;;
+	skip)   [[ $(state) == break* ]] && end_break ;;
+	stats)
+		tail -n 7 "$HISTORY" 2>/dev/null | while read -r day w b; do w=${w#work=}; b=${b#breaks=}
+			printf '%s  %2d work  %2d breaks  %dh%02d\n' "$day" "$w" "$b" $((w * WORK_MIN / 60)) $((w * WORK_MIN % 60)); done | grep . || echo "nothing finished yet"
+		exit ;;
+	*) die "usage: pomodoro watch|toggle|break|stop|skip|stats" ;;
+esac
+# wake the watcher so the bar changes immediately
+pid=$(num "$DIR/watcher"); ((pid > 1)) && kill -USR1 "$pid" 2>/dev/null; exit 0

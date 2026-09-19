@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Pomodoro break: takes over the screen until the break ends or is skipped.
+#
+#   break-screen start   sway "break" mode, notifications paused, fullscreen countdown
+#   break-screen run     what runs inside that window
+#
+# The parent restores sway when the window exits for any reason, so a crash
+# cannot leave you in a mode with no keys.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+TIPS=(
+	"Stand up. Walk away from the desk."
+	"Drink a glass of water."
+	"Look at something 20 feet away for 20 seconds."
+	"Roll your shoulders. Stretch your neck."
+	"Shake out your hands and wrists."
+	"Move your body. Ten squats, go."
+	"Breathe in for four, out for six."
+	"Refill the water bottle."
+)
+DIR="$RUNTIME/pomodoro"
+on_break() { [[ $(cat "$DIR/state" 2>/dev/null) == break ]]; }
+
+case "${1:-}" in
+	start)
+		need swaymsg foot; on_break || exit 0
+		swaymsg -q 'mode "break"'; makoctl mode -a do-not-disturb >/dev/null 2>&1
+		foot --app-id=break-screen --font='JetBrainsMono Nerd Font:size=30' -e "$0" run >/dev/null 2>&1
+		swaymsg -q 'mode "default"'; makoctl mode -r do-not-disturb >/dev/null 2>&1
+		;;
+	run)
+		trap '' INT TSTP QUIT HUP; stty -echo -icanon 2>/dev/null; printf '\e[?25l'
+		tip=${TIPS[RANDOM % ${#TIPS[@]}]}
+		center() { printf '%*s%s\n' $(((cols - ${#1}) / 2)) '' "$1"; }
+		while on_break; do
+			end=$(cat "$DIR/end" 2>/dev/null); [[ $end =~ ^[0-9]+$ ]] || break
+			left=$((end - EPOCHSECONDS)); ((left < 0)) && left=0
+			cols=$(tput cols); rows=$(tput lines); printf '\e[H\e[2J'
+			for ((i = 0; i < rows / 2 - 3; i++)); do echo; done
+			center "BREAK"; echo; center "$(printf '%02d:%02d' $((left / 60)) $((left % 60)))"; echo
+			center "$tip"; echo; echo; center "skip: Mod + Ctrl + Shift + B"
+			read -r -t 1 -n 1000 _ 2>/dev/null
+		done
+		printf '\e[?25h'
+		;;
+	*) die "usage: break-screen start|run" ;;
+esac
