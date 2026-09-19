@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Focus an open window, otherwise start the program.
+#
+#   focus-or-launch '<app_id/class regex>' <command...>
+#   focus-or-launch --browser    any browser window, else the default browser
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need swaymsg
+
+if [[ ${1:-} == --browser ]]; then
+	desktop=$(xdg-settings get default-web-browser 2>/dev/null)
+	set -- '(?i)firefox|brave|chromium|librewolf|zen' gtk-launch "${desktop:-firefox.desktop}"
+fi
+[[ $# -ge 2 ]] || die "usage: focus-or-launch '<regex>' <command...>"
+
+match=$1; shift
+swaymsg -q "[app_id=\"$match\"] focus" 2>/dev/null || swaymsg -q "[class=\"$match\"] focus" 2>/dev/null || exec "$@"

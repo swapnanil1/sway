@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Lock the screen with the active theme's colours.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+"$BIN/theme" --ensure
+exec swaylock -f -C "$CACHE/swaylock" "$@"

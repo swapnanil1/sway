@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Screenshots with grim. Both land in the clipboard and in ~/Pictures/Screenshots.
+#
+#   screenshot area     select a region, then annotate it in satty
+#   screenshot screen   the whole screen, no questions
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need grim wl-copy
+
+dir="$HOME/Pictures/Screenshots"; mkdir -p "$dir"
+file="$dir/$(date +%Y-%m-%d_%H-%M-%S).png"
+
+case "${1:-}" in
+	area)
+		need slurp
+		region=$(slurp) || exit 0              # Escape cancels
+		if command -v satty >/dev/null; then
+			grim -g "$region" - | satty --filename - --output-filename "$file" --copy-command wl-copy --early-exit
+		else
+			grim -g "$region" "$file" && wl-copy <"$file"
+		fi
+		;;
+	screen) grim "$file" && wl-copy <"$file" && "$BIN/sound" screenshot && notify "Screenshot saved" "$file" ;;
+	*) die "usage: screenshot area|screen" ;;
+esac

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Drop-down terminal on the scratchpad: started on first use, toggled after.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need swaymsg foot
+
+if ! swaymsg -t get_tree | grep -q '"app_id": "dropdown"'; then
+	foot --app-id=dropdown &
+	for _ in {1..50}; do
+		swaymsg -t get_tree | grep -q '"app_id": "dropdown"' && break
+		sleep 0.1
+	done
+fi
+swaymsg -q '[app_id="dropdown"] scratchpad show, move position center'

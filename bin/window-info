@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Show what identifies the focused window, for writing rules in 70-rules.conf.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need swaymsg jq
+
+info=$(swaymsg -t get_tree | jq -r '
+	recurse(.nodes[]?, .floating_nodes[]?) | select(.focused)
+	| "app_id: \(.app_id // "-")\nclass:  \(.window_properties.class // "-")\ntitle:  \(.name)"')
+notify "Window" "$info"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Volume through WirePlumber.
+#
+#   volume up | down | mute | mic
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need wpctl
+
+case "${1:-}" in
+	up)   wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ && "$BIN/sound" volume ;;
+	down) wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && "$BIN/sound" volume ;;
+	mute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+	mic)  wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle ;;
+	*) die "usage: volume up|down|mute|mic" ;;
+esac

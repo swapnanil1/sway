@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Clipboard history (cliphist).
+#
+#   clipboard pick    choose an entry and copy it
+#   clipboard clear   forget everything
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need cliphist wl-copy
+
+case "${1:-}" in
+	pick)  need fuzzel; cliphist list | fuzzel --dmenu --prompt "clipboard  " | cliphist decode | wl-copy ;;
+	clear) cliphist wipe && notify "Clipboard history cleared" ;;
+	*) die "usage: clipboard pick|clear" ;;
+esac

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# ~/.config/sway-desktop/wallpaper.{png,jpg,jpeg,webp} or ~/Pictures/wallpaper.*
+# if one exists, otherwise the active theme's background colour.
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+
+for img in "$HOME"/.config/sway-desktop/wallpaper.{png,jpg,jpeg,webp} "$HOME"/Pictures/wallpaper.{png,jpg,jpeg,webp}; do
+	[[ -f $img ]] && exec swaymsg -q "output * bg $img fill"
+done
+[[ -f $CACHE/theme.env ]] && . "$CACHE/theme.env"
+exec swaymsg -q "output * bg ${BG:-#1e222a} solid_color"

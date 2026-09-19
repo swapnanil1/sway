@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Menus, all through fuzzel.
+#
+#   menu apps | windows | session
+
+. "$(dirname "$(readlink -f "$0")")/lib/common.sh"
+need fuzzel
+
+case "${1:-}" in
+	apps) exec fuzzel ;;
+	windows)
+		need swaymsg jq
+		pick=$(swaymsg -t get_tree | jq -r '
+			recurse(.nodes[]?, .floating_nodes[]?) | select(.pid and .name)
+			| "\(.id)\t\(.app_id // .window_properties.class // "?")  \(.name)"' |
+			fuzzel --dmenu --prompt "window  " --with-nth 2 --accept-nth 1) || exit 0
+		[[ -n $pick ]] && swaymsg -q "[con_id=$pick] focus"
+		;;
+	session)
+		# "label|command": power first, then what you restart while tinkering
+		entries=(
+			"Lock|$BIN/lock"
+			"Logout|$BIN/sound --wait logout; $BIN/session stop; swaymsg exit"
+			"Suspend|systemctl suspend"
+			"Reboot|$BIN/sound --wait logout; systemctl reboot"
+			"Shutdown|$BIN/sound --wait logout; systemctl poweroff"
+			"Reload sway|$BIN/reload"
+			"Restart the bar|systemctl --user restart waybar.service"
+			"Restart notifications|systemctl --user restart mako.service"
+			"Theme picker|$BIN/theme"
+			"Game mode|$BIN/gamemode on"
+		)
+		choice=$(printf '%s\n' "${entries[@]%%|*}" | fuzzel --dmenu --prompt "session  ") || exit 0
+		for entry in "${entries[@]}"; do
+			[[ ${entry%%|*} == "$choice" ]] && { setsid -f bash -c "${entry#*|}" >/dev/null 2>&1; exit 0; }
+		done
+		;;
+	*) die "usage: menu apps|windows|session" ;;
+esac
