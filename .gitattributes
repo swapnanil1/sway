@@ -1,0 +1,3 @@
+# Everything here is read on Linux: LF in the repo and in every checkout,
+# whatever the OS doing the editing.
+* text=auto eol=lf

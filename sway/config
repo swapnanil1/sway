@@ -1,0 +1,21 @@
+# sway config. Everything else lives in config.d/, loaded in name order:
+#   00_colors (generated)  01_theme  02_rules  03_apps  04_wm  05_workspaces  06_hardware
+
+# Mod is Super. config.d/06_hardware.conf swaps left Alt and left Super, so it
+# is the key under the left thumb; apps get their Alt on the key beside it.
+set $mod Mod4
+include ~/.config/sway/config.d/*.conf
+
+##-- Startup -------------------------------
+
+# Hands the Wayland socket to systemd and D-Bus, then starts sway-session.target,
+# which owns the daemons (waybar, mako, polkit agent, swayidle, cliphist,
+# autotiling) and XDG autostart. Runs once per login, not on reload.
+exec ~/.config/sway/scripts/session-start
+
+# Idempotent, so safe to re-run on every reload
+exec_always ~/.config/sway/scripts/display
+exec_always ~/.config/sway/scripts/wallpaper
+
+# Distribution snippets (Arch ships the systemd environment import here)
+include /etc/sway/config.d/*

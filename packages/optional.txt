@@ -1,0 +1,16 @@
+# Installed only with: ./install.sh --optional
+# Nothing here starts a daemon.
+
+# Night light (wlr gamma protocol, no config needed)
+gammastep
+noto-fonts-cjk
+
+# More of the KDE set, none of it needed by the desktop itself
+kcalc
+filelight
+partitionmanager
+# remote shares opened in Dolphin become real paths for non-KDE apps
+kio-fuse
+
+# Not listed on purpose: kdeconnect autostarts a 40-60 MB daemon at every
+# login. Install it by hand if you want phone integration.

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Session menu: power actions first, then the things you restart while
+# tinkering. Opened by Mod+Shift+E and by right click on the bar's Arch logo.
+
+# "label|command", icons are Material Design glyphs from the Nerd Font
+entries=(
+	$'\U000f033e  Lock|~/.config/sway/scripts/lock-now'
+	$'\U000f0343  Logout|~/.config/sway/scripts/sound --wait logout; systemctl --user stop sway-session.target; swaymsg exit'
+	$'\U000f04b2  Suspend|systemctl suspend'
+	$'\U000f0709  Reboot|~/.config/sway/scripts/sound --wait logout; systemctl reboot'
+	$'\U000f0425  Shutdown|~/.config/sway/scripts/sound --wait logout; systemctl poweroff'
+	$'\U000f0450  Reload sway config|swaymsg reload'
+	$'\U000f035c  Restart the bar|systemctl --user restart waybar.service'
+	$'\U000f009a  Restart notifications|systemctl --user restart mako.service'
+	$'\U000f03d8  Theme picker|~/.config/sway/scripts/theme'
+	$'\U000f0297  Game mode|~/.config/sway/scripts/gamemode on'
+)
+
+choice=$(printf '%s\n' "${entries[@]%%|*}" | wofi --dmenu -i -p "Session" --lines "$((${#entries[@]} + 1))")
+[[ -n $choice ]] || exit 0
+
+for entry in "${entries[@]}"; do
+	if [[ ${entry%%|*} == "$choice" ]]; then
+		setsid -f bash -c "${entry#*|}" >/dev/null 2>&1
+		exit 0
+	fi
+done

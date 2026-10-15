@@ -1,0 +1,13 @@
+[Unit]
+Description=sway session
+Documentation=man:systemd.special(7)
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
+
+# Session daemons. To drop one: systemctl --user mask <unit>
+Wants=waybar.service mako.service polkit-agent.service swayidle.service
+Wants=cliphist.service autotiling.service
+
+# ~/.config/autostart and /etc/xdg/autostart (nm-applet etc.), replaces dex
+Wants=xdg-desktop-autostart.target

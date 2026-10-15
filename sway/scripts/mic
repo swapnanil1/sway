@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Microphone mute state for waybar. Event driven (pactl subscribe), no polling.
+# One JSON line per change; the "class" (live, muted) picks the colour in
+# waybar/style.css.
+#   mic            print state now and on every source change (waybar exec)
+#   mic toggle     mute/unmute the default source
+
+ICON_LIVE=$'\U000f036c'
+ICON_MUTED=$'\U000f036d'
+
+show() {
+	if [[ $(pactl get-source-mute @DEFAULT_SOURCE@ 2>/dev/null) == *yes ]]; then
+		printf '{"text": "%s muted", "class": "muted", "tooltip": "Microphone muted"}\n' "$ICON_MUTED"
+	else
+		printf '{"text": "%s", "class": "live", "tooltip": "Microphone live"}\n' "$ICON_LIVE"
+	fi
+}
+
+if [[ $1 == toggle ]]; then
+	pactl set-source-mute @DEFAULT_SOURCE@ toggle
+	exit 0
+fi
+
+# take the pactl/grep children down with us when the bar restarts
+trap 'pkill -P $$' EXIT
+trap 'exit 0' TERM INT HUP
+
+show
+pactl subscribe 2>/dev/null | grep --line-buffered -E "'change' on (source|server)" | while read -r _; do
+	show
+done

@@ -1,0 +1,47 @@
+# KDE applications: native Wayland, one consistent Qt look (Breeze through
+# qt6ct), and root work goes through polkit helpers instead of running the
+# GUI as root. No Plasma shell: sway is the desktop.
+
+# File manager and friends
+dolphin
+kio-extras
+kio-admin
+kdegraphics-thumbnailers
+ffmpegthumbs
+qt6-imageformats
+ark
+7zip
+unzip
+zip
+
+# What Dolphin's menus need outside Plasma: an application menu definition
+# (Plasma ships its own; this is Arch's) so the Open With list is not empty,
+# and the helper tools behind Open With and the file-type editor. The cache
+# built from them is refreshed by install.sh and at every login.
+archlinux-xdg-menu
+kde-cli-tools
+
+# Viewers and editor
+gwenview
+okular
+kate
+
+# Theming: Breeze for Qt (style, icons, cursors) and the matching GTK theme
+# for the few GTK apps left (Firefox, satty, Timeshift). qt6ct selects the Qt
+# style; nwg-look changes the GTK side.
+breeze
+breeze-icons
+breeze-gtk
+qt6ct
+nwg-look
+
+# Everyday. OBS records and streams the screen through the portal: use its
+# "Screen Capture (PipeWire)" source.
+firefox
+obs-studio
+pavucontrol-qt
+fish
+eza
+fastfetch
+neovim
+git

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Wayland session launcher. install.sh puts this in /usr/local/bin and names it
+# in /usr/share/wayland-sessions/sway-desktop.desktop, so the login manager runs
+# it. It loads the session environment and then becomes sway.
+[ -f "$HOME/.config/sway/env" ] && . "$HOME/.config/sway/env"
+exec sway "$@"

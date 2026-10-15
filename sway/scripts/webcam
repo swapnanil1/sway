@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Camera-in-use indicator for waybar. Webcams are opened through V4L2, below
+# PipeWire, so the privacy module never sees them. The kernel driver's use
+# count does: each open file handle on a camera device holds one reference,
+# whatever process holds it. One read of a sysfs file per driver.
+#
+# A real camera (uvcvideo) is in use from the first opener. A virtual one
+# (v4l2loopback, DroidCam's v4l2loopback_dc) is always held open by its feeder,
+# so it counts as in use from the second opener: the app consuming it.
+
+in_use=0
+[[ -r /sys/module/uvcvideo/refcnt ]] && (($(</sys/module/uvcvideo/refcnt) > 0)) && in_use=1
+for f in /sys/module/v4l2loopback/refcnt /sys/module/v4l2loopback_dc/refcnt; do
+	[[ -r $f ]] && (($(<"$f") > 1)) && in_use=1
+done
+
+if ((in_use)); then
+	printf '{"text": "\U000f0567", "class": "on", "tooltip": "Camera in use"}\n'
+else
+	printf '{"text": "", "class": "off"}\n'
+fi

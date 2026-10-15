@@ -1,0 +1,59 @@
+/* wofi layout. Colours come from colors.css, written by ~/.config/sway/scripts/theme */
+@import url("colors.css");
+
+window {
+	margin: 0;
+	border: 2px solid @accent;
+	border-radius: 0;
+	background-color: @bg;
+	font-family: "JetBrainsMono Nerd Font";
+	font-size: 14px;
+}
+
+#outer-box {
+	margin: 8px;
+}
+
+#input {
+	margin: 0 0 8px 0;
+	padding: 6px 10px;
+	border: none;
+	border-radius: 0;
+	color: @fg;
+	background-color: @bg_alt;
+}
+#input:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+#inner-box {
+	border: none;
+	background-color: @bg;
+}
+
+#scroll {
+	margin: 0;
+	border: none;
+}
+
+#entry {
+	padding: 4px 8px;
+	border-radius: 0;
+}
+#entry:selected {
+	background-color: @accent;
+}
+
+#text {
+	margin: 0 0 0 6px;
+	color: @fg;
+}
+#entry:selected #text {
+	color: @bg;
+	font-weight: bold;
+}
+
+#img {
+	margin-right: 4px;
+}

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Locker. Colours come from ~/.config/swaylock/config, written by scripts/theme.
+# -f returns as soon as the screen is locked, which is what swayidle's
+# before-sleep needs: the system may only suspend once the lock is up.
+exec swaylock -f "$@"

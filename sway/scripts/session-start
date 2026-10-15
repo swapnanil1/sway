@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Runs once per login from the sway config.
+
+# Let systemd user units and D-Bus activated services (portals, mako, keyring)
+# see the Wayland session
+systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK DISPLAY \
+	XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME \
+	MOZ_ENABLE_WAYLAND ELECTRON_OZONE_PLATFORM_HINT 2>/dev/null
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK DISPLAY \
+	XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME 2>/dev/null
+
+# The colour files are generated, not shipped
+~/.config/sway/scripts/theme --ensure
+
+mkdir -p ~/Pictures/Screenshots
+
+# KDE's application cache (what Dolphin's Open With and the Ark context menu
+# entries are read from). Plasma's kded keeps it fresh; here it is rebuilt at
+# login instead. Incremental, a fraction of a second, exits when done.
+(kbuildsycoca6 >/dev/null 2>&1 &)
+
+# Clear anything left over from a session that died uncleanly. The portals are
+# stopped too: one started under a stale WAYLAND_DISPLAY cannot screen-share,
+# and D-Bus starts them again on demand with the environment imported above.
+systemctl --user stop sway-session.target 2>/dev/null
+systemctl --user stop xdg-desktop-portal-wlr.service xdg-desktop-portal-gtk.service \
+	xdg-desktop-portal.service 2>/dev/null
+systemctl --user reset-failed 2>/dev/null
+systemctl --user start sway-session.target
+
+# after the session target, so PipeWire is up
+(sleep 2; ~/.config/sway/scripts/sound login) &

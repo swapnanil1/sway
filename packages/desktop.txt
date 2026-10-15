@@ -1,0 +1,30 @@
+# The sway session itself.
+sway
+swaybg
+swaylock
+swayidle
+waybar
+wofi
+mako
+libnotify
+foot
+autotiling
+
+# Clipboard history, screenshots
+wl-clipboard
+cliphist
+grim
+slurp
+satty
+
+# Media keys, system monitor (behind the bar clicks; nothing resident)
+playerctl
+htop
+
+# Monitor brightness over DDC/CI, CPU/GPU temperatures for the bar
+ddcutil
+lm_sensors
+
+# Event sounds (plain .oga files, played by pw-play; no daemon)
+ocean-sound-theme
+sound-theme-freedesktop

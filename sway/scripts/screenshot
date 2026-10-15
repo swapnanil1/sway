@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Screenshots: grim captures, slurp selects, satty annotates. The result is
+# copied to the clipboard and saved under ~/Pictures/Screenshots when you
+# press save or copy in satty.
+#
+#   screenshot area | window | full
+
+DIR=~/Pictures/Screenshots
+mkdir -p "$DIR"
+file="$DIR/$(date +%Y-%m-%d_%H-%M-%S).png"
+
+case "$1" in
+	area)
+		geo=$(slurp) || exit 0
+		args=(-g "$geo")
+		;;
+	window)
+		geo=$(swaymsg -t get_tree | jq -r '.. | select(.focused? == true) | .rect | "\(.x),\(.y) \(.width)x\(.height)"')
+		[[ -n $geo ]] || { notify-send -u critical "Screenshot" "No focused window"; exit 1; }
+		args=(-g "$geo")
+		;;
+	full)
+		args=()
+		;;
+	*) echo "usage: ${0##*/} area|window|full" >&2; exit 2 ;;
+esac
+
+grim "${args[@]}" - | satty --filename - --output-filename "$file" --copy-command wl-copy --early-exit
+[[ -f $file ]] && ~/.config/sway/scripts/sound screenshot
+exit 0

@@ -1,0 +1,48 @@
+# What a bare Arch server install is missing for any Wayland desktop.
+
+# AMD graphics. The kernel driver does VRR and tearing on Wayland; there is no
+# Xorg driver to install. install.sh skips these without an amdgpu GPU.
+mesa
+vulkan-radeon
+linux-firmware-amdgpu
+amd-ucode
+
+# Audio
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+rtkit
+libpulse
+
+# Fonts
+ttf-jetbrains-mono-nerd
+noto-fonts
+noto-fonts-emoji
+
+# Desktop plumbing: privilege prompts, mounting, secrets, portals, user dirs.
+# polkit-kde-agent draws the password dialog (the Plasma one); xorg-xhost is
+# what the Timeshift and GParted launchers use to let root reach the display.
+polkit
+polkit-kde-agent
+xorg-xhost
+udisks2
+gnome-keyring
+libsecret
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+xdg-user-dirs
+xdg-utils
+
+# X11 apps on Wayland (Steam, games, older Electron builds); Qt on Wayland
+xorg-xwayland
+qt6-wayland
+qt5-wayland
+
+# envsubst for the theme switcher; jq for every script that reads sway's IPC
+gettext
+jq
+
+# Login manager
+ly

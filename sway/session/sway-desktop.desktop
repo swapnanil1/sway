@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Sway Desktop
+Comment=sway with the session environment from ~/.config/sway/env
+Exec=/usr/local/bin/sway-desktop
+Type=Application
+DesktopNames=sway
