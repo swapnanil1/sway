@@ -2,7 +2,7 @@
 sway/theme.env
 sway/config.d/00_colors.conf
 waybar/colors.css
-wofi/colors.css
+wofi/style.css
 foot/colors.ini
 mako/config
 swaylock/config

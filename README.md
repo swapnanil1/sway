@@ -166,9 +166,10 @@ GTK applications and non-KDE Qt applications keep Breeze-Dark.
   config import the generated file.
 
 The generated files are git-ignored, so switching themes never changes the
-repository, and they are recreated whenever one is missing. mako and swaylock
-cannot include a second file, so for those two the template is the whole
-config: edit `themes/templates/mako.conf`, not `~/.config/mako/config`.
+repository, and they are recreated whenever one is missing. mako, swaylock and
+wofi cannot include a second file, so for those three the template is the
+whole config: edit `themes/templates/mako.conf`, not `~/.config/mako/config`,
+and `themes/templates/wofi.css`, not `~/.config/wofi/style.css`.
 
 Open foot and KDE windows keep their colours; new ones use the new theme.
 

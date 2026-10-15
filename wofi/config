@@ -1,6 +1,6 @@
 # wofi: app launcher (Mod+Space) and the dmenu behind the key list, window
 # switcher, theme picker, session menu and clipboard history.
-# Colours: colors.css, written by ~/.config/sway/scripts/theme; layout: style.css
+# style.css is written by ~/.config/sway/scripts/theme from themes/templates/wofi.css
 mode=drun
 prompt=Search
 allow_images=true
