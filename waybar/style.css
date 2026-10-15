@@ -24,6 +24,14 @@ window#waybar {
 	color: @fg;
 }
 
+/* air between the outermost pills and the screen edges */
+.modules-left {
+	margin-left: 4px;
+}
+.modules-right {
+	margin-right: 10px;
+}
+
 tooltip {
 	background-color: @bg;
 	border: 2px solid @bg_alt;
@@ -215,7 +223,7 @@ tooltip label {
 
 #tray {
 	padding: 0 10px;
-	margin-right: 8px;
+	margin-left: 10px;
 }
 #tray > .passive {
 	-gtk-icon-effect: dim;

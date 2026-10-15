@@ -3,7 +3,7 @@
 // screen (26 px pills with 6 px above and below), 11 pt bold, a dot between
 // pills. Layout:
 //   logo . [workspaces mode] . [network] . [pomodoro]   [clock]
-//   [cpu temps] . [memory] . [brightness volume mic] (capture, caps) . tray
+//   [cpu temps] . [memory] . [brightness volume mic] (capture, caps) tray
 {
 	"layer": "top",
 	"position": "top",
@@ -16,15 +16,14 @@
 	"modules-center": ["clock"],
 	"modules-right": ["cpu", "custom/cpu-temp", "custom/gpu-temp", "custom/dot#d", "memory",
 	                  "custom/dot#e", "custom/brightness", "pulseaudio", "custom/mic",
-	                  "privacy", "custom/webcam", "keyboard-state", "custom/dot#f", "tray"],
+	                  "privacy", "custom/webcam", "keyboard-state", "tray"],
 
 	// the dot between pills (polybar's "dot" module); one entry per place it appears
-	"custom/dot#a": { "format": "", "tooltip": false },
-	"custom/dot#b": { "format": "", "tooltip": false },
-	"custom/dot#c": { "format": "", "tooltip": false },
-	"custom/dot#d": { "format": "", "tooltip": false },
-	"custom/dot#e": { "format": "", "tooltip": false },
-	"custom/dot#f": { "format": "", "tooltip": false },
+	"custom/dot#a": { "format": "•", "tooltip": false },
+	"custom/dot#b": { "format": "•", "tooltip": false },
+	"custom/dot#c": { "format": "•", "tooltip": false },
+	"custom/dot#d": { "format": "•", "tooltip": false },
+	"custom/dot#e": { "format": "•", "tooltip": false },
 
 	// Arch logo: left click launcher, right click session menu
 	"custom/menu": {
