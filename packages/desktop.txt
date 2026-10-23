@@ -21,6 +21,7 @@ satty
 # Media keys, system monitor (behind the bar clicks; nothing resident)
 playerctl
 ffmpeg
+mat2
 htop
 
 # Monitor brightness over DDC/CI, CPU/GPU temperatures for the bar

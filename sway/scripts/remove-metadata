@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Clean temporary copies with mat2; publish only successful results.
+set -uo pipefail
+interactive=0
+[[ ${1:-} == --run ]] && { interactive=1; shift; }
+check_only=0
+[[ ${1:-} == --check ]] && { check_only=1; shift; }
+[[ ${1:-} == -- ]] && shift
+[[ $# -gt 0 ]] || { echo "Usage: ${0##*/} [--check] [--] FILE..." >&2; exit 2; }
+finish() {
+	if ((interactive)); then
+		read -rp 'Press Enter to close. ' _ || true
+	fi
+}
+command -v mat2 >/dev/null || { echo 'Install the mat2 package first.' >&2; finish; exit 1; }
+command -v exiftool >/dev/null || { echo 'Install perl-image-exiftool (a mat2 dependency) first.' >&2; finish; exit 1; }
+temp=''
+cleanup() {
+	[[ -z $temp ]] || rm -rf -- "$temp"
+	temp=''
+}
+trap cleanup EXIT
+trap 'echo "Cleaning cancelled."; exit 130' INT TERM HUP
+if ((check_only)); then
+	echo 'Read-only metadata report. No files will be changed.'
+else
+	echo 'Shows metadata, then creates cleaned copies. Originals stay untouched.'
+fi
+echo 'Reports include technical/file information; not every field is private or removable.'
+done_n=0 failed=0
+for input in "$@"; do
+	printf '\nMetadata: %s\n' "$input"
+	if [[ ! -f $input || ! -r $input ]]; then
+		echo 'Skipped: not a readable file.' >&2; failed=$((failed + 1)); continue
+	fi
+	input=$(realpath -- "$input") || { failed=$((failed + 1)); continue; }
+	# ExifTool reports all tags it recognizes, including duplicate/grouped tags.
+	if ! exiftool -a -G1 -s -- "$input"; then
+		echo 'Could not read metadata; skipped.' >&2
+		failed=$((failed + 1)); continue
+	fi
+	if ((check_only)); then done_n=$((done_n + 1)); continue; fi
+	printf '\nRemoving metadata…\n'
+	directory=${input%/*}; name=${input##*/}
+	stem=${name%.*}; extension=''
+	if [[ $name == *.* && -n $stem ]]; then extension=.${name##*.}; else stem=$name; fi
+	base="$directory/$stem.cleaned"; output="$base$extension"; suffix=1
+	while [[ -e $output || -L $output ]]; do
+		output="$base-$suffix$extension"; suffix=$((suffix + 1))
+	done
+	temp=$(mktemp -d -- "$directory/.remove-metadata.XXXXXXXX") || { failed=$((failed + 1)); continue; }
+	# In-place cleaning applies ONLY to our temporary copy, never the source.
+	if cp -- "$input" "$temp/$name" && chmod u+rw -- "$temp/$name" \
+		&& mat2 --unknown-members abort --inplace -- "$temp/$name" \
+		&& mv --update=none-fail -T -- "$temp/$name" "$output"; then
+		printf 'Saved cleaned copy: %s\n' "$output"
+		done_n=$((done_n + 1))
+	else
+		echo 'Not cleaned: unsupported format, cleaning error, or output could not be saved. See details above.' >&2
+		failed=$((failed + 1))
+	fi
+	cleanup
+done
+if ((check_only)); then
+	printf '\n%d inspected, %d failed. No files changed.\n' "$done_n" "$failed"
+else
+	printf '\n%d cleaned, %d failed. Upload the .cleaned copies.\n' "$done_n" "$failed"
+	printf '%s\n' 'Review copies first: cleaning can change documents. Visible content and filenames are not anonymised.'
+fi
+finish
+((failed == 0))

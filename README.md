@@ -315,7 +315,7 @@ dialog whenever something asks polkit for rights. That covers three cases:
 
 ### Context menu
 
-Five entries of this setup's own in Dolphin's right-click menu, as KIO service
+Six entries of this setup's own in Dolphin's right-click menu, as KIO service
 menus: `kde/servicemenus/`, installed executable into
 `~/.local/share/kio/servicemenus`.
 
@@ -370,6 +370,23 @@ menus: `kde/servicemenus/`, installed executable into
   track. Lossy conversion can reduce quality; FLAC/WAV cannot restore lost quality.
   CLI: `~/.config/sway/scripts/convert-media --to mp3 -- file.mkv`.
   Only ordinary KDE service menus and the FFmpeg shell helper are used.
+
+* **Metadata**, a submenu on files, including multiple selections.
+  **Check metadata** opens a terminal with all tags ExifTool recognizes,
+  including technical/file information, without changing anything.
+  **Remove metadata (cleaned copy)** shows that report first, then cleans.
+  Uses `mat2` to remove supported metadata from images, documents, audio,
+  video and other supported formats. Saves `name.cleaned.ext` beside the
+  original, adding numbers if needed; originals and existing copies are kept.
+  Unsupported or failed files are reported and no cleaned copy is published.
+  Archives with unsupported members are rejected rather than leaving those
+  members untouched. The local `mat2.desktop` overrides mat2's packaged menu.
+  Upload the **cleaned copy** and review it first: cleaning can flatten PDFs,
+  remove document features or change appearance. This is not universal
+  anonymisation: visible names/faces/text, filenames and identifying content
+  remain. `mat2 --list` shows supported formats; `mat2 --show FILE` inspects
+  metadata it recognizes. CLI: `~/.config/sway/scripts/remove-metadata -- FILE`;
+  add `--check` before `--` to inspect without cleaning.
 
 ### Screenshots and recording
 
