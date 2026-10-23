@@ -58,6 +58,7 @@ simply stay inactive without it:
 | Monitor brightness keys and bar module | A monitor that speaks DDC/CI (`ddcutil`). Shows `N/A` otherwise. |
 | CPU and GPU temperature in the bar | `lm_sensors` labels `Tctl`/`Tdie`/`Package id 0` (CPU) and `edge`/`junction` (GPU). Shows `N/A` otherwise. |
 | Network speed in the bar | Any interface with a default route; wired and Wi-Fi both work. |
+| Power profile toggle in the bar | `power-profiles-daemon` with a CPU driver that exposes profiles (`amd-pstate`, `intel_pstate`). The module hides itself otherwise. |
 
 ## Install
 
@@ -130,7 +131,9 @@ work on the lock screen.
 
 On the bar: scroll on brightness and volume, left click volume to mute, right
 click volume or the microphone for the mixer, click CPU, temperatures or memory
-for `htop`, hover the clock for a calendar (right click switches the format),
+for `htop`, click the speedometer next to CPU to cycle the power profile
+(performance, balanced, power-saver), hover the clock for a calendar (right
+click switches the format),
 right click the logo for the session menu, left click it for the launcher.
 The pomodoro module takes left (start, pause), middle (break now) and right
 (stop) click, and scrolling shows the last seven days. A red CAPS badge
@@ -379,6 +382,10 @@ video, a game) keeps the screen awake.
   kernel driver; there is no Xorg driver or compositor to configure.
 * **Brightness**: DDC/CI through `ddcutil`. The value is cached in
   `$XDG_RUNTIME_DIR/brightness`, so the bar never polls the monitor.
+* **Power profiles**: the speedometer in the bar is waybar's
+  `power-profiles-daemon` module, so it costs no polling: the daemon pushes
+  changes over D-Bus. Orange means performance, green means power-saver.
+  `powerprofilesctl` sets the same thing from a terminal.
 * **Mouse**: flat acceleration profile, set in `06_hardware.conf`.
 * **X11 apps**: XWayland is on, for Steam, games and Electron builds without
   Wayland support.

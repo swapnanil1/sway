@@ -47,7 +47,7 @@ tooltip label {
 #network,
 #custom-pomodoro,
 #clock,
-#cpu, #custom-cpu-temp, #custom-gpu-temp,
+#cpu, #power-profiles-daemon, #custom-cpu-temp, #custom-gpu-temp,
 #memory,
 #custom-brightness, #pulseaudio, #custom-mic,
 #tray {
@@ -85,6 +85,10 @@ tooltip label {
 }
 
 /* joined pills: no gap, a little air after the shared edge */
+#power-profiles-daemon {
+	border-radius: 0;
+	padding-left: 7px;
+}
 #custom-cpu-temp {
 	border-radius: 0;
 	padding-left: 7px;
@@ -157,6 +161,9 @@ tooltip label {
 /* --- right --------------------------------------------------------------- */
 
 #cpu              { color: @blue; }
+#power-profiles-daemon             { color: @fg; }
+#power-profiles-daemon.performance { color: @orange; }
+#power-profiles-daemon.power-saver { color: @green; }
 #custom-cpu-temp  { color: @fg; }
 #custom-gpu-temp  { color: @fg; }
 #custom-cpu-temp.warn, #custom-gpu-temp.warn { color: @yellow; }

@@ -3,7 +3,7 @@
 // screen (26 px pills with 6 px above and below), 11 pt bold, a dot between
 // pills. Layout:
 //   logo . [workspaces mode] . [network] . [pomodoro]   [clock]
-//   [cpu temps] . [memory] . [brightness volume mic] (capture, caps) tray
+//   [cpu profile temps] . [memory] . [brightness volume mic] (capture, caps) tray
 {
 	"layer": "top",
 	"position": "top",
@@ -14,7 +14,7 @@
 	"modules-left": ["custom/menu", "custom/dot#a", "sway/workspaces", "sway/mode",
 	                 "custom/dot#b", "network", "custom/dot#c", "custom/pomodoro"],
 	"modules-center": ["clock"],
-	"modules-right": ["cpu", "custom/cpu-temp", "custom/gpu-temp", "custom/dot#d", "memory",
+	"modules-right": ["cpu", "power-profiles-daemon", "custom/cpu-temp", "custom/gpu-temp", "custom/dot#d", "memory",
 	                  "custom/dot#e", "custom/brightness", "pulseaudio", "custom/mic",
 	                  "privacy", "custom/webcam", "keyboard-state", "tray"],
 
@@ -97,6 +97,20 @@
 		"format": "󰘚 {usage:2}%",
 		"tooltip": false,
 		"on-click": "foot --app-id foot-float htop"
+	},
+
+	// CPU power profile (power-profiles-daemon over D-Bus, no polling): click
+	// cycles performance / balanced / power-saver. Hidden when the daemon is
+	// not running.
+	"power-profiles-daemon": {
+		"format": "{icon}",
+		"format-icons": {
+			"default": "󰾅",
+			"performance": "󰓅",
+			"balanced": "󰾅",
+			"power-saver": "󰾆"
+		},
+		"tooltip-format": "Power profile: {profile}\nDriver: {driver}"
 	},
 
 	"custom/cpu-temp": {

@@ -137,6 +137,7 @@ doctor() {
 	check "KDE menu definition (Dolphin Open With)" test -f /etc/xdg/menus/arch-applications.menu
 	check "KDE application cache built"           sh -c "ls \"\${XDG_CACHE_HOME:-$HOME/.cache}\"/ksycoca6_* >/dev/null 2>&1"
 	check "event sound theme installed"           test -d /usr/share/sounds/freedesktop/stereo
+	check "power profiles (bar toggle)"           sh -c "powerprofilesctl list 2>/dev/null | grep -q performance"
 	if ((fails)); then
 		warn "$fails check(s) failed. Audio and DDC checks need a logged-in session; re-run './install.sh --doctor' after the first login."
 	else
@@ -387,6 +388,15 @@ else
 	fi
 	# and drop any lockout that is in force right now
 	run sudo faillock --reset 2>/dev/null || true
+fi
+
+step "Power profiles"
+# The bar's profile toggle talks to power-profiles-daemon; enabled, not
+# started, so a running session is not disturbed. It is D-Bus activated anyway.
+if systemctl is-enabled --quiet power-profiles-daemon.service 2>/dev/null; then
+	info "ok      power-profiles-daemon.service"
+else
+	run sudo systemctl enable power-profiles-daemon.service
 fi
 
 step "Login manager"

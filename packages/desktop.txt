@@ -25,6 +25,11 @@ htop
 ddcutil
 lm_sensors
 
+# CPU power profile toggle in the bar (performance / balanced / power-saver).
+# A small system daemon, activated over D-Bus; the kernel's pstate driver
+# (amd-pstate, intel_pstate) is what exposes the profiles.
+power-profiles-daemon
+
 # Event sounds (plain .oga files, played by pw-play; no daemon)
 ocean-sound-theme
 sound-theme-freedesktop
