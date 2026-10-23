@@ -315,7 +315,7 @@ dialog whenever something asks polkit for rights. That covers three cases:
 
 ### Context menu
 
-Three entries of this setup's own in Dolphin's right-click menu, as KIO service
+Four entries of this setup's own in Dolphin's right-click menu, as KIO service
 menus: `kde/servicemenus/`, installed executable into
 `~/.local/share/kio/servicemenus`.
 
@@ -341,6 +341,17 @@ menus: `kde/servicemenus/`, installed executable into
   shortcut; it does not install the game or run the executable. The helper
   `~/.config/sway/scripts/add-to-steam /path/to/game.exe` also works from a
   terminal. It uses Steam's shortcut handler, leaving library files to Steam.
+
+* **Add to Heroic**, on a single Windows `.exe`. Install and open Heroic once,
+  then quit it completely, including its tray icon. Right-click the game's
+  executable and choose this action; open Heroic to see the sideloaded game.
+  Choose Wine/Proton in its game settings before playing. Native/AppImage and
+  Flatpak profiles are supported, but if both exist, use Heroic's own Add Game
+  dialog to choose the intended library. Flatpak must have access to the game
+  folder. The helper refuses changes while Heroic is running, skips duplicates,
+  and backs up an existing `sideload_apps/library.json` beside it before updating.
+  Heroic has no add-game URL handler, so this uses its sideload library format.
+  It does not run the executable or install Heroic.
 
 ### Screenshots and recording
 

@@ -7,6 +7,7 @@ waybar
 wofi
 mako
 libnotify
+python
 foot
 autotiling
 

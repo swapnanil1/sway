@@ -1,6 +1,7 @@
 # make check   everything that can be verified without a login session
 # (sway/scripts/admin is included through the wildcard)
-SCRIPTS := install.sh sway/session/sway-desktop $(wildcard sway/scripts/*)
+PYTHON_SCRIPTS := sway/scripts/add-to-heroic
+SCRIPTS := install.sh sway/session/sway-desktop $(filter-out $(PYTHON_SCRIPTS),$(wildcard sway/scripts/*))
 
 .PHONY: check syntax lint themes units packages dry-run
 
@@ -9,6 +10,7 @@ check: syntax lint themes units dry-run
 
 syntax:
 	@for f in $(SCRIPTS); do bash -n $$f || exit 1; done; echo "syntax    ok ($(words $(SCRIPTS)) scripts)"
+	@python3 -c 'import ast, pathlib, sys; [ast.parse(pathlib.Path(p).read_text(), filename=p) for p in sys.argv[1:]]' $(PYTHON_SCRIPTS)
 
 lint:
 	@if command -v shellcheck >/dev/null; then shellcheck -S warning $(SCRIPTS) && echo "lint      ok"; \
