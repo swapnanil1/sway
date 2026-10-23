@@ -181,6 +181,49 @@ is the whole config: edit `themes/templates/mako.conf`, not
 
 Open foot and KDE windows keep their colours; new ones use the new theme.
 
+### Wallpapers
+
+One folder per theme, named like the palette, under `~/Pictures/Wallpapers/`
+(the installer creates them). Paste images in. `scripts/wallpaper` shows a
+random one from the active theme's folder, never the same twice in a row, and
+falls back to images placed directly in `~/Pictures/Wallpapers/` when the
+theme's folder is empty. `wallpaper.timer` runs it every 15 minutes (the
+interval is in `systemd/user/wallpaper.timer`), and a theme change runs it
+too, so the wallpaper follows the theme. A sway reload keeps the current one.
+No slideshow daemon: a systemd timer and one `swaybg` per change.
+
+Wallhaven's colour filter is the quick way to fill the folders:
+`https://wallhaven.cc/search?colors=<hex>`, one colour at a time. Any hex
+works in the URL; the site's own picker offers these swatches:
+
+| | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| `660000` | `990000` | `cc0000` | `cc3333` | `ea4c88` | `993399` |
+| `663399` | `333399` | `0066cc` | `0099cc` | `66cccc` | `77cc33` |
+| `669900` | `336600` | `666600` | `999900` | `cccc33` | `ffff00` |
+| `ffcc33` | `ff9900` | `ff6600` | `cc6633` | `996633` | `663300` |
+| `000000` | `999999` | `cccccc` | `ffffff` | `424153` | |
+
+The two nearest to each palette, a starting point:
+
+| Theme | Wallhaven colours |
+| --- | --- |
+| ayu | `ff9900` orange, `000000` black |
+| catppuccin | `663399` purple, `333399` indigo |
+| dracula | `663399` purple, `ea4c88` pink |
+| everforest | `336600` forest, `669900` green |
+| gruvbox | `cc6633` rust, `ffcc33` amber |
+| kanagawa | `333399` indigo, `424153` slate |
+| material | `0099cc` blue, `66cccc` teal |
+| mono | `000000` black, `999999` grey |
+| monokai | `cccc33` yellow, `ea4c88` pink |
+| nord | `66cccc` ice, `424153` slate |
+| onedark | `0066cc` blue, `cc3333` red |
+| oxocarbon | `000000` black, `993399` magenta |
+| rosepine | `993399` iris, `0099cc` pine |
+| solarized | `0099cc` blue, `999900` olive |
+| tokyonight | `333399` indigo, `0066cc` blue |
+
 ### Game mode
 
 `Mod+Shift+G` pauses notifications, stops the idle lock, and turns off every
@@ -351,8 +394,8 @@ The login manager runs `/usr/local/bin/sway-desktop`, which loads
 qt6ct platform theme, a UTF-8 locale) and then starts sway. sway runs
 `sway/scripts/session-start` once per login: it hands the Wayland socket to
 systemd and D-Bus and starts `sway-session.target`, which owns waybar, mako,
-the polkit agent, swayidle, cliphist and autotiling, plus XDG autostart
-entries.
+the polkit agent, swayidle, cliphist and autotiling, the wallpaper timer,
+plus XDG autostart entries.
 
 ```
 systemctl --user status waybar
@@ -408,8 +451,8 @@ Breeze everywhere, dark by default.
   `~/.config/gtk-3.0/settings.ini` and gsettings, and new windows pick the
   change up.
 * Cursor: `breeze_cursors`, set for sway, GTK, Qt and XWayland alike.
-* Wallpaper: put an image at `~/.config/sway/wallpaper.png` (or `.jpg`, or
-  `~/Pictures/wallpaper.*`). Without one the background is the theme colour.
+* Wallpaper: see [Wallpapers](#wallpapers). Without any image the background
+  is the theme colour.
 
 Not installed on purpose: `kwallet` (gnome-keyring already provides the Secret
 Service that browsers and Electron use, and two providers fight over it),

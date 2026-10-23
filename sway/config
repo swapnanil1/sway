@@ -15,7 +15,7 @@ exec ~/.config/sway/scripts/session-start
 
 # Idempotent, so safe to re-run on every reload
 exec_always ~/.config/sway/scripts/display
-exec_always ~/.config/sway/scripts/wallpaper
+exec_always ~/.config/sway/scripts/wallpaper --keep
 
 # Distribution snippets (Arch ships the systemd environment import here)
 include /etc/sway/config.d/*

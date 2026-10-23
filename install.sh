@@ -303,6 +303,10 @@ else
 fi
 run xdg-user-dirs-update
 run mkdir -p "$HOME/Pictures/Screenshots" "$HOME/.local/state/pomo" "$HOME/Videos/mangohud-logs"
+# one wallpaper folder per theme, to paste images into (scripts/wallpaper)
+for palette in "$REPO"/themes/palettes/*.conf; do
+	run mkdir -p "$HOME/Pictures/Wallpapers/$(basename "$palette" .conf)"
+done
 
 if ((DRY_RUN)) || systemctl --user daemon-reload 2>/dev/null; then
 	run systemctl --user enable gnome-keyring-daemon.socket || warn "could not enable gnome-keyring-daemon.socket"
@@ -422,4 +426,4 @@ fi
 
 step "Done"
 info "Reboot (or log out), pick the 'Sway Desktop' session at the login screen and log in."
-info "Wallpaper: drop an image at ~/.config/sway/wallpaper.png (or ~/Pictures/wallpaper.*)."
+info "Wallpapers: paste images into ~/Pictures/Wallpapers/<theme>/ (one folder per theme is there)."
