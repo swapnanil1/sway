@@ -12,5 +12,9 @@ partitionmanager
 # remote shares opened in Dolphin become real paths for non-KDE apps
 kio-fuse
 
+# In-game overlay; its config is themed with the desktop (mangohud/). 32-bit
+# games also need lib32-mangohud from multilib, which is left to you.
+mangohud
+
 # Not listed on purpose: kdeconnect autostarts a 40-60 MB daemon at every
 # login. Install it by hand if you want phone integration.

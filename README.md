@@ -11,7 +11,7 @@ out of. No X server, no picom, no xrandr: sway does all of that itself.
 * **A proper password dialog** for admin tasks, like Plasma's: no `sudo -E`
 * **Left-hand key layout**: everything within reach of the modifier and W A S D
 * **15 colour themes** switched live across sway, waybar, wofi, foot, mako,
-  swaylock, fastfetch and the shell prompt
+  swaylock, fastfetch, MangoHud and the shell prompt
 * **Searchable key list** generated from the config, so it is never out of date
 * **Game mode**, a **pomodoro timer** that enforces breaks, event sounds, a
   drop-down terminal and per-purpose workspaces
@@ -78,7 +78,7 @@ units.
 | --- | --- |
 | `--dry-run` | Print what would happen, touch nothing |
 | `--yes` | Pass `--noconfirm` to pacman |
-| `--optional` | Also install `packages/optional.txt` (gammastep, CJK fonts, KCalc, Filelight, Partition Manager, kio-fuse) |
+| `--optional` | Also install `packages/optional.txt` (gammastep, CJK fonts, KCalc, Filelight, Partition Manager, kio-fuse, MangoHud) |
 | `--no-themes` | Leave GTK theming alone: no gsettings changes |
 | `--kripton` | Also clone the Kripton GTK theme and Colloid icons (not packaged for Arch) |
 | `--fish` | Make fish the login shell |
@@ -151,9 +151,11 @@ to add one.
 
 `Mod+Shift+T` opens a picker; `~/.config/sway/scripts/theme <name>` applies a
 theme directly. It recolours sway, waybar, wofi, foot, mako, swaylock,
-fastfetch and the KDE applications (through a generated KDE colour scheme that
-`kdeglobals` names). The fish prompt and syntax colours follow the terminal.
-GTK applications and non-KDE Qt applications keep Breeze-Dark.
+fastfetch, MangoHud and the KDE applications (through a generated KDE colour
+scheme that `kdeglobals` names). The fish prompt and syntax colours follow the
+terminal.
+Other Qt applications follow it too, through a generated qt6ct palette. GTK
+applications keep Breeze-Dark.
 
 | Path | Purpose |
 | --- | --- |
@@ -166,10 +168,11 @@ GTK applications and non-KDE Qt applications keep Breeze-Dark.
   config import the generated file.
 
 The generated files are git-ignored, so switching themes never changes the
-repository, and they are recreated whenever one is missing. mako, swaylock and
-wofi cannot include a second file, so for those three the template is the
-whole config: edit `themes/templates/mako.conf`, not `~/.config/mako/config`,
-and `themes/templates/wofi.css`, not `~/.config/wofi/style.css`.
+repository, and they are recreated whenever one is missing. mako, swaylock,
+wofi and MangoHud cannot include a second file, so for those four the template
+is the whole config: edit `themes/templates/mako.conf`, not
+`~/.config/mako/config`, and `themes/templates/wofi.css`, not
+`~/.config/wofi/style.css`.
 
 Open foot and KDE windows keep their colours; new ones use the new theme.
 
@@ -180,6 +183,28 @@ sway key except workspace switching and the key that leaves the mode, so key
 combinations reach the game. There is no compositor to stop: a fullscreen
 game is already scanned out directly, may tear and gets VRR whether game mode
 is on or not. It only touches the user session; nothing system-wide changes.
+
+### MangoHud
+
+The in-game overlay, installed with `--optional`. `mangohud/` is linked to
+`~/.config/MangoHud`: `presets.conf` holds the views, numbered 1 to 7 from
+least to most detail, and `MangoHud.conf` is
+written by the theme switcher from `themes/templates/mangohud.conf`, so the
+HUD uses the desktop palette. A game started after a theme change picks it
+up; a running one reloads it with MangoHud's own key, `Shift_L+F4`. Start a
+game with `mangohud %command%` in its Steam launch options, or `mangohud
+<game>` elsewhere.
+
+The HUD keys sit on the right Shift and the punctuation cluster beside it, so
+they fit a 60% keyboard and never meet sway's Mod:
+
+| Keys | Does |
+| --- | --- |
+| Shift_R + \ | HUD on or off |
+| Shift_R + ] | Cycle the view: fps (the default at start), temps, compact, full, bench, power, everything, off |
+| Shift_R + [ | Cycle the frame cap: none, 141, 72 |
+| Shift_R + ' | Move the HUD to the next corner |
+| Shift_R + ; | Write a 60 second frametime log to `~/Videos/mangohud-logs` |
 
 ### Pomodoro
 
@@ -307,6 +332,7 @@ terminals.
 | --- | --- |
 | `sway/` | sway config (`config.d/` is loaded in name order), window rules, session scripts, the session environment (`env`), launcher (`session/`) and the XWayland pin list |
 | `waybar/`, `wofi/`, `foot/`, `mako/`, `swaylock/`, `fastfetch/` | Symlinked into `~/.config` |
+| `mangohud/` | Symlinked to `~/.config/MangoHud`: the views, plus the themed `MangoHud.conf` |
 | `fish/` | Copied once into `~/.config`: fish rewrites its own files |
 | `systemd/user/` | `sway-session.target` and the daemons it starts |
 | `seeds/` | Files copied once and then left to their tool (GTK, qt6ct, kdeglobals, portals, browser flags, dolphin) |
@@ -361,9 +387,13 @@ Breeze everywhere, dark by default.
 
 * Qt and KDE apps: `qt6ct` is the platform theme (`QT_QPA_PLATFORMTHEME` in
   `sway/env`); the seeded `qt6ct.conf` selects the Breeze style, breeze-dark
-  icons and a dark palette. KDE apps additionally read `~/.config/kdeglobals`
-  for their colour scheme (seeded: BreezeDark); each one also has a Color
-  Scheme entry in its Settings menu. Change the Qt side in `qt6ct`.
+  icons and the palette the theme switcher writes
+  (`~/.config/qt6ct/colors/Sway.conf`). KDE apps additionally read
+  `~/.config/kdeglobals` for their colour scheme (seeded: Sway, the matching
+  KDE scheme); each one also has a Color Scheme entry in its Settings menu.
+  The two must agree: KDE apps take some colours from each, which is how
+  Dolphin's alternating rows once came out grey. Change the Qt side in
+  `qt6ct`.
 * GTK (Firefox, satty, Timeshift): `Breeze-Dark` from `breeze-gtk` with the
   same icons. `nwg-look` changes them; it writes
   `~/.config/gtk-3.0/settings.ini` and gsettings, and new windows pick the

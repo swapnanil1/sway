@@ -8,3 +8,5 @@ mako/config
 swaylock/config
 fastfetch/config.jsonc
 kde/Sway.colors
+qt6ct/colors/Sway.conf
+mangohud/MangoHud.conf

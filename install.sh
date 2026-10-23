@@ -208,6 +208,10 @@ done
 link autostart/nm-applet.desktop "$CONFIG/autostart/nm-applet.desktop"
 # KDE apps find the generated colour scheme here (kdeglobals names it "Sway")
 link kde/Sway.colors "$DATA/color-schemes/Sway.colors"
+# and every Qt app through qt6ct's palette (the seeded qt6ct.conf selects it)
+link qt6ct/colors/Sway.conf "$CONFIG/qt6ct/colors/Sway.conf"
+# MangoHud (optional package); its config is themed like the rest
+link mangohud "$CONFIG/MangoHud"
 for unit in "$REPO"/systemd/user/*; do
 	link "systemd/user/$(basename "$unit")" "$CONFIG/systemd/user/$(basename "$unit")"
 done
@@ -226,6 +230,8 @@ seed seeds/gtk-4.0/settings.ini               "$CONFIG/gtk-4.0/settings.ini"
 seed seeds/xdg-desktop-portal/portals.conf    "$CONFIG/xdg-desktop-portal/portals.conf"
 seed seeds/xdg-desktop-portal-wlr/config      "$CONFIG/xdg-desktop-portal-wlr/config"
 seed seeds/qt6ct/qt6ct.conf                   "$CONFIG/qt6ct/qt6ct.conf"
+# the seed cannot know the home directory; fill it in once, then qt6ct owns the file
+((DRY_RUN)) || sed -i "s|@CONFIG@|$CONFIG|" "$CONFIG/qt6ct/qt6ct.conf"
 seed seeds/kdeglobals                         "$CONFIG/kdeglobals"
 seed seeds/dolphin/dolphinrc                  "$CONFIG/dolphinrc"
 seed seeds/icons-default/index.theme          "$HOME/.icons/default/index.theme"
@@ -295,7 +301,7 @@ else
 	((DRY_RUN)) || printf '%s\n' "$bashrc_line" >>"$HOME/.bashrc"
 fi
 run xdg-user-dirs-update
-run mkdir -p "$HOME/Pictures/Screenshots" "$HOME/.local/state/pomo"
+run mkdir -p "$HOME/Pictures/Screenshots" "$HOME/.local/state/pomo" "$HOME/Videos/mangohud-logs"
 
 if ((DRY_RUN)) || systemctl --user daemon-reload 2>/dev/null; then
 	run systemctl --user enable gnome-keyring-daemon.socket || warn "could not enable gnome-keyring-daemon.socket"
