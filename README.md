@@ -140,12 +140,14 @@ appears while Caps Lock is on.
 
 ### Workspaces
 
-New windows go to a workspace by purpose: 1 web, 2 code, 5 games, 6 Steam,
-7 chat and media, 8 settings. Rules match the window's `app_id` (native
-Wayland) or `class` (XWayland) with case-insensitive patterns
-(`sway/config.d/02_rules.conf`), so native, Flatpak and renamed builds of an
-app all match. `Mod+Shift+I` shows both for the focused window when you want
-to add one.
+New windows go to a workspace by purpose: 1 web, 2 code, 5 games together
+with everything Steam, Proton or Wine spawns for them (sub-launchers,
+installers), 6 the launchers (Steam, Heroic, Epic, plus the Winetricks and
+Protontricks dialogs), 7 chat and media (with Easy Effects as the equaliser),
+8 settings. Rules match the window's `app_id` (native Wayland) or `class`
+(XWayland) with case-insensitive patterns (`sway/config.d/02_rules.conf`), so
+native, Flatpak and renamed builds of an app all match. `Mod+Shift+I` shows
+both for the focused window when you want to add one.
 
 ### Colour themes
 
