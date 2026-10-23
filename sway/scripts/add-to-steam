@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Submit a Windows executable through Steam's SteamOS shortcut handler.
+# Steam owns the library update; no restart or shortcuts.vdf edits needed.
+set -euo pipefail
+
+fail() {
+	printf 'Add to Steam: %s\n' "$1" >&2
+	notify-send -a 'Add to Steam' -i steam 'Could not add to Steam' "$1" || true
+	exit 1
+}
+
+[[ $# == 1 ]] || fail 'Select one .exe file.'
+[[ -f $1 && -r $1 ]] || fail 'The selected file is missing or unreadable.'
+[[ ${1,,} == *.exe ]] || fail 'Select a Windows .exe file.'
+command -v steam >/dev/null || fail 'Steam is not installed.'
+path=$(realpath -- "$1")
+
+# Percent-encode bytes, including slashes, spaces, quotes and UTF-8 names.
+# Pass the resulting URL as a single argument, never as shell source.
+export LC_ALL=C
+encoded=''
+for ((i = 0; i < ${#path}; i++)); do
+	char=${path:i:1}
+	case "$char" in
+		[a-zA-Z0-9.~_-]) encoded+=$char ;;
+		*) printf -v byte '%%%02X' "'$char"; encoded+=$byte ;;
+	esac
+done
+
+# Steam requires this marker before accepting a local shortcut URL.
+touch /tmp/addnonsteamgamefile || fail 'Could not prepare the Steam shortcut request.'
+steam "steam://addnonsteamgame/$encoded" || fail 'Steam could not accept the shortcut request.'

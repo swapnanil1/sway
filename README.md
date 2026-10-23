@@ -315,7 +315,7 @@ dialog whenever something asks polkit for rights. That covers three cases:
 
 ### Context menu
 
-Two entries of this setup's own in Dolphin's right-click menu, as KIO service
+Three entries of this setup's own in Dolphin's right-click menu, as KIO service
 menus: `kde/servicemenus/`, installed executable into
 `~/.local/share/kio/servicemenus`.
 
@@ -332,6 +332,15 @@ menus: `kde/servicemenus/`, installed executable into
   icon. The installer reads the command and icon from whichever Code is
   installed (Code OSS, VS Code, VSCodium) and skips the entry when there is
   none.
+
+* **Add to Steam**, on a single Windows executable, when native Steam is
+  installed. Right-click the game's `.exe` and select it to send the file to
+  Steam as a non-Steam shortcut. In Steam, open the shortcut's **Properties →
+  Compatibility**, enable **Force the use of a specific Steam Play
+  compatibility tool**, and choose Proton before playing. This adds a
+  shortcut; it does not install the game or run the executable. The helper
+  `~/.config/sway/scripts/add-to-steam /path/to/game.exe` also works from a
+  terminal. It uses Steam's shortcut handler, leaving library files to Steam.
 
 ### Screenshots and recording
 
