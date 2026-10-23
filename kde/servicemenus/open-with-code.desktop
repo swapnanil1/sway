@@ -1,0 +1,15 @@
+# Dolphin context menu: "Open with Code" on folders (and the folder background).
+# install.sh fills @CODE_EXEC@ and @CODE_ICON@ from whichever Code is installed
+# (Code OSS, VS Code, VSCodium) and leaves this out when there is none.
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=inode/directory;
+Actions=openWithCode
+X-KDE-Priority=TopLevel
+Icon=@CODE_ICON@
+
+[Desktop Action openWithCode]
+Name=Open with Code
+Icon=@CODE_ICON@
+Exec=@CODE_EXEC@ %f

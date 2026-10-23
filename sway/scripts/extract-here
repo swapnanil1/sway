@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# Extract here, from Dolphin's context menu (kde/servicemenus/extract-here.desktop)
+# or a terminal:
+#
+#   extract-here <archive>...
+#
+# One floating terminal for the whole selection. The archives are extracted
+# one by one into the folder each one is in, with bsdtar (libarchive: tar with
+# any compression, zip, 7z, rar, cpio), exactly as they are: no subfolder, no
+# Ark. Files that already exist are listed first and you choose to overwrite
+# them, keep them, skip the archive or quit. A summary stays on screen until a
+# key is pressed.
+
+if [[ $1 == --run ]]; then
+	shift
+elif [[ ! -t 1 ]]; then
+	# started from Dolphin: open the window, then run in it
+	[[ $# -gt 0 ]] || exit 2
+	exec foot --app-id foot-float --title "Extract here" "$0" --run "$@"
+fi
+[[ $# -gt 0 ]] || { echo "usage: ${0##*/} <archive>..." >&2; exit 2; }
+
+bold=$(tput bold) dim=$(tput dim) red=$(tput setaf 1) green=$(tput setaf 2) yellow=$(tput setaf 3) reset=$(tput sgr0)
+cols=$(tput cols)
+human() { numfmt --to=iec-i --suffix=B "$1"; }
+key() { local k; { IFS= read -rsn1 k </dev/tty; } 2>/dev/null || IFS= read -rsn1 k; printf '%s' "$k"; }
+
+total=$# n=0 extracted=0 skipped=0 failed=0
+printf '%sExtract here%s  %d archive(s)\n' "$bold" "$reset" "$total"
+
+for archive in "$@"; do
+	n=$((n + 1))
+	path=$(realpath -- "$archive" 2>/dev/null || printf '%s' "$archive")
+	dest=${path%/*}
+	printf '\n%s[%d/%d] %s%s\n%s  into %s%s\n' "$bold" "$n" "$total" "${path##*/}" "$reset" "$dim" "$dest" "$reset"
+
+	# What is inside: names for the conflict check, sizes for the summary
+	if ! mapfile -t entries < <(bsdtar -tf "$path" 2>/dev/null) || ((${#entries[@]} == 0)); then
+		err=$(bsdtar -tf "$path" 2>&1 >/dev/null | head -n1)
+		printf '  %s✗ cannot read it%s  %s\n' "$red" "$reset" "${err:-empty or not an archive}"
+		failed=$((failed + 1))
+		continue
+	fi
+	bytes=$(bsdtar -tvf "$path" 2>/dev/null | awk '{ s += $5 } END { print s + 0 }')
+	printf '  %d entries, %s\n' "${#entries[@]}" "$(human "$bytes")"
+
+	conflicts=()
+	for e in "${entries[@]}"; do
+		e=${e%/}
+		[[ -e $dest/$e && ! -d $dest/$e ]] && conflicts+=("$e")
+	done
+
+	keep=()
+	if ((${#conflicts[@]})); then
+		printf '  %s%d already exist here:%s\n' "$yellow" "${#conflicts[@]}" "$reset"
+		printf '    %s\n' "${conflicts[@]:0:12}"
+		((${#conflicts[@]} > 12)) && printf '    %s… and %d more%s\n' "$dim" $((${#conflicts[@]} - 12)) "$reset"
+		printf '  %s[o]%s overwrite   %s[k]%s keep existing   %s[s]%s skip this archive   %s[q]%s quit  ' \
+			"$bold" "$reset" "$bold" "$reset" "$bold" "$reset" "$bold" "$reset"
+		answer=""
+		while [[ -z $answer ]]; do
+			case "$(key)" in
+				o | O) answer=overwrite ;;
+				k | K) answer=keep; keep=(-k) ;;
+				s | S) answer=skip ;;
+				q | Q) answer=quit ;;
+			esac
+		done
+		printf '%s\n' "$answer"
+		[[ $answer == skip ]] && { skipped=$((skipped + 1)); continue; }
+		[[ $answer == quit ]] && { skipped=$((total - n + 1)); break; }
+	fi
+
+	# Extract, one progress line. bsdtar -v names each entry on stderr as
+	# "x name"; with -k it passes over an existing file silently, so the files
+	# kept are exactly the conflicts listed above.
+	start=$EPOCHREALTIME
+	done_n=0 kept=0 status=0 errors=()
+	((${#keep[@]})) && kept=${#conflicts[@]}
+	while IFS= read -r line; do
+		case "$line" in
+			__status=*) status=${line#__status=} ;;
+			"x "*)
+				done_n=$((done_n + 1))
+				name=${line#x }
+				printf '\r\033[K  %s%d/%d%s  %s' "$dim" "$done_n" "${#entries[@]}" "$reset" "${name:0:cols-20}"
+				;;
+			*) errors+=("$line") ;;
+		esac
+	done < <(bsdtar -x "${keep[@]}" -vf "$path" -C "$dest" 2>&1; echo "__status=$?")
+	printf '\r\033[K'
+	elapsed=$(awk -v a="$start" -v b="$EPOCHREALTIME" 'BEGIN { printf "%.1f", b - a }')
+
+	if ((status == 0)); then
+		printf '  %s✓ %d extracted%s' "$green" $((done_n - kept)) "$reset"
+		((kept)) && printf ', %d kept' "$kept"
+		printf '  %s%s, %ss%s\n' "$dim" "$(human "$bytes")" "$elapsed" "$reset"
+		extracted=$((extracted + 1))
+	else
+		printf '  %s✗ failed%s (bsdtar exit %d)\n' "$red" "$reset" "$status"
+		printf '    %s\n' "${errors[@]:0:8}"
+		failed=$((failed + 1))
+	fi
+done
+
+printf '\n%s%d of %d extracted%s' "$bold" "$extracted" "$total" "$reset"
+((skipped)) && printf ', %d skipped' "$skipped"
+((failed)) && printf ', %s%d failed%s' "$red" "$failed" "$reset"
+printf '\n%sPress any key to close.%s' "$dim" "$reset"
+key >/dev/null
+echo

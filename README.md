@@ -313,6 +313,26 @@ dialog whenever something asks polkit for rights. That covers three cases:
 * Anything else that must run as root: `~/.config/sway/scripts/admin <command>`
   does what those launchers do, for any program.
 
+### Context menu
+
+Two entries of this setup's own in Dolphin's right-click menu, as KIO service
+menus: `kde/servicemenus/`, installed executable into
+`~/.local/share/kio/servicemenus`.
+
+* **Extract here**, on anything bsdtar reads: tar with any compression, zip,
+  7z, rar, cpio. It opens one floating terminal for the whole selection and
+  extracts the archives one by one into the folder each is in, exactly as
+  they are: no subfolder, no Ark. Files that already exist are listed first,
+  and you pick overwrite, keep, skip the archive or quit. A summary stays on
+  screen until a key is pressed. `~/.config/sway/scripts/extract-here` does
+  the same from a terminal. Ark's own "Extract" submenu is switched off in
+  the seeded `kservicemenurc`; Dolphin's context menu settings turn it back
+  on.
+* **Open with Code**, on folders and the folder background, with Code's own
+  icon. The installer reads the command and icon from whichever Code is
+  installed (Code OSS, VS Code, VSCodium) and skips the entry when there is
+  none.
+
 ### Screenshots and recording
 
 `grim` captures, `slurp` selects the area, and the image opens in `satty` for
@@ -381,6 +401,7 @@ terminals.
 | `sway/` | sway config (`config.d/` is loaded in name order), window rules, session scripts, the session environment (`env`), launcher (`session/`) and the XWayland pin list |
 | `waybar/`, `wofi/`, `foot/`, `mako/`, `swaylock/`, `fastfetch/` | Symlinked into `~/.config` |
 | `mangohud/` | Symlinked to `~/.config/MangoHud`: the views, plus the themed `MangoHud.conf` |
+| `kde/` | The generated KDE colour scheme and Dolphin's context menu entries (`servicemenus/`) |
 | `fish/` | Copied once into `~/.config`: fish rewrites its own files |
 | `systemd/user/` | `sway-session.target` and the daemons it starts |
 | `seeds/` | Files copied once and then left to their tool (GTK, qt6ct, kdeglobals, portals, browser flags, dolphin) |

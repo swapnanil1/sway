@@ -1,0 +1,5 @@
+# Context menu plugins Dolphin should not show (Dolphin > Settings > Context
+# Menu edits this). Ark's "Extract" submenu is off: this setup has its own
+# "Extract here" (kde/servicemenus), which extracts bare, with no subfolder.
+[Show]
+extractfileitemaction=false

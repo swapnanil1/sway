@@ -138,6 +138,7 @@ doctor() {
 	check "KDE application cache built"           sh -c "ls \"\${XDG_CACHE_HOME:-$HOME/.cache}\"/ksycoca6_* >/dev/null 2>&1"
 	check "event sound theme installed"           test -d /usr/share/sounds/freedesktop/stereo
 	check "power profiles (bar toggle)"           sh -c "powerprofilesctl list 2>/dev/null | grep -q performance"
+	check "Dolphin context menu entries"          test -x "$DATA/kio/servicemenus/extract-here.desktop"
 	if ((fails)); then
 		warn "$fails check(s) failed. Audio and DDC checks need a logged-in session; re-run './install.sh --doctor' after the first login."
 	else
@@ -281,6 +282,36 @@ while read -r app; do
 	info "pin     $app -> XWayland"
 	((DRY_RUN)) || { mkdir -p "$(dirname "$dst")"; sed "s|^Exec=|Exec=$HOME/.config/sway/scripts/x11 |" "$src" >"$dst"; }
 done <"$REPO/sway/x11-apps.txt"
+
+step "KDE context menu"
+# kde/servicemenus/*.desktop: this setup's own entries in Dolphin's right-click
+# menu (archive extraction, editor, game launchers and media conversion).
+# KIO reads them, executable, from
+# ~/.local/share/kio/servicemenus. @HOME@ is filled in because Exec lines
+# expand neither ~ nor $HOME; the Code entry takes its command and icon from
+# whichever Code is installed and is left out when there is none.
+code_desktop=""
+for c in code-oss code codium vscodium visual-studio-code; do
+	[[ -f /usr/share/applications/$c.desktop ]] && { code_desktop=/usr/share/applications/$c.desktop; break; }
+done
+for src in "$REPO"/kde/servicemenus/*.desktop; do
+	name=$(basename "$src"); dst="$DATA/kio/servicemenus/$name"
+	code_exec=code code_icon=code
+	if [[ $name == open-with-code.desktop ]]; then
+		[[ -n $code_desktop ]] || { info "skip    $name (no Code installed)"; continue; }
+		code_exec=$(sed -n 's/^Exec=\([^ ]*\).*/\1/p' "$code_desktop" | head -n1)
+		code_icon=$(sed -n 's/^Icon=//p' "$code_desktop" | head -n1)
+	fi
+	content=$(sed -e "s|@HOME@|$HOME|g" -e "s|@CODE_EXEC@|$code_exec|g" -e "s|@CODE_ICON@|$code_icon|g" "$src")
+	if [[ -x $dst ]] && [[ "$(cat "$dst")" == "$content" ]]; then
+		info "ok      $dst"
+		continue
+	fi
+	info "install $dst"
+	((DRY_RUN)) || { mkdir -p "$(dirname "$dst")"; printf '%s\n' "$content" >"$dst"; chmod 755 "$dst"; }
+done
+# Ark's "Extract" submenu off: the entry above replaces it
+seed seeds/kservicemenurc "$CONFIG/kservicemenurc"
 
 step "KDE application cache"
 # Dolphin's Open With list and the context menu plugins (Ark's extract entries)
