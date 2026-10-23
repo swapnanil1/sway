@@ -315,7 +315,7 @@ dialog whenever something asks polkit for rights. That covers three cases:
 
 ### Context menu
 
-Four entries of this setup's own in Dolphin's right-click menu, as KIO service
+Five entries of this setup's own in Dolphin's right-click menu, as KIO service
 menus: `kde/servicemenus/`, installed executable into
 `~/.local/share/kio/servicemenus`.
 
@@ -352,6 +352,24 @@ menus: `kde/servicemenus/`, installed executable into
   and backs up an existing `sideload_apps/library.json` beside it before updating.
   Heroic has no add-game URL handler, so this uses its sideload library format.
   It does not run the executable or install Heroic.
+
+* **Convert to**, directly in Dolphin's right-click menu. Audio files offer
+  MP3, M4A (AAC), Ogg (Vorbis), Opus, FLAC and WAV; video files also offer
+  MP4 (H.264), MKV (H.264) and WebM (VP9). Select a target and conversion starts
+  in a floating terminal with progress. The menus filter by MIME type, not
+  individual codecs; FFprobe checks for the required stream before conversion.
+  Audio targets extract sound from videos that have an audio track.
+  MP4/MKV try GPU encoding through VA-API, with automatic CPU fallback if
+  unavailable or unsuccessful. Decoding and filtering still run on the CPU;
+  WebM and audio conversion use the CPU. Hardware and software presets can
+  produce different quality and file sizes.
+  Outputs go beside the originals as `name.converted.ext`, with numbers added
+  when needed. Originals and existing files are never overwritten. Ctrl+C
+  cancels the batch and removes partial output. Video presets keep the first
+  video and audio tracks without subtitles; audio presets keep the first audio
+  track. Lossy conversion can reduce quality; FLAC/WAV cannot restore lost quality.
+  CLI: `~/.config/sway/scripts/convert-media --to mp3 -- file.mkv`.
+  Only ordinary KDE service menus and the FFmpeg shell helper are used.
 
 ### Screenshots and recording
 
