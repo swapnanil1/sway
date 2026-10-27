@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# User-level game mode, nothing system-wide and nothing resident:
+#   - notifications paused (mako do-not-disturb)
+#   - idle lock off (a controller does not count as input)
+#   - sway "game" mode: no sway binding fires except the workspace keys and
+#     the one that leaves it, so key combinations reach the game
+# There is no compositor to stop: a fullscreen game is already scanned out
+# directly, may tear and gets VRR (02_rules.conf, 06_hardware.conf).
+#
+#   gamemode on | off
+
+MARK="${XDG_RUNTIME_DIR:-$HOME/.cache}/gamemode"
+
+case "$1" in
+	on)
+		~/.config/sway/scripts/sound gamemode-on
+		touch "$MARK"
+		notify-send -a sway-quiet -t 4000 "Game mode on" "Only Mod+1..0 (workspaces) and Mod+Shift+G (leave) still work."
+		sleep 0.3
+		makoctl mode -a do-not-disturb >/dev/null 2>&1
+		systemctl --user stop sway-v3-swayidle.service
+		swaymsg -q mode game
+		;;
+	off)
+		swaymsg -q mode default
+		systemctl --user start sway-v3-swayidle.service
+		makoctl mode -r do-not-disturb >/dev/null 2>&1
+		rm -f "$MARK"
+		~/.config/sway/scripts/sound gamemode-off
+		notify-send -a sway-quiet -t 2500 "Game mode off"
+		;;
+	*) echo "usage: ${0##*/} on|off" >&2; exit 2 ;;
+esac

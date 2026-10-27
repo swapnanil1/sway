@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Sway (v3)
+Comment=Optional lightweight tiling session alongside KDE Plasma
+Exec=/usr/local/bin/sway-v3
+TryExec=/usr/local/bin/sway-v3
+Type=Application
+DesktopNames=sway

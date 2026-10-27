@@ -1,0 +1,199 @@
+// waybar. Colours come from colors.css, written by ~/.config/sway/scripts/theme.
+// Same geometry as the polybar it replaces on a 1920x1080 top bar: 38 px of
+// screen (26 px pills with 6 px above and below), 11 pt bold, a dot between
+// pills. Layout:
+//   logo . [workspaces mode] . [network] . [pomodoro]   [clock]
+//   [cpu profile temps] . [memory] . [brightness volume mic] (capture, caps) tray
+{
+	"layer": "top",
+	"position": "top",
+	"height": 38,
+	"spacing": 0,
+	"margin": "0",
+
+	"modules-left": ["custom/menu", "custom/dot#a", "sway/workspaces", "sway/mode",
+	                 "custom/dot#b", "network", "custom/dot#c", "custom/pomodoro"],
+	"modules-center": ["clock"],
+	"modules-right": ["cpu", "power-profiles-daemon", "custom/cpu-temp", "custom/gpu-temp", "custom/dot#d", "memory",
+	                  "custom/dot#e", "custom/brightness", "pulseaudio", "custom/mic",
+	                  "privacy", "custom/webcam", "tray"],
+
+	// the dot between pills (polybar's "dot" module); one entry per place it appears
+	"custom/dot#a": { "format": "•", "tooltip": false },
+	"custom/dot#b": { "format": "•", "tooltip": false },
+	"custom/dot#c": { "format": "•", "tooltip": false },
+	"custom/dot#d": { "format": "•", "tooltip": false },
+	"custom/dot#e": { "format": "•", "tooltip": false },
+
+	// Arch logo: left click launcher, right click session menu
+	"custom/menu": {
+		"format": "󰣇",
+		"tooltip": false,
+		"on-click": "wofi --show drun",
+		"on-click-right": "~/.config/sway/scripts/powermenu"
+	},
+
+	"sway/workspaces": {
+		"disable-scroll": false,
+		"all-outputs": false,
+		"format": "{name} {icon}",
+		"format-icons": {
+			"1": "󰖟", "2": "󰅴", "3": "󰆍", "4": "󰉋", "5": "󰊗",
+			"6": "󰓓", "7": "󰊌", "8": "󰒓", "default": "󰧟"
+		}
+	},
+
+	// resize / adjust: shown while a mode is active
+	"sway/mode": {
+		"format": "{}",
+		"tooltip": false
+	},
+
+	// no interface is named: the first one with a default route is shown
+	"network": {
+		"interval": 3,
+		"format": "󰁆 {bandwidthDownBytes}  󰁞 {bandwidthUpBytes}",
+		"format-disconnected": "󰌙 not connected",
+		"tooltip-format": "{ifname}  {ipaddr}/{cidr}",
+		"tooltip-format-wifi": "{essid} ({signalStrength}%)  {ipaddr}/{cidr}",
+		"on-click": "kcmshell6 kcm_networkmanagement"
+	},
+
+	// left click: start, then pause/resume. middle click: break now. right click:
+	// stop. scroll: the last 7 days. The label ends with today's finished blocks.
+	"custom/pomodoro": {
+		"exec": "~/.config/sway/scripts/pomo",
+		"return-type": "json",
+		"format": "{}",
+		"on-click": "~/.config/sway/scripts/pomo toggle",
+		"on-click-middle": "~/.config/sway/scripts/pomo break",
+		"on-click-right": "~/.config/sway/scripts/pomo stop",
+		"on-scroll-up": "~/.config/sway/scripts/pomo stats",
+		"on-scroll-down": "~/.config/sway/scripts/pomo stats"
+	},
+
+	"clock": {
+		"interval": 5,
+		"format": "󰅐 {:%a %d  %I:%M %p}",
+		"format-alt": "󰅐 {:%A, %d %B %Y  %I:%M:%S %p}",
+		"tooltip-format": "<tt><small>{calendar}</small></tt>",
+		"calendar": {
+			"mode": "month",
+			"weeks-pos": "",
+			"on-scroll": 1,
+			"format": {
+				"today": "<b><u>{}</u></b>"
+			}
+		},
+		"actions": {
+			"on-click-right": "mode",
+			"on-scroll-up": "shift_up",
+			"on-scroll-down": "shift_down"
+		}
+	},
+
+	"cpu": {
+		"interval": 2,
+		"format": "󰘚 {usage:2}%",
+		"tooltip": false,
+		"on-click": "foot --app-id foot-float htop"
+	},
+
+	// CPU power profile (power-profiles-daemon over D-Bus, no polling): click
+	// cycles performance / balanced / power-saver. Hidden when the daemon is
+	// not running.
+	"power-profiles-daemon": {
+		"format": "{icon}",
+		"format-icons": {
+			"default": "󰾅",
+			"performance": "󰓅",
+			"balanced": "󰾅",
+			"power-saver": "󰾆"
+		},
+		"tooltip-format": "Power profile: {profile}\nDriver: {driver}"
+	},
+
+	"custom/cpu-temp": {
+		"exec": "~/.config/sway/scripts/temp cpu",
+		"return-type": "json",
+		"interval": 5,
+		"format": "󰔏 {}",
+		"on-click": "foot --app-id foot-float htop"
+	},
+
+	"custom/gpu-temp": {
+		"exec": "~/.config/sway/scripts/temp gpu",
+		"return-type": "json",
+		"interval": 5,
+		"format": "󰢮 {}",
+		"on-click": "foot --app-id foot-float htop"
+	},
+
+	"memory": {
+		"interval": 3,
+		"format": "󰍛 {used:0.1f}G",
+		"states": { "warning": 85 },
+		"tooltip-format": "{used:0.1f}G of {total:0.1f}G",
+		"on-click": "foot --app-id foot-float htop"
+	},
+
+	// scripts/brightness sends RTMIN+8 after every change, so no polling
+	"custom/brightness": {
+		"exec": "~/.config/sway/scripts/brightness get",
+		"interval": "once",
+		"signal": 8,
+		"format": "󰃟 {}",
+		"tooltip": false,
+		"on-click": "~/.config/sway/scripts/brightness menu",
+		"on-click-right": "~/.config/sway/scripts/brightness toggle",
+		"on-scroll-up": "~/.config/sway/scripts/brightness up",
+		"on-scroll-down": "~/.config/sway/scripts/brightness down"
+	},
+
+	// left click mutes, scroll changes volume, right click opens the mixer
+	"pulseaudio": {
+		"format": "{icon} {volume}%",
+		"format-muted": "󰖁 Muted",
+		"format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+		"scroll-step": 5,
+		"tooltip-format": "{desc}",
+		"on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+		"on-click-right": "kcmshell6 kcm_pulseaudio"
+	},
+
+	// left click mutes/unmutes the mic, right click opens the input devices tab
+	"custom/mic": {
+		"exec": "~/.config/sway/scripts/mic",
+		"return-type": "json",
+		"format": "{}",
+		"on-click": "~/.config/sway/scripts/mic toggle",
+		"on-click-right": "kcmshell6 kcm_pulseaudio"
+	},
+
+	// shown only while something captures the screen (portal: OBS, browsers,
+	// Discord) or the microphone, straight from PipeWire; no process behind it
+	"privacy": {
+		"icon-spacing": 4,
+		"icon-size": 16,
+		"transition-duration": 250,
+		"modules": [
+			{ "type": "screenshare", "tooltip": true, "tooltip-icon-size": 24 },
+			{ "type": "audio-in", "tooltip": true, "tooltip-icon-size": 24 }
+		]
+	},
+
+	// Cameras are opened through V4L2, below PipeWire, so the only honest
+	// signal is the kernel driver's use count: non-zero while any process,
+	// of any kind, holds a camera open. One tiny read every few seconds.
+	"custom/webcam": {
+		"exec": "~/.config/sway/scripts/webcam",
+		"return-type": "json",
+		"interval": 5,
+		"format": "{}"
+	},
+
+	"tray": {
+		"icon-size": 18,
+		"spacing": 8
+	}
+}

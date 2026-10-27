@@ -1,0 +1,10 @@
+# Optional helpers for inherited media/metadata/brightness workflows.
+ddcutil
+lm_sensors
+ffmpeg
+mat2
+7zip
+unzip
+zip
+# For the inherited admin helper with XWayland tools.
+xorg-xhost

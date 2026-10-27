@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Show the focused window's app_id (Wayland) or class/instance (XWayland), for
+# writing rules in 02_rules.conf, and whether it runs natively or on XWayland.
+info=$(swaymsg -t get_tree | jq -r '
+	.. | select(.focused? == true) |
+	"app_id: \(.app_id // "-")\nclass: \(.window_properties.class // "-")\ninstance: \(.window_properties.instance // "-")\ntitle: \(.name // "-")\nrunning on: \(if .shell == "xwayland" then "XWayland" else "Wayland" end)"
+')
+info=${info//&/&amp;}; info=${info//</&lt;}; info=${info//>/&gt;}
+notify-send -- "Window" "$info"

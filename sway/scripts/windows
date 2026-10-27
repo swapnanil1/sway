@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Window switcher: every open window in wofi, Enter focuses it (Mod+Tab).
+
+list=$(swaymsg -t get_tree | jq -r '
+	.. | select(.pid? and .name?) |
+	"\(.id)\t\(.app_id // .window_properties.class // "?")  │  \(.name)"
+')
+[[ -n $list ]] || exit 0
+
+choice=$(cut -f2- <<<"$list" | wofi --dmenu -i -p "Windows" --width 900) || exit 0
+id=$(awk -F'\t' -v c="$choice" '$2 == c { print $1; exit }' <<<"$list")
+[[ -n $id ]] && swaymsg -q "[con_id=$id] focus"

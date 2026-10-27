@@ -1,0 +1,11 @@
+# Only sourced by the Sway v3 launcher. Never put this in /etc/environment.
+export XDG_CURRENT_DESKTOP=sway
+export XDG_SESSION_DESKTOP=sway
+export XDG_SESSION_TYPE=wayland
+# Reuse Plasma integration and its existing application theme, not qt6ct.
+export QT_QPA_PLATFORMTHEME=kde
+export QT_QPA_PLATFORM="wayland;xcb"
+export XDG_MENU_PREFIX=plasma-
+export MOZ_ENABLE_WAYLAND=1
+export _JAVA_AWT_WM_NONREPARENTING=1
+# Accessibility and browser password-store choices are left to the user.

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Every binding in wofi, read from the live config so it can never drift from
+# what is actually bound. The text shown is the "#:" comment above each
+# bindsym. Enter runs the selected binding (Mod+Shift+Space).
+
+# Two passes over the same config: first what this setup adds (anything that
+# runs a program, or enters one of its modes), then sway's window management.
+list() {   # list custom|builtin  ->  "key  description<TAB>command"
+	cat ~/.config/sway/config ~/.config/sway/config.d/*.conf | awk -v want="$1" '
+	/^##-- /        { next }
+	/^mode "/       { mode = $2; gsub(/"/, "", mode); next }
+	/^}/            { mode = ""; next }
+	/^[ \t]*#: /    { desc = $0; sub(/^[ \t]*#: */, "", desc); next }
+	$1 == "bindsym" {
+		key = $2; cmd = $0
+		if (key ~ /^--/) { key = $3 }                      # bindsym --locked <key>
+		sub(/^[ \t]*bindsym[ \t]+(--[a-z-]+[ \t]+)*[^ \t]+[ \t]+/, "", cmd)
+		kind = (cmd ~ /^exec / || cmd ~ /"adjust"/ || mode == "adjust") ? "custom" : "builtin"
+		text = (desc != "") ? desc : cmd; desc = ""
+		if (kind != want) next
+		gsub(/\$mod/, "Mod", key); gsub(/Mod4/, "Mod", key); gsub(/Mod1/, "Alt", key)
+		if (mode != "") key = mode ": " key
+		line = sprintf("%-22s %s\t%s", key, text, cmd)
+		if (mode != "") held[++n] = line; else print line     # everyday keys before mode-only ones
+	}
+	END { for (i = 1; i <= n; i++) print held[i] }'
+}
+
+lines=$(
+	printf '%s\t\n' "Mod = key under your left thumb. Enter runs the line." "── this setup ──────────────────────────"
+	list custom
+	printf '%s\t\n' "── window management ───────────────────"
+	list builtin
+)
+
+choice=$(cut -f1 <<<"$lines" | wofi --dmenu -i -p "Keys" --width 1000 --lines 24) || exit 0
+cmd=$(awk -F'\t' -v c="$choice" '$1 == c { print $2; exit }' <<<"$lines")
+[[ -n $cmd ]] && swaymsg -q "$cmd"

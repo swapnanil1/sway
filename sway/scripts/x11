@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Run a program on XWayland even though it could try Wayland.
+#
+#   x11 <command> [args...]
+#
+# For the few apps whose Wayland path misbehaves (missing popups, wrong
+# scaling, a toolkit that half-supports it): every toolkit is told to use X11
+# for this one process, nothing else changes. sway/x11-apps.txt lists .desktop
+# ids that install.sh wraps with this automatically.
+[[ $# -gt 0 ]] || { echo "usage: ${0##*/} <command> [args...]" >&2; exit 2; }
+exec env \
+	QT_QPA_PLATFORM=xcb \
+	GDK_BACKEND=x11 \
+	SDL_VIDEODRIVER=x11 \
+	ELECTRON_OZONE_PLATFORM_HINT=x11 \
+	MOZ_ENABLE_WAYLAND=0 \
+	"$@"

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Wallpaper for the current theme. Dead simple:
+#
+#   ~/Pictures/Wallpapers/<theme>/   images for that theme (folder = palette name)
+#   ~/Pictures/Wallpapers/           images for every theme, used when the
+#                                    theme's own folder is empty
+#
+# A random image is shown, never the same one twice in a row. sway-v3-wallpaper.timer
+# (systemd/user/) runs this again on an interval, and a theme change runs it
+# too (themes/targets.conf), so the wallpaper follows the theme. Without any
+# image the theme's background colour is painted. sway draws it through
+# swaybg; nothing else runs.
+#
+#   wallpaper          next random image
+#   wallpaper --keep   show the current one again (sway reload)
+#   wallpaper <file>   this image, until the next change
+
+DIR=~/Pictures/Wallpapers
+CURRENT="${XDG_RUNTIME_DIR:-$HOME/.cache}/wallpaper"
+[[ -f ~/.config/sway/theme.env ]] && . ~/.config/sway/theme.env
+
+show() {
+	printf '%s\n' "$1" >"$CURRENT"
+	exec swaymsg -q output '*' bg "$1" fill
+}
+images() { find -L "$1" -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) 2>/dev/null; }
+
+[[ -n $1 && $1 != --keep && -f $1 ]] && show "$(realpath -- "$1")"
+
+list=$(images "$DIR/${THEME:-none}")
+[[ -n $list ]] || list=$(images "$DIR")
+if [[ -n $list ]]; then
+	last=$(cat "$CURRENT" 2>/dev/null)
+	if [[ $1 == --keep && -n $last ]] && grep -qxF -- "$last" <<<"$list"; then
+		show "$last"
+	fi
+	next=$(grep -vxF -- "$last" <<<"$list" | shuf -n 1)
+	show "${next:-$last}"
+fi
+rm -f "$CURRENT"
+exec swaymsg -q output '*' bg "${BG:-#1e222a}" solid_color

@@ -1,0 +1,20 @@
+# sway config. Everything else lives in config.d/, loaded in name order:
+#   00_colors (generated)  01_theme  02_rules  03_apps  04_wm  05_workspaces  06_hardware
+
+# Mod is the physical Super key, consistent with Plasma.
+set $mod Mod4
+include ~/.config/sway/config.d/*.conf
+
+##-- Startup -------------------------------
+
+# Hands the Wayland socket to systemd and D-Bus, then starts sway-v3-session.target,
+# which owns only the Sway companion daemons. Runs once per login, not on reload.
+exec ~/.config/sway/scripts/session-start
+
+# Idempotent, so safe to re-run on every reload
+# Optional maximum-refresh selection: ~/.config/sway/scripts/display
+exec_always ~/.config/sway/scripts/wallpaper --keep
+
+# Environment is imported by session-start; do not run the distribution's
+# duplicate import snippets after it. Local additions are preserved separately.
+include ~/.config/sway-v3-local.conf

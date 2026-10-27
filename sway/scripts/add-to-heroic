@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Add an EXE to Heroic's sideload library while the launcher is closed.
+
+Schema: HeroicGamesLauncher/src/backend/storeManagers/sideload/library.ts
+and electronStores.ts. Heroic has no add-game protocol endpoint.
+"""
+import fcntl
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import uuid
+
+
+def notify(message, error=False):
+    print(message, file=sys.stderr if error else sys.stdout)
+    if shutil.which('notify-send'):
+        subprocess.run(['notify-send', '-a', 'Add to Heroic',
+                        'Could not add to Heroic' if error else 'Add to Heroic',
+                        message], check=False)
+
+
+def require_closed():
+    for proc in Path('/proc').glob('[0-9]*'):
+        try:
+            if int(proc.name) == os.getpid() or proc.stat().st_uid != os.getuid():
+                continue
+            args = (proc / 'cmdline').read_bytes().split(b'\0')
+        except (OSError, ProcessLookupError):
+            continue
+        # Native Electron, Flatpak and AppImage processes, including the tray.
+        if any(Path(os.fsdecode(arg)).name.lower().startswith('heroic')
+               or arg == b'com.heroicgameslauncher.hgl' for arg in args[:3] if arg):
+            raise ValueError('Quit Heroic completely (including its tray icon), then try again.')
+
+
+def config_directory():
+    native = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config'))) / 'heroic'
+    flatpak = Path.home() / '.var/app/com.heroicgameslauncher.hgl/config/heroic'
+    candidates = [p for p in (native, flatpak) if (p / 'config.json').is_file()]
+    if not candidates:
+        raise ValueError('Install and open Heroic once, then quit it before adding a game.')
+    if len(candidates) != 1:
+        raise ValueError('Both native and Flatpak Heroic profiles exist. Use Add Game inside the intended Heroic installation.')
+    return candidates[0]
+
+
+def add_game(config, executable):
+    directory = config / 'sideload_apps'
+    directory.mkdir(exist_ok=True)
+    library = directory / 'library.json'
+    # Serialize our own menu invocations; Heroic itself must stay closed.
+    with (directory / '.add-to-heroic.lock').open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        require_closed()
+        original = library.read_bytes() if library.exists() else None
+        data = json.loads(original) if original is not None else {'games': []}
+        if not isinstance(data, dict) or not isinstance(data.get('games'), list):
+            raise ValueError('Unrecognized Heroic library format; no changes made.')
+        games = data['games']
+        for game in games:
+            if not isinstance(game, dict) or not isinstance(game.get('install'), dict):
+                raise ValueError('Unrecognized Heroic game entry; no changes made.')
+            existing = game['install'].get('executable')
+            if existing and Path(existing).resolve() == executable:
+                return f'{executable.stem} is already in Heroic.'
+        games.append({
+            'runner': 'sideload', 'app_name': uuid.uuid4().hex,
+            'title': executable.stem,
+            'install': {'executable': str(executable), 'platform': 'Windows', 'is_dlc': False},
+            'folder_name': str(executable.parent), 'art_cover': '', 'art_square': '',
+            'is_installed': True, 'canRunOffline': True
+        })
+        # Keep a unique backup and replace atomically, preserving other entries.
+        with tempfile.NamedTemporaryFile(mode='w', dir=directory, delete=False) as out:
+            temp = Path(out.name)
+            try:
+                json.dump(data, out, indent=2, ensure_ascii=False)
+                out.write('\n')
+                out.flush()
+                os.fsync(out.fileno())
+                require_closed()
+                if original is not None:
+                    backup = directory / f'library.json.bak-{uuid.uuid4().hex}'
+                    shutil.copy2(library, backup)
+                os.replace(temp, library)
+            finally:
+                temp.unlink(missing_ok=True)
+    return f'Added {executable.stem}. Open Heroic and choose Wine/Proton in the game settings before playing.'
+
+
+def main():
+    try:
+        if len(sys.argv) != 2:
+            raise ValueError('Select one .exe file.')
+        executable = Path(sys.argv[1]).resolve()
+        if executable.suffix.lower() != '.exe' or not executable.is_file() or not os.access(executable, os.R_OK):
+            raise ValueError('Select a readable Windows .exe file.')
+        require_closed()
+        notify(add_game(config_directory(), executable))
+    except (OSError, ValueError, TypeError) as error:
+        notify(str(error), error=True)
+        return 1
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -1,0 +1,8 @@
+# xdg-desktop-portal-wlr: screen sharing for browsers, Discord, OBS and
+# anything else that asks the portal. wlroots shares outputs and regions, not
+# single windows, so an app's "window" picker stays empty: pick a screen.
+[screencast]
+# the picker: slurp, click an output or drag a region
+chooser_type=simple
+chooser_cmd=slurp -f %o -or
+max_fps=60

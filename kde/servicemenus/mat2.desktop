@@ -1,0 +1,21 @@
+# Override mat2's packaged menu with this setup's copy-preserving action.
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/octet-stream;
+Actions=checkMetadata;removeMetadata;
+X-KDE-Submenu=Metadata
+X-KDE-Priority=TopLevel
+X-KDE-Protocols=file
+TryExec=mat2
+Icon=mat2
+
+[Desktop Action checkMetadata]
+Name=Check metadata
+Icon=dialog-information
+Exec=foot --app-id foot-float --title "Check metadata" @HOME@/.config/sway/scripts/remove-metadata --run --check -- %F
+
+[Desktop Action removeMetadata]
+Name=Remove metadata (cleaned copy)
+Icon=mat2
+Exec=foot --app-id foot-float --title "Remove metadata" @HOME@/.config/sway/scripts/remove-metadata --run -- %F

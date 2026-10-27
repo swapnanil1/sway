@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Login-manager/TTY entry for the optional Sway session; owns cleanup on normal exit/crash.
+set -euo pipefail
+if [[ -n ${SWAYSOCK:-} ]] || pgrep -u "$(id -u)" -x 'plasmashell|kwin_wayland|kwin_x11' >/dev/null; then
+    echo 'Log out of the existing desktop before starting Sway v3.' >&2
+    exit 1
+fi
+config="${XDG_CONFIG_HOME:-$HOME/.config}"
+# shellcheck source=/dev/null
+source "$config/sway/env"
+cleanup() {
+    systemctl --user stop sway-v3-session.target 2>/dev/null || true
+    # Portals cache the compositor socket. Next desktop reactivates its backend.
+    systemctl --user stop xdg-desktop-portal-wlr.service xdg-desktop-portal-gtk.service \
+        xdg-desktop-portal.service 2>/dev/null || true
+    dbus-update-activation-environment --systemd WAYLAND_DISPLAY= DISPLAY= SWAYSOCK= \
+        XDG_CURRENT_DESKTOP= XDG_SESSION_DESKTOP= XDG_SESSION_TYPE= \
+        QT_QPA_PLATFORMTHEME= QT_QPA_PLATFORM= XDG_MENU_PREFIX= 2>/dev/null || true
+    systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY SWAYSOCK \
+        XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE \
+        QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM XDG_MENU_PREFIX 2>/dev/null || true
+}
+trap cleanup EXIT
+child=''
+trap '[[ -z $child ]] || kill -TERM "$child" 2>/dev/null || true' TERM INT HUP
+sway "$@" &
+child=$!
+status=0
+wait "$child" || status=$?
+# A signal can interrupt wait before sway has finished. Reap before cleanup.
+if kill -0 "$child" 2>/dev/null; then wait "$child" || true; fi
+exit "$status"

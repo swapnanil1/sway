@@ -1,0 +1,13 @@
+[Unit]
+Description=Waybar
+Documentation=https://github.com/Alexays/Waybar/wiki
+PartOf=sway-v3-session.target
+
+[Service]
+# the bar imports colors.css, which is generated
+ExecStartPre=%h/.config/sway/scripts/theme --ensure
+ExecStart=/usr/bin/waybar
+ExecReload=/bin/kill -SIGUSR2 $MAINPID
+Restart=on-failure
+RestartSec=1
+Slice=session.slice

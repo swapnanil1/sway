@@ -1,0 +1,15 @@
+# written by sway/scripts/theme
+sway/theme.env
+sway/config.d/00_colors.conf
+waybar/colors.css
+wofi/style.css
+foot/colors.ini
+mako/config
+swaylock/config
+fastfetch/config.jsonc
+kde/Sway.colors
+qt6ct/colors/Sway.conf
+mangohud/MangoHud.conf
+
+# Python checks
+__pycache__/

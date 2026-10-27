@@ -1,0 +1,56 @@
+# install.sh fills @HOME@ and installs this executable for Dolphin.
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=video/*;
+Actions=mp4;mkv;webm;mp3;m4a;ogg;opus;flac;wav;
+X-KDE-Submenu=Convert to
+X-KDE-Priority=TopLevel
+X-KDE-Protocols=file
+TryExec=ffmpeg
+Icon=media-optical
+
+[Desktop Action mp4]
+Name=MP4 video (H.264)
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to mp4 -- %F
+
+[Desktop Action mkv]
+Name=MKV video (H.264)
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to mkv -- %F
+
+[Desktop Action webm]
+Name=WebM video (VP9)
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to webm -- %F
+
+[Desktop Action mp3]
+Name=MP3 audio
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to mp3 -- %F
+
+[Desktop Action m4a]
+Name=M4A audio (AAC)
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to m4a -- %F
+
+[Desktop Action ogg]
+Name=Ogg audio (Vorbis)
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to ogg -- %F
+
+[Desktop Action opus]
+Name=Opus audio
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to opus -- %F
+
+[Desktop Action flac]
+Name=FLAC audio
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to flac -- %F
+
+[Desktop Action wav]
+Name=WAV audio
+Icon=media-optical
+Exec=foot --app-id foot-float --title "Convert media" @HOME@/.config/sway/scripts/convert-media --run-to wav -- %F

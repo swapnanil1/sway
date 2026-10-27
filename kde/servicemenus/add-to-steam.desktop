@@ -1,0 +1,16 @@
+# install.sh fills @HOME@ and installs this executable for Dolphin.
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/vnd.microsoft.portable-executable;application/x-ms-dos-executable;application/x-msdownload;
+Actions=addToSteam
+X-KDE-Priority=TopLevel
+X-KDE-Protocols=file
+X-KDE-RequiredNumberOfUrls=1
+TryExec=steam
+Icon=steam
+
+[Desktop Action addToSteam]
+Name=Add to Steam
+Icon=steam
+Exec=@HOME@/.config/sway/scripts/add-to-steam %f

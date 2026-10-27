@@ -1,0 +1,12 @@
+# .desktop ids (the file name without .desktop, from /usr/share/applications)
+# that install.sh pins to XWayland: it writes a copy of the entry into
+# ~/.local/share/applications with the command wrapped in scripts/x11. Entries
+# whose application is not installed are skipped, so it is safe to list apps
+# you may install later. Re-run install.sh after adding one; delete the copy
+# in ~/.local/share/applications to undo.
+#
+# Mod+Shift+I on a window shows whether it runs on Wayland or XWayland.
+
+# DaVinci Resolve (AUR). Bundles a Qt with no Wayland plugin; pinned so no
+# environment setting can ever make it try.
+com.blackmagicdesign.resolve

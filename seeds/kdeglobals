@@ -1,0 +1,16 @@
+# Read by KDE applications (Dolphin, Kate, Gwenview, Okular, Ark) for the
+# things qt6ct does not cover: their colour scheme, icon theme and widget
+# style. "Sway" is the scheme the theme switcher writes
+# (~/.local/share/color-schemes/Sway.colors), so these apps follow the
+# palette. Seeded once; the apps' own settings dialogs may rewrite it.
+[General]
+ColorScheme=Sway
+
+[Icons]
+Theme=breeze-dark
+
+[KDE]
+widgetStyle=Breeze
+
+[UiSettings]
+ColorScheme=Sway

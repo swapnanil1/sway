@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+# Dolphin opens a floating terminal; --to provides the same presets for CLI use.
+set -uo pipefail
+
+usage() {
+	printf 'Usage: %s [--to mp4|mkv|webm|mp3|m4a|ogg|opus|flac|wav] [--] FILE...\n' "${0##*/}"
+}
+interactive=1
+format=''
+case ${1:-} in
+	--help|-h) usage; exit 0 ;;
+	--to)
+		[[ $# -ge 3 ]] || { usage >&2; exit 2; }
+		format=$2; interactive=0; shift 2 ;;
+	--run-to)
+		[[ $# -ge 3 ]] || { usage >&2; exit 2; }
+		format=$2; shift 2 ;;
+	--run) shift ;;
+	*)
+		if [[ ! -t 0 || ! -t 1 ]]; then
+			[[ $# -gt 0 ]] || { usage >&2; exit 2; }
+			exec foot --app-id foot-float --title 'Convert media' "$0" --run "$@"
+		fi ;;
+esac
+[[ ${1:-} == -- ]] && shift
+[[ $# -gt 0 ]] || { usage >&2; exit 2; }
+
+finish() {
+	if ((interactive)); then
+		printf '\nPress Enter to close. '
+		read -r _ || true
+	fi
+}
+command -v ffmpeg >/dev/null || { echo 'FFmpeg is missing. Install the ffmpeg package.' >&2; finish; exit 1; }
+command -v ffprobe >/dev/null || { echo 'FFprobe is missing. Install the ffmpeg package.' >&2; finish; exit 1; }
+
+if ((interactive)) && [[ -z $format ]]; then
+	printf 'Convert media — %d file(s)\n\n' "$#"
+	printf '%s\n' 'Video:  1) MP4 / H.264   2) MKV / H.264   3) WebM / VP9' \
+		'Audio:  4) MP3          5) M4A / AAC    6) Ogg / Vorbis' \
+		'        7) Opus         8) FLAC         9) WAV' \
+		'' 'Audio formats also extract sound from video.' \
+		'Outputs go beside each original; existing files are never overwritten.' \
+		'Video keeps the first video and first audio track; subtitles are omitted.' \
+		''
+	while :; do
+		read -rp 'Choose 1–9 (q to cancel): ' choice || exit 0
+		case $choice in
+			1) format=mp4 ;; 2) format=mkv ;; 3) format=webm ;;
+			4) format=mp3 ;; 5) format=m4a ;; 6) format=ogg ;;
+			7) format=opus ;; 8) format=flac ;; 9) format=wav ;;
+			q|Q) exit 0 ;; *) continue ;;
+		esac
+		break
+	done
+fi
+
+# Explicit stream maps exclude cover art, subtitles and attachments.
+audio=(-map 0:a:0 -vn -sn -dn)
+video=(-map 0:V:0 -map '0:a:0?' -sn -dn
+	-vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p)
+case $format in
+	mp4|mkv) options=("${video[@]}" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 192k)
+		[[ $format == mp4 ]] && options+=(-movflags +faststart) ;;
+	webm) options=("${video[@]}" -c:v libvpx-vp9 -crf 32 -b:v 0 -cpu-used 4 -c:a libopus -b:a 128k) ;;
+	mp3) options=("${audio[@]}" -c:a libmp3lame -q:a 2) ;;
+	m4a) options=("${audio[@]}" -c:a aac -b:a 192k -movflags +faststart) ;;
+	ogg) options=("${audio[@]}" -c:a libvorbis -q:a 5) ;;
+	opus) options=("${audio[@]}" -c:a libopus -b:a 128k) ;;
+	flac) options=("${audio[@]}" -c:a flac) ;;
+	wav) options=("${audio[@]}" -c:a pcm_s16le) ;;
+	*) usage >&2; exit 2 ;;
+esac
+
+device=''
+if [[ $format == mp4 || $format == mkv ]]; then
+	for candidate in /dev/dri/renderD*; do
+		[[ -r $candidate && -w $candidate ]] || continue
+		device=$candidate
+		break
+	done
+fi
+
+encode() {
+	if [[ -n $device ]]; then
+		printf 'Encoding with GPU (VA-API).\n'
+		gpu_options=(-map 0:V:0 -map '0:a:0?' -sn -dn
+			-vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2,format=nv12,hwupload'
+			-c:v h264_vaapi -rc_mode CQP -qp 23 -c:a aac -b:a 192k)
+		[[ $format == mp4 ]] && gpu_options+=(-movflags +faststart)
+		if ffmpeg -hide_banner -loglevel warning -stats -nostdin -n \
+			-vaapi_device "$device" -i "$input" "${gpu_options[@]}" "$temp/output.$format"; then
+			return 0
+		fi
+		printf '\nGPU encoding failed; retrying on CPU.\n'
+		rm -f -- "$temp/output.$format"
+		device='' # Avoid repeating a GPU failure for the rest of this batch.
+	fi
+	printf 'Encoding with CPU.\n'
+	ffmpeg -hide_banner -loglevel warning -stats -nostdin -n \
+		-i "$input" "${options[@]}" "$temp/output.$format"
+}
+
+temp=''
+cleanup() {
+	if [[ -n $temp ]]; then
+		rm -f -- "$temp/output.$format"
+		rmdir -- "$temp" 2>/dev/null || true
+	fi
+	temp=''
+}
+trap cleanup EXIT
+trap 'printf "\nConversion cancelled.\n"; exit 130' INT TERM HUP
+done_n=0 failed=0 index=0
+for input in "$@"; do
+	index=$((index + 1))
+	printf '\n[%d/%d] %s\n' "$index" "$#" "$input"
+	if [[ ! -f $input || ! -r $input ]]; then
+		echo 'Skipped: not a readable file.' >&2; failed=$((failed + 1)); continue
+	fi
+	input=$(realpath -- "$input") || { failed=$((failed + 1)); continue; }
+	stream=a:0
+	case $format in mp4|mkv|webm) stream=V:0 ;; esac
+	if ! found=$(ffprobe -v error -select_streams "$stream" -show_entries stream=index -of csv=p=0 "$input") || [[ -z $found ]]; then
+		echo "Skipped: no readable $stream stream for $format output." >&2
+		failed=$((failed + 1)); continue
+	fi
+	directory=${input%/*}; name=${input##*/}; stem=${name%.*}
+	[[ -n $stem ]] || stem=$name
+	base="$directory/$stem.converted"
+	output="$base.$format"; suffix=1
+	while [[ -e $output || -L $output ]]; do
+		output="$base-$suffix.$format"; suffix=$((suffix + 1))
+	done
+	temp=$(mktemp -d -- "$directory/.convert-media.XXXXXXXX") || { failed=$((failed + 1)); continue; }
+	printf 'Output: %s\n' "$output"
+	if encode; then
+		# Publish without replacing a destination created while FFmpeg ran.
+		if mv --update=none-fail -T -- "$temp/output.$format" "$output"; then
+			printf '\nSaved: %s\n' "$output"; done_n=$((done_n + 1))
+		else
+			echo 'Could not save output (destination exists or is not writable).' >&2
+			failed=$((failed + 1))
+		fi
+	else
+		echo 'Conversion failed; see the FFmpeg error above.' >&2
+		failed=$((failed + 1))
+	fi
+	cleanup
+done
+printf '\n%d converted, %d failed. Originals kept.\n' "$done_n" "$failed"
+finish
+((failed == 0))

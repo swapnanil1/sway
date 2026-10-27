@@ -1,0 +1,16 @@
+# wofi: app launcher (Mod+Space) and the dmenu behind the key list, window
+# switcher, theme picker, session menu and clipboard history.
+# style.css is written by ~/.config/sway/scripts/theme from themes/templates/wofi.css
+mode=drun
+prompt=Search
+allow_images=true
+image_size=20
+insensitive=true
+matching=contains
+hide_scroll=true
+no_actions=true
+term=foot
+width=600
+height=420
+location=center
+lines=10

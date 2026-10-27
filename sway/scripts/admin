@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Run a GUI program as root behind the polkit password dialog, without
+# `sudo -E` and without a terminal.
+#
+#   admin <command> [args...]
+#
+# KDE apps never need this: Partition Manager, Kate (saving a root-owned file)
+# and Dolphin (kio-admin, "Open as Administrator") run as you and ask polkit
+# for a root helper. Timeshift and GParted do what this script does inside
+# their own launchers. This is for the rest: GTK or Qt tools that simply must
+# run as root.
+#
+# Root has to reach the display. A native Wayland app needs the socket
+# variables; an XWayland app needs an X authorisation for the root user, which
+# xhost grants for the duration of the run and revokes afterwards.
+
+[[ $# -gt 0 ]] || { echo "usage: ${0##*/} <command> [args...]" >&2; exit 2; }
+
+env_args=(
+	DISPLAY="${DISPLAY:-}"
+	WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-}"
+	XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-}"
+	XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-sway}"
+	QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-wayland;xcb}"
+	QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME:-kde}"
+)
+[[ -n ${XAUTHORITY:-} ]] && env_args+=(XAUTHORITY="$XAUTHORITY")
+
+xhost +SI:localuser:root >/dev/null 2>&1
+pkexec env "${env_args[@]}" "$@"
+status=$?
+xhost -SI:localuser:root >/dev/null 2>&1
+exit $status

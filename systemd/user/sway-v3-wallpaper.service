@@ -1,0 +1,8 @@
+[Unit]
+Description=Next wallpaper for the current theme
+PartOf=sway-v3-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/sway/scripts/wallpaper
+Slice=session.slice

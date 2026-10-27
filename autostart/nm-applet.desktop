@@ -1,0 +1,8 @@
+[Desktop Entry]
+# network-manager-applet autostarts a tray icon from /etc/xdg/autostart. The
+# bar already shows the connection, so the icon only costs memory; this
+# override hides it. nm-connection-editor (the bar's network click) is
+# unaffected. Delete ~/.config/autostart/nm-applet.desktop to get the icon back.
+Type=Application
+Name=nm-applet
+Hidden=true

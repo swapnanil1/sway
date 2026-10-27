@@ -1,0 +1,16 @@
+/* ${THEME_HEADER} */
+@define-color bg        ${BG};
+@define-color bg_alt    ${BG_ALT};
+@define-color fg        ${FG};
+@define-color fg_dim    ${FG_DIM};
+@define-color accent    ${ACCENT};
+@define-color selection ${SELECTION};
+@define-color black     ${BLACK};
+@define-color red       ${RED};
+@define-color green     ${GREEN};
+@define-color yellow    ${YELLOW};
+@define-color blue      ${BLUE};
+@define-color magenta   ${MAGENTA};
+@define-color cyan      ${CYAN};
+@define-color white     ${WHITE};
+@define-color orange    ${ORANGE};

@@ -1,0 +1,8 @@
+// VS Code runtime arguments. Seeded by the sway dotfiles installer.
+{
+	// sway is not a desktop Electron recognises, so name the secret store
+	// explicitly: the keyring that ly unlocks at login.
+	"password-store": "gnome-libsecret",
+	// native Wayland
+	"ozone-platform-hint": "auto"
+}

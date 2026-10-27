@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# CPU or GPU temperature for waybar, as JSON: the "class" (ok, warn, crit, na)
+# picks the colour in waybar/style.css, so the output carries no colour itself.
+#
+#   temp cpu | gpu
+
+CPU_WARN=75 CPU_CRIT=90
+GPU_WARN=70 GPU_CRIT=85
+
+# sensors prints "Tctl:  +54.0°C"; take the number of the first matching label
+read_temp() {   # read_temp <sensors output> <label>...
+	local data=$1 label value; shift
+	for label in "$@"; do
+		value=$(awk -v l="$label:" '$1 == l { gsub(/[+°C]/, "", $2); print $2; exit }' <<<"$data")
+		[[ $value =~ ^[0-9]+(\.[0-9]+)?$ ]] && { printf '%.0f\n' "$value"; return 0; }
+	done
+	return 1
+}
+
+data=$(sensors 2>/dev/null)
+case "$1" in
+	cpu) temp=$(read_temp "$data" Tctl Tdie "Package id 0"); warn=$CPU_WARN; crit=$CPU_CRIT; what=CPU ;;
+	gpu) temp=$(read_temp "$data" edge junction);            warn=$GPU_WARN; crit=$GPU_CRIT; what=GPU ;;
+	*)   echo "usage: ${0##*/} cpu|gpu" >&2; exit 2 ;;
+esac
+
+if [[ -z $temp ]]; then
+	printf '{"text": "N/A", "class": "na", "tooltip": "%s: no sensor"}\n' "$what"
+	exit 0
+fi
+
+class=ok
+((temp >= warn)) && class=warn
+((temp >= crit)) && class=crit
+printf '{"text": "%s°C", "class": "%s", "tooltip": "%s temperature"}\n' "$temp" "$class" "$what"

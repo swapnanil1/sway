@@ -1,0 +1,36 @@
+# Additions for an existing Arch Plasma installation. Official repositories only.
+# GTK here is a toolkit/portal fallback, not the GNOME desktop or keyring.
+sway
+swaybg
+swayidle
+swaylock
+waybar
+wofi
+mako
+foot
+autotiling
+xorg-xwayland
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+polkit-kde-agent
+qt6-wayland
+plasma-integration
+wl-clipboard
+cliphist
+grim
+slurp
+satty
+jq
+gettext
+libnotify
+libpulse
+playerctl
+htop
+ttf-jetbrains-mono-nerd
+noto-fonts-emoji
+gtk3
+dolphin
+kde-cli-tools
+plasma-nm
+plasma-pa
+xdg-utils

@@ -1,0 +1,15 @@
+# install.sh fills @HOME@ and installs this executable for Dolphin.
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/vnd.microsoft.portable-executable;application/x-ms-dos-executable;application/x-msdownload;
+Actions=addToHeroic
+X-KDE-Priority=TopLevel
+X-KDE-Protocols=file
+X-KDE-RequiredNumberOfUrls=1
+Icon=com.heroicgameslauncher.hgl
+
+[Desktop Action addToHeroic]
+Name=Add to Heroic
+Icon=com.heroicgameslauncher.hgl
+Exec=@HOME@/.config/sway/scripts/add-to-heroic %f

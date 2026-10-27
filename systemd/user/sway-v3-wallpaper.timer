@@ -1,0 +1,11 @@
+[Unit]
+Description=Change the wallpaper on an interval
+PartOf=sway-v3-session.target
+
+# How often: change both lines together. A systemd timer costs nothing between
+# runs; there is no slideshow daemon.
+[Timer]
+Unit=sway-v3-wallpaper.service
+OnActiveSec=15min
+OnUnitActiveSec=15min
+AccuracySec=1min

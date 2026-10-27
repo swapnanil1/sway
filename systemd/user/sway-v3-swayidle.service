@@ -1,0 +1,10 @@
+[Unit]
+Description=Lock the screen on idle and sleep
+PartOf=sway-v3-session.target
+
+[Service]
+# timeouts are at the top of the script
+ExecStart=%h/.config/sway/scripts/idle
+Restart=on-failure
+RestartSec=1
+Slice=session.slice
