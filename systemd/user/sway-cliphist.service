@@ -1,6 +1,6 @@
 [Unit]
 Description=Clipboard history (cliphist)
-PartOf=sway-v3-session.target
+PartOf=sway-session.target
 
 [Service]
 ExecStart=/usr/bin/wl-paste --watch cliphist store

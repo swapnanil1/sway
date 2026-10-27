@@ -2,25 +2,33 @@
 # Login-manager/TTY entry for the optional Sway session; owns cleanup on normal exit/crash.
 set -euo pipefail
 if [[ -n ${SWAYSOCK:-} ]] || pgrep -u "$(id -u)" -x 'plasmashell|kwin_wayland|kwin_x11' >/dev/null; then
-    echo 'Log out of the existing desktop before starting Sway v3.' >&2
+    echo 'Log out of the existing desktop before starting Sway.' >&2
     exit 1
 fi
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
 # shellcheck source=/dev/null
 source "$config/sway/env"
+cursor_file="${XDG_RUNTIME_DIR:?A normal user login with XDG_RUNTIME_DIR is required}/sway-cursor.conf"
+cursor_tmp=''
 cleanup() {
-    systemctl --user stop sway-v3-session.target 2>/dev/null || true
+    systemctl --user stop sway-session.target 2>/dev/null || true
     # Portals cache the compositor socket. Next desktop reactivates its backend.
     systemctl --user stop xdg-desktop-portal-wlr.service xdg-desktop-portal-gtk.service \
-        xdg-desktop-portal.service 2>/dev/null || true
+        plasma-xdg-desktop-portal-kde.service xdg-desktop-portal.service 2>/dev/null || true
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY= DISPLAY= SWAYSOCK= \
         XDG_CURRENT_DESKTOP= XDG_SESSION_DESKTOP= XDG_SESSION_TYPE= \
-        QT_QPA_PLATFORMTHEME= QT_QPA_PLATFORM= XDG_MENU_PREFIX= 2>/dev/null || true
+        QT_QPA_PLATFORMTHEME= QT_QPA_PLATFORM= XDG_MENU_PREFIX= XCURSOR_THEME= XCURSOR_SIZE= 2>/dev/null || true
     systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY SWAYSOCK \
         XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE \
-        QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM XDG_MENU_PREFIX 2>/dev/null || true
+        QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM XDG_MENU_PREFIX XCURSOR_THEME XCURSOR_SIZE 2>/dev/null || true
+    rm -f -- "$cursor_file"
+    [[ -z $cursor_tmp ]] || rm -f -- "$cursor_tmp"
 }
 trap cleanup EXIT
+cursor_tmp=$(mktemp "${cursor_file}.XXXXXX")
+printf 'seat * xcursor_theme "%s" %s\n' "$XCURSOR_THEME" "$XCURSOR_SIZE" > "$cursor_tmp"
+mv -f -- "$cursor_tmp" "$cursor_file"
+cursor_tmp=''
 child=''
 trap '[[ -z $child ]] || kill -TERM "$child" 2>/dev/null || true' TERM INT HUP
 sway "$@" &

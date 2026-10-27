@@ -4,14 +4,15 @@
 
 # "label|command", icons are Material Design glyphs from the Nerd Font
 entries=(
+	$'\U000f0379  Display settings|~/.config/sway/scripts/display configure'
 	$'\U000f033e  Lock|~/.config/sway/scripts/lock-now'
 	$'\U000f0343  Logout|~/.config/sway/scripts/sound --wait logout; swaymsg exit'
 	$'\U000f04b2  Suspend|systemctl suspend'
 	$'\U000f0709  Reboot|~/.config/sway/scripts/sound --wait logout; systemctl reboot'
 	$'\U000f0425  Shutdown|~/.config/sway/scripts/sound --wait logout; systemctl poweroff'
 	$'\U000f0450  Reload sway config|swaymsg reload'
-	$'\U000f035c  Restart the bar|systemctl --user restart sway-v3-waybar.service'
-	$'\U000f009a  Restart notifications|systemctl --user restart sway-v3-mako.service'
+	$'\U000f035c  Restart the bar|systemctl --user restart sway-waybar.service'
+	$'\U000f009a  Restart notifications|systemctl --user restart sway-mako.service'
 	$'\U000f03d8  Theme picker|~/.config/sway/scripts/theme'
 	$'\U000f0297  Game mode|~/.config/sway/scripts/gamemode on'
 )

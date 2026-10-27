@@ -1,6 +1,6 @@
 [Unit]
 Description=Alternate split direction for sway
-PartOf=sway-v3-session.target
+PartOf=sway-session.target
 
 [Service]
 ExecStart=/usr/bin/autotiling

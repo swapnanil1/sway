@@ -1,13 +1,148 @@
-#!/usr/bin/env bash
-# Put every connected output on its largest mode at the highest refresh rate it
-# offers. Output names differ between ports and GPUs, so nothing is hardcoded.
-# sway alone would pick the preferred mode, which is often not the fastest.
+#!/usr/bin/env python3
+"""Manage Sway's own monitor profile; never write Plasma/KScreen settings.
 
-swaymsg -t get_outputs | jq -r '
-	.[] | select(.active and (.modes | length > 0)) |
-	.name as $name |
-	(.modes | max_by([.width * .height, .refresh])) as $m |
-	"\($name) \($m.width)x\($m.height)@\($m.refresh / 1000)Hz"
-' | while read -r output mode; do
-	swaymsg -q output "$output" mode "$mode"
-done
+  display show          show active modes, layout, scale and rotation
+  display configure     open wdisplays, then save the resulting arrangement
+  display save          save current active outputs for future Sway logins
+  display max-refresh   explicitly select largest/highest-refresh modes, unsaved
+
+The saved file is ~/.config/sway-outputs.conf. Existing versions are backed
+up. Disabled outputs are not persisted, so a changed docking setup retains a
+usable fallback display. Edit the file for more advanced rules.
+"""
+import argparse
+import datetime
+import json
+import math
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+TRANSFORMS = {"normal", "90", "180", "270", "flipped", "flipped-90",
+              "flipped-180", "flipped-270"}
+
+
+def number(value, label, positive=False, integral=False):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"Invalid {label}: {value!r}")
+    if not math.isfinite(value) or (positive and value <= 0):
+        raise ValueError(f"Invalid {label}: {value!r}")
+    if integral and value != int(value):
+        raise ValueError(f"Invalid {label}: {value!r}")
+    return int(value) if integral else value
+
+
+def output_name(output):
+    name = output.get("name", "")
+    # Connector names are identifiers, not configuration or shell commands.
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+", name):
+        raise ValueError(f"Unsupported output name: {name!r}")
+    return name
+
+
+def mode_text(mode):
+    width = number(mode["width"], "width", positive=True, integral=True)
+    height = number(mode["height"], "height", positive=True, integral=True)
+    refresh = number(mode["refresh"], "refresh", positive=True) / 1000
+    return f"{width}x{height}@{refresh:.3f}Hz"
+
+
+def profile(outputs):
+    active = [output for output in outputs if output.get("active")]
+    if not active:
+        raise ValueError("No active outputs; the existing profile was left unchanged.")
+    lines = ["# Saved by Sway display; independent of Plasma display settings.",
+             "# Active outputs only. Unknown/disconnected outputs keep Sway defaults.",
+             "# HDR, color profiles, VRR and disabled-output rules are not imported."]
+    for output in active:
+        name = output_name(output)
+        mode = mode_text(output["current_mode"])
+        scale = number(output["scale"], "scale", positive=True)
+        x = number(output["rect"]["x"], "x position", integral=True)
+        y = number(output["rect"]["y"], "y position", integral=True)
+        transform = output["transform"]
+        if transform not in TRANSFORMS:
+            raise ValueError(f"Unsupported transform: {transform!r}")
+        lines.extend([f'output "{name}" {{', "    enable", f"    mode {mode}",
+                      f"    scale {scale:g}", f"    pos {x} {y}",
+                      f"    transform {transform}", "}"])
+    return "\n".join(lines) + "\n"
+
+
+def read_outputs():
+    if not os.environ.get("SWAYSOCK"):
+        raise ValueError("Run this tool inside Sway. Configure Plasma displays in Plasma.")
+    result = subprocess.run(["swaymsg", "-r", "-t", "get_outputs"],
+                            check=True, text=True, capture_output=True, timeout=10)
+    outputs = json.loads(result.stdout)
+    if not isinstance(outputs, list):
+        raise ValueError("Sway returned an unexpected output description.")
+    return outputs
+
+
+def save_profile(contents):
+    config = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+    path = config / "sway-outputs.conf"
+    config.mkdir(parents=True, exist_ok=True)
+    backup = None
+    if path.exists() or path.is_symlink():
+        stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        backup = path.with_name(f"{path.name}.bak-{stamp}")
+        shutil.copy2(path, backup, follow_symlinks=True)
+    fd, temporary = tempfile.mkstemp(prefix=".sway-outputs-", dir=config, text=True)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            stream.write(contents)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    print(f"Saved {path}; used on the next Sway login or configuration reload.")
+    if backup:
+        print(f"Previous profile: {backup}")
+    print("Saved active outputs only; review the profile after changing monitors/ports.")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("action", nargs="?", default="show",
+                        choices=["show", "configure", "save", "max-refresh"])
+    action = parser.parse_args().action
+    outputs = read_outputs()
+    if action == "configure":
+        # Only an explicit user action starts this UI; nothing runs at login.
+        subprocess.run(["wdisplays"], check=True)
+        outputs = read_outputs()
+        action = "save"
+    if action in ("show", "save"):
+        text = profile(outputs)  # Validate the complete profile before any write.
+        if action == "show":
+            print(text, end="")
+        else:
+            save_profile(text)
+    else:
+        commands = []
+        for output in outputs:
+            if not output.get("active") or not output.get("modes"):
+                continue
+            name = output_name(output)
+            for mode in output["modes"]:
+                mode_text(mode)
+            best = max(output["modes"], key=lambda m: (m["width"] * m["height"], m["refresh"]))
+            commands.append(["swaymsg", "-q", "output", name, "mode", mode_text(best)])
+        for command in commands:
+            subprocess.run(command, check=True, timeout=10)
+        print("Refresh selection applied to Sway only. Run 'display save' to keep it.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (ValueError, KeyError, TypeError, OSError, subprocess.SubprocessError) as error:
+        print(f"display: {error}", file=sys.stderr)
+        sys.exit(1)

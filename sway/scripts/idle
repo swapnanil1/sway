@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Idle behaviour, run as sway-v3-swayidle.service: lock after LOCK_AFTER seconds, turn
+# Idle behaviour, run as sway-swayidle.service: lock after LOCK_AFTER seconds, turn
 # the outputs off after OFF_AFTER, lock before suspend and on `loginctl
 # lock-session`. A fullscreen window inhibits all of this (02_rules.conf).
 #
-# To pause it (game mode, a long download): systemctl --user stop sway-v3-swayidle.service
+# To pause it (game mode, a long download): systemctl --user stop sway-swayidle.service
 
 LOCK_AFTER=600   # seconds idle before the screen locks
 OFF_AFTER=900    # seconds idle before the outputs power down

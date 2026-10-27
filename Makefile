@@ -1,7 +1,8 @@
 # make check   everything that can be verified without a login session
 # (sway/scripts/admin is included through the wildcard)
-PYTHON_SCRIPTS := sway/scripts/add-to-heroic
-SCRIPTS := install.sh sway/session/sway-desktop $(filter-out $(PYTHON_SCRIPTS),$(wildcard sway/scripts/*))
+PYTHON_SCRIPTS := sway/scripts/add-to-heroic sway/scripts/display
+SCRIPT_DIRS := $(patsubst %/,%,$(wildcard sway/scripts/*/))
+SCRIPTS := install.sh sway/session/sway-desktop $(filter-out $(PYTHON_SCRIPTS) $(SCRIPT_DIRS),$(wildcard sway/scripts/*))
 
 .PHONY: check syntax lint themes regression validate packages dry-run
 

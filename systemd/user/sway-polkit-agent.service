@@ -1,6 +1,6 @@
 [Unit]
 Description=Polkit authentication agent (KDE)
-PartOf=sway-v3-session.target
+PartOf=sway-session.target
 
 [Service]
 ExecStart=/usr/lib/polkit-kde-authentication-agent-1

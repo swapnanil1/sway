@@ -1,7 +1,7 @@
 [Unit]
 Description=Waybar
 Documentation=https://github.com/Alexays/Waybar/wiki
-PartOf=sway-v3-session.target
+PartOf=sway-session.target
 
 [Service]
 # the bar imports colors.css, which is generated

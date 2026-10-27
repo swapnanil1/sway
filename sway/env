@@ -1,4 +1,4 @@
-# Only sourced by the Sway v3 launcher. Never put this in /etc/environment.
+# Only sourced by the Sway launcher. Never put this in /etc/environment.
 export XDG_CURRENT_DESKTOP=sway
 export XDG_SESSION_DESKTOP=sway
 export XDG_SESSION_TYPE=wayland
@@ -9,3 +9,13 @@ export XDG_MENU_PREFIX=plasma-
 export MOZ_ENABLE_WAYLAND=1
 export _JAVA_AWT_WM_NONREPARENTING=1
 # Accessibility and browser password-store choices are left to the user.
+
+# Read KDE's saved cursor choice without changing shared settings. The launcher
+# writes a runtime Sway include so the compositor and its apps agree at startup.
+XCURSOR_THEME=$(kreadconfig6 --file kcminputrc --group Mouse --key cursorTheme --default breeze_cursors 2>/dev/null) || XCURSOR_THEME=breeze_cursors
+XCURSOR_SIZE=$(kreadconfig6 --file kcminputrc --group Mouse --key cursorSize --default 24 2>/dev/null) || XCURSOR_SIZE=24
+# Only theme directory names, never Sway command syntax. Spaces are quoted by
+# the launcher; quotes, newlines, variables and command separators are rejected.
+[[ $XCURSOR_THEME =~ ^[[:alnum:]_.+\ -]+$ ]] || XCURSOR_THEME=breeze_cursors
+[[ $XCURSOR_SIZE =~ ^[1-9][0-9]{0,2}$ ]] || XCURSOR_SIZE=24
+export XCURSOR_THEME XCURSOR_SIZE

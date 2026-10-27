@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# Clipboard history (sway-v3-cliphist.service records it): pick an entry, it becomes
+# Clipboard history (sway-cliphist.service records it): pick an entry, it becomes
 # the clipboard again. Mod+V.
 cliphist list | wofi --dmenu -i -p "Clipboard" --width 800 | cliphist decode | wl-copy

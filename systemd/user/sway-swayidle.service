@@ -1,6 +1,6 @@
 [Unit]
 Description=Lock the screen on idle and sleep
-PartOf=sway-v3-session.target
+PartOf=sway-session.target
 
 [Service]
 # timeouts are at the top of the script

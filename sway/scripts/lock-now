@@ -2,7 +2,7 @@
 # Lock immediately. Normally logind tells swayidle to run the locker; if
 # swayidle is not running that request would silently do nothing, so lock
 # directly in that case.
-if systemctl --user is-active --quiet sway-v3-swayidle.service; then
+if systemctl --user is-active --quiet sway-swayidle.service; then
 	loginctl lock-session
 else
 	exec ~/.config/sway/scripts/lock

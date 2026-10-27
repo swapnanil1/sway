@@ -5,8 +5,8 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
 DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
-STATE="${XDG_STATE_HOME:-$HOME/.local/state}/sway-v3"
-DEST="$DATA/sway-v3"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/sway"
+DEST="$DATA/sway"
 DRY_RUN=0 YES=0 EXTRAS=0 DOCTOR=0
 for arg in "$@"; do
     case "$arg" in
@@ -51,16 +51,16 @@ retire_seed() {
 doctor() {
     local failed=0
     for item in "$CONFIG/sway/config" "$CONFIG/xdg-desktop-portal/sway-portals.conf" \
-        "$CONFIG/systemd/user/sway-v3-session.target" \
-        /usr/local/bin/sway-v3 /usr/share/wayland-sessions/sway-v3.desktop; do
+        "$CONFIG/systemd/user/sway-session.target" \
+        /usr/local/bin/sway-desktop /usr/share/wayland-sessions/sway-desktop.desktop; do
         if [[ -e $item ]]; then say "OK: $item"; else say "MISSING: $item"; failed=1; fi
     done
     if [[ -f $CONFIG/xdg-desktop-portal/portals.conf ]]; then
-        say 'REVIEW: generic portals.conf can override Plasma; see docs/V3-MIGRATION.md.'
+        say 'REVIEW: generic portals.conf can override Plasma; see docs/MIGRATION.md.'
         failed=1
     fi
     for cmd in sway swaybg swayidle swaylock waybar foot wofi mako grim slurp wl-copy wl-paste \
-        cliphist autotiling jq envsubst kcmshell6 dolphin pactl dbus-update-activation-environment; do
+        cliphist autotiling jq envsubst kreadconfig6 kcmshell6 dolphin pactl wdisplays python3 dbus-update-activation-environment; do
         command -v "$cmd" >/dev/null || { say "MISSING command: $cmd"; failed=1; }
     done
     say 'Runtime checks (login, locking, screen sharing, wallet and Plasma return) require both sessions; see README.'
@@ -83,7 +83,7 @@ if ! ((DRY_RUN)); then
         say 'Start with a working Arch Plasma desktop (for example Archinstall + plasma-meta). This installer adds Sway to it.' >&2; exit 1;
     }
 fi
-say 'Sway v3: optional session alongside KDE Plasma. No live session will be started or reloaded.'
+say 'Sway: optional session alongside KDE Plasma. No live session will be started or reloaded.'
 package_lists=("$REPO/packages/sway.txt")
 if ((EXTRAS)); then package_lists+=("$REPO/packages/extras.txt"); fi
 mapfile -t pkgs < <(packages "${package_lists[@]}")
@@ -115,8 +115,8 @@ link "$DEST/sway/portal-wlr.conf" "$CONFIG/xdg-desktop-portal-wlr/config" portal
 retire_seed "$REPO/seeds/xdg-desktop-portal/portals.conf" "$CONFIG/xdg-desktop-portal/portals.conf" portals/legacy-generic.conf
 retire_seed "$REPO/autostart/nm-applet.desktop" "$CONFIG/autostart/nm-applet.desktop" autostart/nm-applet.desktop
 # Session entry is independent of the clone path. Leave the existing login manager and its default session unchanged.
-for spec in 'sway/session/sway-desktop /usr/local/bin/sway-v3 755' \
-            'sway/session/sway-v3.desktop /usr/share/wayland-sessions/sway-v3.desktop 644'; do
+for spec in 'sway/session/sway-desktop /usr/local/bin/sway-desktop 755' \
+            'sway/session/sway-desktop.desktop /usr/share/wayland-sessions/sway-desktop.desktop 644'; do
     read -r source target mode <<< "$spec"
     if [[ -e $target ]] && ! cmp -s "$REPO/$source" "$target"; then
         run sudo cp -a "$target" "$target.bak-$(date +%Y%m%d-%H%M%S)-$$"
@@ -126,6 +126,6 @@ done
 run systemctl --user daemon-reload
 say "Installed copy: $DEST"
 say "Backups (if needed): $BACKUP"
-say 'Log out, select Sway (v3) at the existing login screen. Plasma remains available.'
+say 'Log out, select Sway at the existing login screen. Plasma remains available.'
 say 'Log out of Plasma fully before using Sway to release its compositor VRAM.'
-say 'Existing v2 users: review docs/V3-MIGRATION.md; shared old settings are not blindly reset.'
+say 'Existing v2 users: review docs/MIGRATION.md; shared old settings are not blindly reset.'

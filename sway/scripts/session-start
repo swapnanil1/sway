@@ -3,13 +3,13 @@
 set -euo pipefail
 [[ ${XDG_CURRENT_DESKTOP:-} == sway && -n ${SWAYSOCK:-} ]] || exit 1
 systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK \
-    XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM
+    XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM XCURSOR_THEME XCURSOR_SIZE
 # Explicit empty DISPLAY prevents a stale X11 display from a preceding session.
 dbus-update-activation-environment --systemd "DISPLAY=${DISPLAY:-}" WAYLAND_DISPLAY SWAYSOCK \
-    XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM
+    XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM XCURSOR_THEME XCURSOR_SIZE
 "$HOME/.config/sway/scripts/theme" --ensure
 mkdir -p "$HOME/Pictures/Screenshots"
-systemctl --user stop sway-v3-session.target
+systemctl --user stop sway-session.target
 systemctl --user stop xdg-desktop-portal.service xdg-desktop-portal-wlr.service \
     xdg-desktop-portal-gtk.service plasma-xdg-desktop-portal-kde.service 2>/dev/null || true
-systemctl --user start sway-v3-session.target
+systemctl --user start sway-session.target

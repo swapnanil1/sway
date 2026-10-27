@@ -1,8 +1,8 @@
-> Historical v2 documentation. See ../README.md for v3 installation.
+> Historical v2 documentation. See ../README.md for Sway installation.
 
 # Historical v2 documentation
 
-This describes the standalone v2 branch, not the v3 installer.
+This describes the standalone v2 branch, not the Sway installer.
 
 # sway desktop for Arch Linux
 

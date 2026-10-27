@@ -18,12 +18,12 @@ case "$1" in
 		notify-send -a sway-quiet -t 4000 "Game mode on" "Only Mod+1..0 (workspaces) and Mod+Shift+G (leave) still work."
 		sleep 0.3
 		makoctl mode -a do-not-disturb >/dev/null 2>&1
-		systemctl --user stop sway-v3-swayidle.service
+		systemctl --user stop sway-swayidle.service
 		swaymsg -q mode game
 		;;
 	off)
 		swaymsg -q mode default
-		systemctl --user start sway-v3-swayidle.service
+		systemctl --user start sway-swayidle.service
 		makoctl mode -r do-not-disturb >/dev/null 2>&1
 		rm -f "$MARK"
 		~/.config/sway/scripts/sound gamemode-off

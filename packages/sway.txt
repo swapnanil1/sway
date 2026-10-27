@@ -12,6 +12,7 @@ autotiling
 xorg-xwayland
 xdg-desktop-portal-wlr
 xdg-desktop-portal-gtk
+xdg-desktop-portal-kde
 polkit-kde-agent
 qt6-wayland
 plasma-integration
@@ -34,3 +35,5 @@ kde-cli-tools
 plasma-nm
 plasma-pa
 xdg-utils
+wdisplays
+python

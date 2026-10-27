@@ -13,7 +13,7 @@ def run(argv, env):
     subprocess.run(argv, env=env, cwd=REPO, check=True, timeout=30)
 
 
-with tempfile.TemporaryDirectory(prefix="sway-v3-validate-") as tmp:
+with tempfile.TemporaryDirectory(prefix="sway-validate-") as tmp:
     home = Path(tmp)
     env = {key: value for key, value in os.environ.items()
            if not key.startswith("XDG_") and key not in
@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory(prefix="sway-v3-validate-") as tmp:
     else:
         print("units: skipped (systemd-analyze not installed)", flush=True)
     if shutil.which("sway") and shutil.which("envsubst"):
-        dest = home / ".local/share/sway-v3"
+        dest = home / ".local/share/sway"
         dest.mkdir(parents=True)
         config = home / ".config"
         config.mkdir(exist_ok=True)
@@ -46,6 +46,12 @@ with tempfile.TemporaryDirectory(prefix="sway-v3-validate-") as tmp:
             if folder != "themes":
                 (config / folder).symlink_to(dest / folder)
         run([str(dest / "sway/scripts/theme"), "--no-reload", "onedark"], env)
+        (home / "sway-cursor.conf").write_text(
+            'seat * xcursor_theme "breeze_cursors" 32\n')
+        (config / "sway-outputs.conf").write_text(
+            'output "HEADLESS-1" {\n'
+            '    enable\n    mode 1920x1080@60.000Hz\n'
+            '    scale 1.25\n    pos 0 0\n    transform normal\n}\n')
         env.update(WLR_BACKENDS="headless", WLR_RENDERER="pixman")
         run(["sway", "--validate", "--config", str(config / "sway/config")], env)
         print("sway: generated configuration validated headlessly", flush=True)

@@ -1,0 +1,5 @@
+[Unit]
+Description=Sway companion services (never enabled globally)
+Wants=sway-waybar.service sway-mako.service sway-polkit-agent.service
+Wants=sway-swayidle.service sway-cliphist.service sway-autotiling.service
+# Wallpaper rotation is opt-in: systemctl --user start sway-wallpaper.timer
