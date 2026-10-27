@@ -129,9 +129,19 @@ tooltip label {
 #workspaces button.visible:not(.focused) {
 	box-shadow: inset 0 -2px @black;
 }
+/* Attention requests pulse until the window is acknowledged. */
+@keyframes workspace-urgent {
+	from { background-color: @red; color: @bg; }
+	to { background-color: @bg; color: @red; }
+}
 #workspaces button.urgent {
 	color: @bg;
 	background-color: @red;
+	animation-name: workspace-urgent;
+	animation-duration: 0.8s;
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
 }
 #workspaces button:hover {
 	box-shadow: none;

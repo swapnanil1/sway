@@ -1,0 +1,240 @@
+/* waybar. Colours come from colors.css (written by ~/.config/sway/scripts/theme);
+   everything else is layout.
+
+   Geometry matches the polybar this replaces on a 1920x1080 top bar:
+     bar height 38 px  = 26 px pills + 6 px above and below (polybar: height 26,
+                         border 6), so the pill radius is 13 px
+     font 11 pt bold   = polybar font-0 size 11
+     dots between pills with ~2 characters of air on each side
+   Pills: a module on its own has round ends; modules that share a pill have
+   a flat edge towards each other. */
+@import url("colors.css");
+
+* {
+	border: none;
+	border-radius: 0;
+	font-family: "JetBrainsMono Nerd Font", "Noto Sans Mono";
+	font-weight: bold;
+	font-size: 11pt;
+	min-height: 0;
+}
+
+window#waybar {
+	background-color: @bg;
+	color: @fg;
+}
+
+/* air between the outermost pills and the screen edges */
+.modules-left {
+	margin-left: 4px;
+}
+.modules-right {
+	margin-right: 10px;
+}
+
+tooltip {
+	background-color: @bg;
+	border: 2px solid @bg_alt;
+}
+tooltip label {
+	color: @fg;
+}
+
+/* --- pills ------------------------------------------------------------- */
+
+#workspaces,
+#mode,
+#network,
+#custom-pomodoro,
+#clock,
+#cpu, #power-profiles-daemon, #custom-cpu-temp, #custom-gpu-temp,
+#memory,
+#custom-brightness, #pulseaudio, #custom-mic,
+#tray {
+	background-color: @bg_alt;
+	color: @fg;
+	margin: 6px 0;
+	padding: 0 9px;
+}
+
+/* left end, right end: round */
+#workspaces, #network, #custom-pomodoro, #clock, #cpu, #memory, #custom-brightness, #tray {
+	border-radius: 13px 0 0 13px;
+}
+#workspaces, #mode, #network, #custom-pomodoro, #clock, #custom-gpu-temp, #memory, #custom-mic, #tray {
+	border-radius: 0 13px 13px 0;
+}
+#workspaces, #network, #custom-pomodoro, #clock, #memory, #tray {
+	border-radius: 13px;
+}
+
+/* the dot between pills: polybar's "dot" with padding 2 */
+#custom-dot {
+	color: @black;
+	font-size: 8pt;
+	padding: 0 14px;
+	margin: 0;
+	background-color: transparent;
+}
+
+/* modes (resize, adjust, game) show in the workspace pill, polybar style */
+#mode {
+	background-color: @yellow;
+	color: @bg;
+	padding: 0 14px;
+}
+
+/* joined pills: no gap, a little air after the shared edge */
+#power-profiles-daemon {
+	border-radius: 0;
+	padding-left: 7px;
+}
+#custom-cpu-temp {
+	border-radius: 0;
+	padding-left: 7px;
+}
+#custom-gpu-temp {
+	padding-left: 7px;
+}
+#pulseaudio {
+	border-radius: 0;
+	padding-left: 7px;
+}
+#custom-mic {
+	padding-left: 7px;
+}
+
+/* --- left ---------------------------------------------------------------- */
+
+#custom-menu {
+	font-size: 15pt;
+	color: @yellow;
+	padding: 0 0 0 10px;
+}
+
+#workspaces {
+	padding: 0;
+}
+/* polybar: 11 px before the number, two characters after the icon */
+#workspaces button {
+	padding: 0 16px 0 11px;
+	color: @white;
+	background-color: transparent;
+	border-radius: 13px;
+}
+#workspaces button.focused {
+	color: @bg;
+	background-color: @accent;
+}
+#workspaces button.visible:not(.focused) {
+	box-shadow: inset 0 -2px @black;
+}
+#workspaces button.urgent {
+	color: @bg;
+	background-color: @red;
+}
+#workspaces button:hover {
+	box-shadow: none;
+	text-shadow: none;
+	background-color: @black;
+	color: @fg;
+}
+
+#network {
+	color: @white;
+}
+#network.disconnected {
+	color: @fg_dim;
+}
+
+#custom-pomodoro.running { color: @green; }
+#custom-pomodoro.paused  { color: @yellow; }
+#custom-pomodoro.break   { color: @blue; }
+#custom-pomodoro.stopped { color: @fg_dim; }
+
+/* --- center -------------------------------------------------------------- */
+
+#clock {
+	color: @cyan;
+}
+
+/* --- right --------------------------------------------------------------- */
+
+#cpu              { color: @blue; }
+#power-profiles-daemon             { color: @fg; }
+#power-profiles-daemon.performance { color: @orange; }
+#power-profiles-daemon.power-saver { color: @green; }
+#custom-cpu-temp  { color: @fg; }
+#custom-gpu-temp  { color: @fg; }
+#custom-cpu-temp.warn, #custom-gpu-temp.warn { color: @yellow; }
+#custom-cpu-temp.crit, #custom-gpu-temp.crit { color: @red; }
+#custom-cpu-temp.na,   #custom-gpu-temp.na   { color: @fg_dim; }
+
+#memory           { color: @green; }
+#memory.warning   { color: @red; }
+
+#custom-brightness { color: @yellow; }
+
+#pulseaudio       { color: @yellow; }
+#pulseaudio.muted { color: @fg_dim; }
+
+#custom-mic       { color: @white; }
+#custom-mic.muted { color: @red; }
+
+/* Capture indicators: a pill only while the screen or mic is being captured */
+#privacy {
+	background-color: transparent;
+	padding: 0;
+	margin: 0;
+}
+#privacy-item {
+	margin: 6px 0 6px 8px;
+	padding: 0 8px;
+	background-color: @bg_alt;
+	border-radius: 13px;
+}
+#privacy-item.screenshare { color: @red; }
+#privacy-item.audio-in    { color: @orange; }
+
+/* same look for the capture PipeWire cannot see: the webcam */
+#custom-webcam {
+	background-color: transparent;
+	padding: 0;
+	margin: 0;
+}
+#custom-webcam.on {
+	margin: 6px 0 6px 8px;
+	padding: 0 8px;
+	background-color: @bg_alt;
+	border-radius: 13px;
+	color: @red;
+}
+
+/* Caps Lock badge: invisible while off, a red pill while on */
+#keyboard-state {
+	background-color: transparent;
+	padding: 0;
+	margin: 0;
+}
+#keyboard-state > label {
+	padding: 0;
+	margin: 0;
+}
+#keyboard-state > label.locked {
+	margin: 6px 0 6px 8px;
+	padding: 0 10px;
+	background-color: @red;
+	color: @bg;
+	border-radius: 13px;
+}
+
+#tray {
+	padding: 0 10px;
+	margin-left: 10px;
+}
+#tray > .passive {
+	-gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+	-gtk-icon-effect: highlight;
+}
