@@ -23,6 +23,8 @@ class SwayTests(unittest.TestCase):
         self.runtime.mkdir(mode=0o700)
         self.log = self.root / "commands"
         self.env = os.environ.copy()
+        # Never pass real login credentials/handoff sockets to mocked sessions.
+        self.env.pop("PAM_KWALLET5_LOGIN", None)
         for key in list(self.env):
             if key.startswith("XDG_") or key in ("SWAYSOCK", "DISPLAY", "WAYLAND_DISPLAY"):
                 self.env.pop(key)
@@ -229,6 +231,35 @@ printf 'cursor=%s size=%s\n' "$XCURSOR_THEME" "$XCURSOR_SIZE" >> "$TEST_LOG"''')
         self.run_script("install.sh", expected=42)
         self.assertEqual(marker.read_text(), "keep my edits\n")
         self.assertTrue((self.home / ".config/sway/config").is_file())
+
+    def test_kwallet_handoff_is_guarded_and_does_not_break_companion_startup(self):
+        self.env.update(XDG_CURRENT_DESKTOP="sway", SWAYSOCK="/test/socket")
+        theme = self.seed(".config/sway/scripts/theme", "#!/bin/bash\nexit 0\n")
+        theme.chmod(0o755)
+        # Substitute only the packaged helper path in an isolated script copy.
+        # Do not add a production override or run the host's real PAM helper.
+        helper = self.bin / "pam_kwallet_init"
+        script = self.root / "session-start"
+        script.write_text((REPO / "sway/scripts/session-start").read_text().replace(
+            "/usr/lib/pam_kwallet_init", str(helper)))
+        script.chmod(0o755)
+        self.stub("pam_kwallet_init", 'echo wallet-handoff >> "$TEST_LOG"')
+        self.run_script(str(script))
+        self.assertNotIn("wallet-handoff", self.log.read_text())
+        self.env["PAM_KWALLET5_LOGIN"] = "/test/pam-socket"
+        self.run_script(str(script))
+        commands = self.log.read_text()
+        self.assertEqual(commands.count("wallet-handoff"), 1)
+        self.assertLess(commands.rindex("dbus-update-activation-environment"),
+                        commands.index("wallet-handoff"))
+        self.assertLess(commands.rindex("start sway-session.target"),
+                        commands.index("wallet-handoff"))
+        self.stub("pam_kwallet_init", "exit 23")
+        result = self.run_script(str(script))
+        self.assertIn("KWallet PAM initialization failed", result.stderr)
+        helper.unlink()
+        result = self.run_script(str(script))
+        self.assertNotIn("KWallet PAM initialization failed", result.stderr)
 
     def test_custom_data_and_state_roots_survive_reinstallation(self):
         data = self.root / "data"

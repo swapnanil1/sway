@@ -112,8 +112,11 @@ must already work for capture. The installer does not replace the audio stack.
 
 Sway deliberately skips the general XDG autostart target. Cloud sync, password
 manager tray apps and other desktop startup applications may need to be opened
-manually. KWallet may prompt when first used; automatic unlock depends on your
-existing login/PAM configuration. No credential migration is attempted.
+manually. When the login manager supplies a KWallet PAM handoff, Sway runs the
+existing `/usr/lib/pam_kwallet_init` helper after companion startup. The helper
+is skipped when absent or no handoff is supplied. KWallet may still prompt when
+first used; automatic unlock depends on your existing login/PAM configuration.
+No PAM edits, provider changes or credential migration are performed.
 
 Saved NetworkManager connections can reconnect normally. If a new Wi-Fi network
 needs a password and the KDE control panel cannot get an agent in Sway, use

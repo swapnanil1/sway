@@ -26,3 +26,8 @@ systemctl --user start sway-session.target
 for unit in sway-waybar sway-mako sway-polkit-agent sway-swayidle sway-cliphist sway-autotiling; do
     systemctl --user is-active --quiet "$unit.service"
 done
+# Plasma normally performs this PAM handoff through its autostart set. Reuse
+# KDE's helper after the display environment and companion services are ready.
+if [[ -n ${PAM_KWALLET5_LOGIN:-} && -x /usr/lib/pam_kwallet_init ]]; then
+    /usr/lib/pam_kwallet_init || echo 'KWallet PAM initialization failed; check wallet access before opening credential-dependent apps.' >&2
+fi
