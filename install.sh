@@ -88,15 +88,17 @@ doctor() {
         command -v "$cmd" >/dev/null || { say "MISSING command: $cmd"; failed=1; }
     done
     say 'Runtime checks (login, locking, screen sharing, wallet and Plasma return) require both sessions; see README.'
-    if [[ -n ${DBUS_SESSION_BUS_ADDRESS:-} ]]; then
-        bash "$REPO/sway/scripts/wallet-check" || failed=1
-    else
-        say 'Wallet check skipped: no session bus. Run sway/scripts/wallet-check in each desktop.'
-    fi
+    say 'Optional credential diagnostics: sway/scripts/wallet-check in each desktop.'
     return "$failed"
 }
 if ((DOCTOR)); then doctor; exit; fi
 if ((EUID == 0)); then say 'Run as your normal desktop user; sudo is used only for packages and the session entry.' >&2; exit 1; fi
+# Reject invalid XDG roots before any package or filesystem changes.
+for path in "$HOME" "$CONFIG" "$DATA" "$STATE"; do
+    if [[ $path != /* ]]; then
+        say 'HOME and XDG directory paths must be absolute.' >&2; exit 1
+    fi
+done
 # Existing helpers use ~/.config paths. Reject unsupported layouts explicitly.
 if [[ $CONFIG != "$HOME/.config" ]]; then
     say 'Custom XDG_CONFIG_HOME is not supported by the inherited v2 helpers.' >&2; exit 1

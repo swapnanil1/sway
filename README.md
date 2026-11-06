@@ -230,11 +230,11 @@ bash /path/to/this/repository/sway/scripts/wallet-check
 ~/.config/sway/scripts/wallet-check
 ```
 
-This reports the running Secret Service provider and whether its collections
-are locked. It never starts a provider, unlocks collections, lists secret items,
-or retrieves passwords. `--doctor` also runs it when a session bus is available.
-A missing provider may simply not have started yet; a locked collection may need
-your existing wallet's unlock dialog. A successful check does not establish that
+This optional check reports the running Secret Service provider. It never starts
+a provider, inspects collections or retrieves passwords. It is separate from
+`--doctor`: a wallet that has not started yet does not make an installation
+unhealthy. A missing provider may simply not have started yet. A successful check
+does not establish that
 a browser or IDE is using its original backend or encryption key. PID and bus
 owner numbers change between sessions; compare the provider process instead.
 
@@ -251,6 +251,23 @@ sessions, saved-password access and IDE authentication after switching in both
 directions. Stop and diagnose unexpected sign-outs before resetting app data or
 wallets. Wallet access checks cannot guarantee that a third-party app preserves
 its credentials.
+
+## Portability boundaries
+
+The installer targets Arch Linux with Plasma 6 and systemd. Package names,
+KDE helper paths and the portal unit name follow that platform; this is not a
+cross-distribution installer. No display-manager brand or GPU vendor is required.
+The default `~/.config` layout is required by inherited Sway bindings and service
+paths. Custom absolute `XDG_DATA_HOME` and `XDG_STATE_HOME` roots are supported;
+relative paths are rejected before changes. Home/data paths containing whitespace
+remain unsupported. Shell-sensitive paths and alternative config layouts have
+not been validated. Porting those means updating all consumers together, rather
+than removing the installer guard and claiming support.
+
+Startup uses one D-Bus environment update for both D-Bus and systemd, as described
+in the [D-Bus manual](https://dbus.freedesktop.org/doc/dbus-update-activation-environment.1.html).
+Tools create their own output directories when used; login does not pre-create
+screenshot folders or start optional wallet diagnostics.
 
 ## Installation failure handling
 

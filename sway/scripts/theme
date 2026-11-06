@@ -34,7 +34,7 @@ if [[ $1 == --ensure ]]; then
 	while IFS='|' read -r template target _; do
 		target=${target// /}
 		[[ -z ${template// /} || $template == \#* || -f $ROOT/$target ]] && continue
-		current=$(sed -n 's/^THEME=//p' "$ROOT/sway/theme.env" 2>/dev/null)
+		current=$(sed -n 's/^THEME=//p' "$ROOT/sway/theme.env" 2>/dev/null || true)
 		exec "$0" --no-reload "${current:-onedark}"
 	done <"$ROOT/themes/targets.conf"
 	exit 0
@@ -106,7 +106,8 @@ done <"$ROOT/themes/targets.conf"
 
 ((RELOAD)) || exit 0
 for cmd in "${reloads[@]}"; do
-	eval "$cmd" >/dev/null 2>&1
+	# An unavailable optional daemon must not prevent the remaining reloads.
+	eval "$cmd" >/dev/null 2>&1 || true
 done
 ~/.config/sway/scripts/sound theme
 notify-send -a sway-quiet -t 2500 "Theme" "$THEME"

@@ -206,7 +206,7 @@ printf 'cursor=%s size=%s\n' "$XCURSOR_THEME" "$XCURSOR_SIZE" >> "$TEST_LOG"''')
 
     def test_startup_reports_environment_import_failure(self):
         self.env.update(XDG_CURRENT_DESKTOP="sway", SWAYSOCK="/test/socket")
-        self.stub("systemctl", "exit 19")
+        self.stub("dbus-update-activation-environment", "exit 19")
         result = self.run_script("sway/scripts/session-start", expected=19)
         self.assertIn("startup failed", result.stderr)
         self.assertIn("idle locking may be unavailable", self.log.read_text())
@@ -230,6 +230,49 @@ printf 'cursor=%s size=%s\n' "$XCURSOR_THEME" "$XCURSOR_SIZE" >> "$TEST_LOG"''')
         self.assertEqual(marker.read_text(), "keep my edits\n")
         self.assertTrue((self.home / ".config/sway/config").is_file())
 
+    def test_custom_data_and_state_roots_survive_reinstallation(self):
+        data = self.root / "data"
+        state = self.root / "state with spaces"
+        self.env.update(XDG_DATA_HOME=str(data), XDG_STATE_HOME=str(state))
+        self.run_script("install.sh")
+        config = self.home / ".config/sway/config"
+        self.assertEqual(config.resolve(), data / "sway/sway/config")
+        (data / "sway/marker").write_text("preserve")
+        self.run_script("install.sh")
+        backups = list((state / "sway/backups").glob("*/installed-files/marker"))
+        self.assertEqual(len(backups), 1)
+        self.assertEqual(backups[0].read_text(), "preserve")
+
+    def test_relative_xdg_roots_rejected_before_mutation(self):
+        for key in ("XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME"):
+            with self.subTest(key=key):
+                self.env[key] = "relative/path"
+                result = self.run_script("install.sh", "--dry-run", expected=1)
+                self.assertIn("must be absolute", result.stderr)
+                del self.env[key]
+        self.assertFalse(list(self.home.iterdir()))
+        self.assertFalse(self.log.exists())
+
+    def test_ensure_recovers_when_all_generated_theme_files_are_missing(self):
+        self.run_script("install.sh")
+        root = self.home / ".local/share/sway"
+        (root / "sway/theme.env").unlink()
+        (root / "sway/config.d/00_colors.conf").unlink()
+        self.run_script(str(root / "sway/scripts/theme"), "--ensure")
+        self.assertIn("THEME=onedark", (root / "sway/theme.env").read_text())
+        self.assertTrue((root / "sway/config.d/00_colors.conf").is_file())
+
+    def test_optional_reload_failure_does_not_abort_theme_change(self):
+        self.run_script("install.sh")
+        root = self.home / ".local/share/sway"
+        for cmd in ("swaymsg", "makoctl", "systemctl"):
+            self.stub(cmd, "exit 42")
+        sound = root / "sway/scripts/sound"
+        sound.write_text("#!/bin/bash\nexit 0\n")
+        self.run_script(str(root / "sway/scripts/theme"), "nord")
+        self.assertIn("THEME=nord", (root / "sway/theme.env").read_text())
+        self.assertIn("notification", self.log.read_text())
+
     def test_wallet_check_does_not_activate_missing_provider(self):
         self.stub("busctl", '''printf 'busctl %s\\n' "$*" >> "$TEST_LOG"
 exit 1''')
@@ -239,17 +282,16 @@ exit 1''')
         self.assertIn("--auto-start=no", commands)
         self.assertNotIn("GetSecret", commands)
 
-    def test_wallet_check_reports_locked_collection_without_reading_items(self):
+    def test_wallet_check_only_reports_provider_identity(self):
         self.stub("busctl", '''printf 'busctl %s\\n' "$*" >> "$TEST_LOG"
 case "$*" in
   *GetNameOwner*) echo 's ":1.42"' ;;
   *GetConnectionUnixProcessID*) echo 'u 123' ;;
-  *Collections*) echo 'ao 1 "/org/freedesktop/secrets/collection/example"' ;;
-  *Locked*) echo 'b true' ;;
   *) exit 99 ;;
 esac''')
-        result = self.run_script("sway/scripts/wallet-check", expected=1)
-        self.assertIn("Collection locked: true", result.stdout)
+        result = self.run_script("sway/scripts/wallet-check")
+        self.assertIn("Secret Service owner:", result.stdout)
+        self.assertNotIn("get-property", self.log.read_text())
         self.assertNotIn("GetSecret", self.log.read_text())
 
 
