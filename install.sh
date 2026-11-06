@@ -22,6 +22,25 @@ say() { printf '%s\n' "$*"; }
 run() {
     if ((DRY_RUN)); then printf '[dry-run] '; printf '%q ' "$@"; printf '\n'; else "$@"; fi
 }
+# Failed user-file deployment is rolled back; package upgrades are not undone.
+stage=''
+committed=0
+changed=()
+saved=()
+rollback() {
+    local status=$? i
+    trap - EXIT
+    if (( !DRY_RUN && !committed )); then
+        for ((i=${#changed[@]}-1; i>=0; i--)); do
+            rm -rf -- "${changed[i]}"
+            if [[ -n ${saved[i]} ]]; then
+                mv -- "${saved[i]}" "${changed[i]}" || say "RESTORE MANUALLY: ${saved[i]} -> ${changed[i]}" >&2
+            fi
+        done
+    fi
+    if (( !DRY_RUN )) && [[ -n $stage ]]; then rm -rf -- "$stage"; fi
+    exit "$status"
+}
 # Existing content is retained in a unique backup directory for this run.
 BACKUP="$STATE/backups/$(date +%Y%m%d-%H%M%S)-$$"
 backup() {
@@ -29,6 +48,11 @@ backup() {
     if [[ -e $path || -L $path ]]; then
         run mkdir -p "$BACKUP/$(dirname "$label")"
         run mv -- "$path" "$BACKUP/$label"
+        changed+=("$path")
+        saved+=("$BACKUP/$label")
+    else
+        changed+=("$path")
+        saved+=('')
     fi
 }
 link() {
@@ -64,6 +88,11 @@ doctor() {
         command -v "$cmd" >/dev/null || { say "MISSING command: $cmd"; failed=1; }
     done
     say 'Runtime checks (login, locking, screen sharing, wallet and Plasma return) require both sessions; see README.'
+    if [[ -n ${DBUS_SESSION_BUS_ADDRESS:-} ]]; then
+        bash "$REPO/sway/scripts/wallet-check" || failed=1
+    else
+        say 'Wallet check skipped: no session bus. Run sway/scripts/wallet-check in each desktop.'
+    fi
     return "$failed"
 }
 if ((DOCTOR)); then doctor; exit; fi
@@ -76,13 +105,27 @@ if [[ $HOME == *[[:space:]]* || $DATA == *[[:space:]]* ]]; then
     say 'Paths with whitespace are not supported by the inherited v2 helpers.' >&2; exit 1
 fi
 if ! ((DRY_RUN)); then
-    for cmd in pacman sudo; do command -v "$cmd" >/dev/null || { say "Missing: $cmd" >&2; exit 1; }; done
+    for cmd in pacman sudo flock; do command -v "$cmd" >/dev/null || { say "Missing: $cmd" >&2; exit 1; }; done
     # Check the desktop component; the user may have removed the metapackage.
     # No login-manager package/service is required or changed here.
     pacman -Q plasma-workspace >/dev/null 2>&1 || {
         say 'Start with a working Arch Plasma desktop (for example Archinstall + plasma-meta). This installer adds Sway to it.' >&2; exit 1;
     }
+    mkdir -p "$STATE"
+    exec 9>"$STATE/install.lock"
+    flock -n 9 || { say 'Another Sway installation is running.' >&2; exit 1; }
+    if [[ -n ${XDG_RUNTIME_DIR:-} ]]; then
+        exec 8>"$XDG_RUNTIME_DIR/sway-session.lock"
+        flock -n 8 || { say 'Log out of Sway before installing.' >&2; exit 1; }
+    fi
+    if pgrep -u "$(id -u)" -x sway >/dev/null; then
+        say 'Log out of Sway before replacing its installed files.' >&2; exit 1
+    fi
 fi
+trap rollback EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 say 'Sway: optional session alongside KDE Plasma. No live session will be started or reloaded.'
 package_lists=("$REPO/packages/sway.txt")
 if ((EXTRAS)); then package_lists+=("$REPO/packages/extras.txt"); fi
@@ -91,17 +134,24 @@ args=(-Syu --needed)
 ((YES)) && args+=(--noconfirm)
 run sudo pacman "${args[@]}" "${pkgs[@]}"
 
-# Use a managed copy: git switches/updates cannot rewrite the installed session.
-# Reinstallation backs up the complete previous copy before replacing it.
-backup "$DEST" installed-files
-run mkdir -p "$DEST"
+# Stage and render before touching the installed copy, on the same filesystem.
+if ((DRY_RUN)); then
+    stage="$DATA/.sway-stage-dry-run"
+else
+    mkdir -p "$DATA"
+    stage=$(mktemp -d "$DATA/.sway-stage.XXXXXX")
+fi
 for dir in sway waybar wofi mako foot swaylock themes systemd; do
-    run cp -a "$REPO/$dir" "$DEST/$dir"
+    run cp -a "$REPO/$dir" "$stage/$dir"
 done
 if ! ((DRY_RUN)); then
-    chmod +x "$DEST/sway/scripts/"* "$DEST/sway/session/sway-desktop"
-    "$DEST/sway/scripts/theme" --no-reload onedark
+    chmod +x "$stage/sway/scripts/"* "$stage/sway/session/sway-desktop"
+    "$stage/sway/scripts/theme" --check
+    "$stage/sway/scripts/theme" --no-reload onedark
 fi
+backup "$DEST" installed-files
+run mv -- "$stage" "$DEST"
+stage=''
 for dir in sway waybar wofi mako foot swaylock; do
     link "$DEST/$dir" "$CONFIG/$dir" "config/$dir"
 done
@@ -124,8 +174,9 @@ for spec in 'sway/session/sway-desktop /usr/local/bin/sway-desktop 755' \
     run sudo install -Dm"$mode" "$REPO/$source" "$target"
 done
 run systemctl --user daemon-reload
+committed=1
 say "Installed copy: $DEST"
 say "Backups (if needed): $BACKUP"
-say 'Log out, select Sway at the existing login screen. Plasma remains available.'
+say 'Log out, select Sway (KDE companion) at the existing login screen. Plasma remains available.'
 say 'Log out of Plasma fully before using Sway to release its compositor VRAM.'
 say 'Existing v2 users: review docs/MIGRATION.md; shared old settings are not blindly reset.'

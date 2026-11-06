@@ -18,7 +18,7 @@ The `v2` branch remains the standalone setup. Its documentation is archived in
 | --- | --- | --- |
 | Desktop | Existing Plasma shell and KWin | Sway, Waybar, wofi, mako, foot |
 | Common apps | Your existing apps | Same installed apps; Dolphin and KDE settings shortcuts |
-| Login | Existing Plasma login setup | Adds a separate **Sway** entry |
+| Login | Existing Plasma login setup | Adds a separate **Sway (KDE companion)** entry |
 | Themes | Managed in Plasma | Sway-only palette; KDE/GTK application settings stay shared |
 | Audio/network | Existing system services | Uses the same services; no duplicate audio/network daemon |
 | Passwords | Existing wallet/keyring | Leaves the provider and browser settings alone |
@@ -83,7 +83,7 @@ start a new session or reload the running compositor.
 ## Enter and leave Sway
 
 1. Save your work and log out of Plasma.
-2. At the existing login screen, select **Sway** and sign in.
+2. At the existing login screen, select **Sway (KDE companion)** and sign in.
 3. `Super+Return` opens a terminal. `Super+Space` opens the launcher.
 4. `Super+Shift+E` opens the session menu; choose logout to return to login.
 5. Select Plasma to return to your primary desktop. A login manager may remember
@@ -192,9 +192,9 @@ Installation copies the session into `~/.local/share/sway` (or
 
 Two system files provide the login entry: `/usr/local/bin/sway-desktop` and
 `/usr/share/wayland-sessions/sway-desktop.desktop`. No display manager is enabled or
-replaced. The distro's `sway.desktop` entry is left intact. If the login screen
-shows two entries named Sway, select the one provided by `sway-desktop.desktop`,
-whose command is `/usr/local/bin/sway-desktop`.
+replaced. The distro's `sway.desktop` entry is left intact. Select **Sway (KDE companion)**, provided by `sway-desktop.desktop`, whose command
+is `/usr/local/bin/sway-desktop`. The distro's plain Sway entry bypasses this
+project's session setup and cleanup.
 
 The installed copy is independent of the git checkout: changing branches does
 not rewrite the session. Re-run the installer to deploy repository updates,
@@ -219,6 +219,54 @@ changes only the Sway tools, not `kdeglobals` or GTK application settings.
 
 Old seed, fish, fastfetch, MangoHud and KDE service-menu files remain in the
 repository as v2 reference assets; Sway does not install them.
+
+## Credential continuity
+
+Before relying on desktop switching, run this from a terminal in **each** desktop:
+
+```bash
+bash /path/to/this/repository/sway/scripts/wallet-check
+# After installation, also available as:
+~/.config/sway/scripts/wallet-check
+```
+
+This reports the running Secret Service provider and whether its collections
+are locked. It never starts a provider, unlocks collections, lists secret items,
+or retrieves passwords. `--doctor` also runs it when a session bus is available.
+A missing provider may simply not have started yet; a locked collection may need
+your existing wallet's unlock dialog. A successful check does not establish that
+a browser or IDE is using its original backend or encryption key. PID and bus
+owner numbers change between sessions; compare the provider process instead.
+
+Keep each application's existing password backend consistent across desktops.
+Check Chromium-family browser flags and VS Code runtime arguments against the
+backend already used successfully in Plasma; do not guess a new backend from the
+desktop name. KWallet's native API and its Secret Service API are distinct access
+paths; this diagnostic only checks Secret Service. Password managers launched by
+Plasma autostart may need to be opened manually in Sway. No automatic provider
+selection, wallet migration, credential export or deletion is performed.
+
+Save work and close the browser/IDE normally before logout. Verify existing site
+sessions, saved-password access and IDE authentication after switching in both
+directions. Stop and diagnose unexpected sign-outs before resetting app data or
+wallets. Wallet access checks cannot guarantee that a third-party app preserves
+its credentials.
+
+## Installation failure handling
+
+The installer serializes deployments and refuses to replace a running Sway
+installation. It stages copies and renders themes before replacing user files;
+ordinary failures restore changed user files in reverse order. Theme rendering
+uses a lock and replaces complete individual files to avoid truncated configs.
+Backups remain available after successful updates. A forced kill or power loss
+can still interrupt deployment; inspect the reported backup directory before
+retrying. Package upgrades and root-owned session entry changes are outside the
+user-file rollback. Personal managed-file edits remain backed up rather than
+merged automatically.
+
+The wrapper serializes Sway sessions through a runtime lock. Failed companion
+startup emits a critical notification and an error in the session log; inspect
+`systemctl --user --failed` before relying on idle locking.
 
 ## Validation before daily use
 

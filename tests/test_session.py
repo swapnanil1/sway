@@ -1,5 +1,6 @@
 """Installer/session regression checks; never install packages or touch the host session."""
 import os
+import fcntl
 from pathlib import Path
 import shutil
 import subprocess
@@ -28,6 +29,8 @@ class SwayTests(unittest.TestCase):
         self.env.update(HOME=str(self.home), PATH=f"{self.bin}:{os.environ['PATH']}",
                         TEST_LOG=str(self.log), XDG_RUNTIME_DIR=str(self.runtime))
         self.stub("pacman", '[[ "$*" == "-Q plasma-workspace" ]]')
+        self.stub("pgrep", 'exit 1')
+        self.stub("notify-send", 'printf "notification %s\\n" "$*" >> "$TEST_LOG"')
         # Explicit allowlist: even a regression cannot run a privileged host operation.
         self.stub("sudo", '''printf 'sudo %s\n' "$*" >> "$TEST_LOG"
 case "$1" in
@@ -160,6 +163,94 @@ printf 'cursor=%s size=%s\n' "$XCURSOR_THEME" "$XCURSOR_SIZE" >> "$TEST_LOG"''')
             if line.startswith("Wants="):
                 for dependency in line.split("=", 1)[1].split():
                     self.assertTrue((folder / dependency).is_file(), dependency)
+
+    def test_failed_copy_leaves_working_installation_intact(self):
+        self.run_script("install.sh")
+        config = self.home / ".config/sway/config"
+        before = config.read_bytes()
+        self.stub("cp", "exit 28")
+        self.run_script("install.sh", expected=28)
+        self.assertEqual(config.read_bytes(), before)
+        self.assertFalse(list((self.home / ".local/share").glob(".sway-stage.*")))
+
+    def test_failed_late_deployment_restores_user_files(self):
+        old = self.seed(".config/sway/config", "original config\n")
+        self.stub("systemctl", "exit 42")
+        self.run_script("install.sh", expected=42)
+        self.assertEqual(old.read_text(), "original config\n")
+        self.assertFalse(old.parent.is_symlink())
+        self.assertFalse((self.home / ".local/share/sway").exists())
+
+    def test_failed_render_keeps_working_configuration(self):
+        self.run_script("install.sh")
+        config = self.home / ".config/sway/config.d/00_colors.conf"
+        before = config.read_bytes()
+        self.stub("envsubst", "printf partial; exit 23")
+        self.run_script("install.sh", expected=23)
+        self.assertEqual(config.read_bytes(), before)
+        self.run_script(str(self.home / ".config/sway/scripts/theme"),
+                        "--no-reload", "onedark", expected=23)
+        self.assertEqual(config.read_bytes(), before)
+
+    def test_second_session_and_installer_cannot_take_live_session_lock(self):
+        with (self.runtime / "sway-session.lock").open("w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.run_script("sway/session/sway-desktop", expected=1)
+            self.run_script("install.sh", expected=1)
+        self.assertFalse(self.log.exists())
+
+    def test_existing_sway_detected_without_inherited_socket(self):
+        self.stub("pgrep", '[[ "$*" == *sway* ]]')
+        self.run_script("sway/session/sway-desktop", expected=1)
+        self.assertFalse(self.log.exists())
+
+    def test_startup_reports_environment_import_failure(self):
+        self.env.update(XDG_CURRENT_DESKTOP="sway", SWAYSOCK="/test/socket")
+        self.stub("systemctl", "exit 19")
+        result = self.run_script("sway/scripts/session-start", expected=19)
+        self.assertIn("startup failed", result.stderr)
+        self.assertIn("idle locking may be unavailable", self.log.read_text())
+
+    def test_startup_detects_failed_daemon_even_when_target_starts(self):
+        self.env.update(XDG_CURRENT_DESKTOP="sway", SWAYSOCK="/test/socket")
+        theme = self.seed(".config/sway/scripts/theme", "#!/bin/bash\nexit 0\n")
+        theme.chmod(0o755)
+        self.stub("systemctl", '''printf 'systemctl %s\\n' "$*" >> "$TEST_LOG"
+[[ "$*" != *'is-active --quiet sway-swayidle.service'* ]]''')
+        self.run_script("sway/scripts/session-start", expected=1)
+        commands = self.log.read_text()
+        self.assertIn("start sway-session.target", commands)
+        self.assertIn("notification", commands)
+
+    def test_failed_update_restores_previous_managed_copy(self):
+        self.run_script("install.sh")
+        marker = self.seed(".local/share/sway/personal-marker", "keep my edits\n")
+        self.stub("systemctl", "exit 42")
+        self.run_script("install.sh", expected=42)
+        self.assertEqual(marker.read_text(), "keep my edits\n")
+        self.assertTrue((self.home / ".config/sway/config").is_file())
+
+    def test_wallet_check_does_not_activate_missing_provider(self):
+        self.stub("busctl", '''printf 'busctl %s\\n' "$*" >> "$TEST_LOG"
+exit 1''')
+        result = self.run_script("sway/scripts/wallet-check", expected=1)
+        self.assertIn("does not mean credentials were deleted", result.stdout)
+        commands = self.log.read_text()
+        self.assertIn("--auto-start=no", commands)
+        self.assertNotIn("GetSecret", commands)
+
+    def test_wallet_check_reports_locked_collection_without_reading_items(self):
+        self.stub("busctl", '''printf 'busctl %s\\n' "$*" >> "$TEST_LOG"
+case "$*" in
+  *GetNameOwner*) echo 's ":1.42"' ;;
+  *GetConnectionUnixProcessID*) echo 'u 123' ;;
+  *Collections*) echo 'ao 1 "/org/freedesktop/secrets/collection/example"' ;;
+  *Locked*) echo 'b true' ;;
+  *) exit 99 ;;
+esac''')
+        result = self.run_script("sway/scripts/wallet-check", expected=1)
+        self.assertIn("Collection locked: true", result.stdout)
+        self.assertNotIn("GetSecret", self.log.read_text())
 
 
 if __name__ == "__main__":

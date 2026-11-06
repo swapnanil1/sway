@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Sway
+Name=Sway (KDE companion)
 Comment=Optional lightweight tiling session alongside KDE Plasma
 Exec=/usr/local/bin/sway-desktop
 TryExec=/usr/local/bin/sway-desktop

@@ -13,3 +13,5 @@ mangohud/MangoHud.conf
 
 # Python checks
 __pycache__/
+# Runtime lock used by the theme renderer.
+themes/.render.lock

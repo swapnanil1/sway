@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Read-only runtime diagnostics. Never activate a provider, unlock a wallet,
+# enumerate items or read secrets. Run in BOTH desktops and compare providers.
+set -euo pipefail
+echo "Desktop: ${XDG_CURRENT_DESKTOP:-unknown}"
+if ! command -v busctl >/dev/null; then
+    echo 'Cannot inspect Secret Service: busctl is unavailable.' >&2
+    exit 1
+fi
+if ! owner=$(busctl --user --auto-start=no --timeout=5 call org.freedesktop.DBus \
+    /org/freedesktop/DBus org.freedesktop.DBus GetNameOwner s org.freedesktop.secrets 2>/dev/null); then
+    echo 'No running Secret Service provider. This does not mean credentials were deleted.'
+    echo 'Check your existing wallet/PAM setup; do not delete wallets or change app backends blindly.'
+    exit 1
+fi
+echo "Secret Service owner: $owner"
+# Identity only: no environment variables or credential payloads.
+provider_pid=$(busctl --user --auto-start=no --timeout=5 call org.freedesktop.DBus /org/freedesktop/DBus \
+    org.freedesktop.DBus GetConnectionUnixProcessID s org.freedesktop.secrets)
+provider_pid=${provider_pid#u }
+if [[ $provider_pid =~ ^[0-9]+$ ]]; then
+    provider=$(ps -p "$provider_pid" -o comm= 2>/dev/null) || provider=unknown
+    echo "Provider process: $provider"
+fi
+collections=$(busctl --user --auto-start=no --timeout=5 get-property org.freedesktop.secrets \
+    /org/freedesktop/secrets org.freedesktop.Secret.Service Collections)
+locked=0
+for path in $collections; do
+    path=${path//\"/}
+    [[ $path == /* ]] || continue
+    state=$(busctl --user --auto-start=no --timeout=5 get-property org.freedesktop.secrets \
+        "$path" org.freedesktop.Secret.Collection Locked)
+    if [[ $state == 'b true' ]]; then locked=1; fi
+    echo "Collection locked: ${state#b }"
+done
+echo 'A reachable provider does not prove an app uses its original encryption key.'
+echo 'Compare browser/IDE password-store settings and existing logins in both desktops.'
+exit "$locked"

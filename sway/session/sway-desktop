@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Login-manager/TTY entry for the optional Sway session; owns cleanup on normal exit/crash.
 set -euo pipefail
-if [[ -n ${SWAYSOCK:-} ]] || pgrep -u "$(id -u)" -x 'plasmashell|kwin_wayland|kwin_x11' >/dev/null; then
+if [[ -n ${SWAYSOCK:-} ]] || pgrep -u "$(id -u)" -x 'sway|plasmashell|kwin_wayland|kwin_x11' >/dev/null; then
     echo 'Log out of the existing desktop before starting Sway.' >&2
     exit 1
 fi
+# Hold ownership until cleanup finishes; do not pass the lock to the compositor.
+exec 9>"${XDG_RUNTIME_DIR:?A normal user login with XDG_RUNTIME_DIR is required}/sway-session.lock"
+flock -n 9 || { echo 'Another Sway session is starting or running.' >&2; exit 1; }
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
 # shellcheck source=/dev/null
 source "$config/sway/env"
@@ -31,7 +34,7 @@ mv -f -- "$cursor_tmp" "$cursor_file"
 cursor_tmp=''
 child=''
 trap '[[ -z $child ]] || kill -TERM "$child" 2>/dev/null || true' TERM INT HUP
-sway "$@" &
+sway "$@" 9>&- &
 child=$!
 status=0
 wait "$child" || status=$?

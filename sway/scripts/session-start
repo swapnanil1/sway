@@ -2,6 +2,17 @@
 # No XDG autostart target: start only the explicit Sway companion services.
 set -euo pipefail
 [[ ${XDG_CURRENT_DESKTOP:-} == sway && -n ${SWAYSOCK:-} ]] || exit 1
+report_failure() {
+    local status=$?
+    trap - EXIT
+    if ((status)); then
+        echo "Sway companion startup failed (status $status). Check sway-* user services and the session log." >&2
+        notify-send -u critical 'Sway startup incomplete' \
+            'Check systemctl --user --failed and the session log; idle locking may be unavailable.' 2>/dev/null || true
+    fi
+    exit "$status"
+}
+trap report_failure EXIT
 systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK \
     XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_MENU_PREFIX QT_QPA_PLATFORMTHEME QT_QPA_PLATFORM XCURSOR_THEME XCURSOR_SIZE
 # Explicit empty DISPLAY prevents a stale X11 display from a preceding session.
@@ -13,3 +24,7 @@ systemctl --user stop sway-session.target
 systemctl --user stop xdg-desktop-portal.service xdg-desktop-portal-wlr.service \
     xdg-desktop-portal-gtk.service plasma-xdg-desktop-portal-kde.service 2>/dev/null || true
 systemctl --user start sway-session.target
+# Wants= dependencies do not make starting the target fail when a daemon fails.
+for unit in sway-waybar sway-mako sway-polkit-agent sway-swayidle sway-cliphist sway-autotiling; do
+    systemctl --user is-active --quiet "$unit.service"
+done
