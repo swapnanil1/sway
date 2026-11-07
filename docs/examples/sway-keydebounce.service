@@ -1,0 +1,13 @@
+[Unit]
+Description=Keyboard debounce for Sway
+PartOf=sway-session.target
+ConditionEnvironment=XDG_CURRENT_DESKTOP=sway
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/sudo -n /usr/bin/systemctl start keydebounce.service
+ExecStop=/usr/bin/sudo -n /usr/bin/systemctl stop keydebounce.service
+
+[Install]
+WantedBy=sway-session.target

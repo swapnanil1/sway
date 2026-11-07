@@ -1,0 +1,1 @@
+swapnanil ALL=(root) NOPASSWD: /usr/bin/systemctl start keydebounce.service, /usr/bin/systemctl stop keydebounce.service

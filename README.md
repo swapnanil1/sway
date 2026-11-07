@@ -123,6 +123,34 @@ needs a password and the KDE control panel cannot get an agent in Sway, use
 `nmcli --ask device wifi connect "SSID"` from a terminal; Sway does not run the
 Plasma shell or a separate network tray agent.
 
+### Optional keyboard debounce
+
+Install [keydebounce](https://github.com/swapnanil1/gokeydebounce) and configure
+its **root** service for your keyboard, but skip its boot-enablement step.
+The examples below already use your username, **swapnanil**; no editor or text
+replacement is needed. From this Sway repository, paste this entire block into
+your terminal:
+
+```bash
+sudo install -o root -g root -m 440 docs/examples/sway-keydebounce.sudoers /etc/sudoers.d/sway-keydebounce &&
+sudo systemctl disable --now keydebounce.service &&
+mkdir -p ~/.config/systemd/user &&
+cp docs/examples/sway-keydebounce.service ~/.config/systemd/user/ &&
+systemctl --user daemon-reload &&
+systemctl --user enable --now sway-keydebounce.service
+```
+
+This copies the [prepared sudoers file](docs/examples/sway-keydebounce.sudoers)
+into `/etc/sudoers.d/` with the correct ownership and permissions. It starts the
+filter now if you are in Sway, otherwise on your next Sway login. On Sway logout,
+it stops so KDE can use its own debounce.
+For optional edits before installing, use `vim docs/examples/sway-keydebounce.sudoers`.
+Use **Vim (`vim`)** for editing these examples; do not use `vi` or `visudo`.
+The [optional service](docs/examples/sway-keydebounce.service) is not installed
+automatically. It requires the configured root service; it does not replace it.
+Normal logout/compositor-exit cleanup is covered; forcibly killing the Sway
+wrapper can leave the root service running (`sudo systemctl stop keydebounce.service`).
+
 ## Retained workflow and defaults
 
 | Shortcut | Action |
