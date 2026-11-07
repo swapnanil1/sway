@@ -24,7 +24,7 @@ The latter is historical documentation, not Sway installation instructions.
 | `faillock deny=0`, reset failure counter | No authentication-policy edits |
 | Membership in `input` for Caps Lock badge | No group change; omit that module |
 | Power profile daemon enablement | Use the existing daemon if present; do not change system services |
-| Maximum refresh, VRR and Alt/Super swap | Independent saved display profile; optional max refresh, VRR and swap; physical Super as Mod |
+| Maximum refresh, VRR and Alt/Super swap | Independent saved display profile; optional max refresh and VRR; left Alt/Super swap retained only in Sway |
 | Fixed Breeze cursor | Read Plasma's saved cursor theme/size at each Sway login |
 | Symlinks directly into the checkout | Managed copy with backups; branch switches do not alter the installation |
 | Large package selection | Sway companions plus reused KDE tools; optional utility package list |

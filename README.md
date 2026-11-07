@@ -146,7 +146,8 @@ must actually emit an urgency/activation request for the indicator to react.
 The current `focus_on_window_activation urgent` policy asks for attention
 without jumping to another workspace.
 
-The physical **Super** key is Mod; the v2 Alt/Super swap is now optional. Output
+Left **Alt** and **Super** are swapped in Sway, so shortcuts labelled Super use
+the physical left Alt key. Right-side modifiers and Plasma are unchanged. Output
 refresh selection and VRR use Sway's defaults unless you opt in. Optional
 brightness/sensor tools show `N/A` when unavailable. The old evdev Caps Lock
 module is disabled, so installation does not add you to the `input` group.
@@ -209,8 +210,8 @@ Put personal Sway commands in **`~/.config/sway-local.conf`**. It is included
 last and is never replaced by the installer. For example:
 
 ```sway
-# Optional v2 keyboard layout:
-# input type:keyboard xkb_options altwin:swap_lalt_lwin
+# Optional: disable the default left Alt/Super swap:
+# input type:keyboard xkb_options ""
 # Optional VRR:
 # output * adaptive_sync on
 ```
